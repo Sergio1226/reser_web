@@ -1,9 +1,9 @@
 # ReserWeb
 Aplicacion sobre reservas web para hotel
 
-Funcionalidades y/o requisitos:
+## Funcionalidades y/o requisitos:
 
-Registro e inicio de sesión
+### Registro e inicio de sesión
 
 RF1. El sistema debe permitir a los clientes registrar una nueva cuenta ingresando datos personales (cédula, nacionalidad, nombre completo, profesión, teléfono, tipo de documento, correo).
 
@@ -11,13 +11,13 @@ RF2. El sistema debe validar que el cliente no esté ya registrado antes de perm
 
 RF3. El sistema debe permitir a los clientes iniciar sesión con su correo y contraseña.
 
-Gestión de usuario
+### Gestión de usuario
 
 RF4. El cliente debe poder modificar sus datos personales (algunos como correo, contraseña, profesión y teléfono) una vez haya iniciado sesión.
 
 RF5. El administrador debe poder visualizar los datos personales de cualquier cliente registrado siguiendo el tratamiento de datos.
 
-Gestión de habitaciones
+### Gestión de habitaciones
 
 RF6. El sistema debe permitir a los clientes buscar habitaciones según numero de personas (adultos y niños) y capacidad (Sencilla, Doble, 3 a 6 personas).
 
@@ -31,11 +31,11 @@ RF10. El administrador debe poder modificar la información de una habitación e
 
 RF11. El administrador debe poder establecer el estado de una habitación como Abierta o Cerrada dentro de un intervalo de fechas.
 
-Gestión de servicios adicionales
+### Gestión de servicios adicionales
 
 RF12. El sistema debe permitir que el cliente seleccione servicios adicionales con costo extra: desayuno, tour al páramo de Ocetá, recorrido turístico por el pueblo, o las que considere el administrador del hotel.
 
-Reservas
+### Reservas
 
 RF13. El sistema debe permitir al cliente reservar habitaciones seleccionadas según fechas y cantidad de personas.
 
@@ -47,7 +47,7 @@ RF16. El sistema debe requerir el valor total para confirmar la reserva.
 
 RF17. El sistema debe permitir modificar una reserva existente, ajustando fechas, número de personas, habitación o servicios seleccionados, siempre que haya disponibilidad.
 
-Administración y control
+### Administración y control
 
 RF18. El administrador debe poder consultar todas las reservas realizadas.
 
