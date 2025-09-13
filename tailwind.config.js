@@ -5,10 +5,12 @@ export default {
     extend: {
       colors: {
         primary:"#f8b784ff",
-        secondary:"#f8b784ff",
-        gradient_1:"rgba(138, 190, 146,1)",
-        gradient_2:"rgba(155, 190, 160, 1)",
-        button_primary:"rgba(29, 166, 208, 1)"
+        secondary:"rgba(191, 247, 200, 1)",
+        gradient_1:"rgba(221, 247, 221, 1)",
+        button_primary:"#6EBCF7",
+      },
+      size:{
+        icon: '20px',
       },
       borderRadius: { 'button': '10px' },
       fontFamily: {
