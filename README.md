@@ -56,3 +56,13 @@ RF19. El administrador debe poder ver un resumen de la ocupación por fechas.
 RF20. El administrador o cliente debe poder cancelar una reserva bajo ciertas condiciones (por definir en reglas de negocio).
 
 RF21. El sistema debe permitir al administrador eliminar habitaciones que no estén asociadas a reservas activas o futuras.
+
+# Lenguajes
+
+* Tailwind(CSS)
+* React(JSX)
+
+# DevMode
+* Instalar npm 
+* Instalar librerias->npm install
+* Correr Prueba->npm run dev 
