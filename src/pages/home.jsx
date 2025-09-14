@@ -31,24 +31,24 @@ export default function Home() {
         </div>
       </header>
       <main className="bg-gradient-to-b from-secondary to-gradient_1 flex-1">
-        <div className="text-center justify-start text-black text-xl font-normal font-['Julius_Sans_One']">
+        <div className="text-center justify-start text-black text-xl font-normal font-['Julius_Sans_One'] pt-8">
           Tu hogar en Monguí
           <br />
           Tradición, descanso y hospitalidad.
         </div>
         <div className="flex justify-center p-4 space-x-2">
-          <p className=" text-xl font-['Julius_Sans_One'] w-1/2 " >
+          <p className=" text-xl font-['Julius_Sans_One'] w-1/2 text-justify p-4" >
             Bienvenidos a Los Recuerdos de Florito y Leo, un hotel familiar en
             el corazón de Monguí, Boyacá. En nuestro hotel, nos dedicamos a
             ofrecer una experiencia única, llena de calidez y tranquilidad,
             donde cada huésped es tratado como parte de nuestra familia
           </p>
           <div className="items-center ">
-              <img className=" rounded-[20px]" src="/src/assets/hotel.png" alt="hotel" />
+              <img className=" rounded-[20px] w-[350px] h-[180px]" src="/src/assets/entrada_hospedaje.jpg" alt="hotel" />
           </div>
         </div>
         <div className="flex justify-center m-4">
-          <img className="rounded-[20px] border border-black/20 shadow-lg" src="/src/assets/location.png" alt="" />
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d567.8421308116622!2d-72.85008154448731!3d5.721665664571183!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e6a492a8ae86e31%3A0x40a06b0a595c1e04!2shospedaje%20Florito%20y%20Leo!5e0!3m2!1ses!2sco!4v1757813254413!5m2!1ses!2sco" className="rounded-[20px] w-[600px] h-[450px]"></iframe>
         </div>
       </main>
       <Footer/>
