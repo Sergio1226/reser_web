@@ -17,7 +17,7 @@ export default function Home() {
             />
             <div className="flex flex-row items-start justify-center space-y-2 ">
               <h1 className="text-black text-4xl font-bold">
-                Hotel: Los Recuerdos de Florito y Leo
+                Hospedaje Los Recuerdos de Florito y Leo
               </h1>
             </div>
           </div>
@@ -63,7 +63,7 @@ export default function Home() {
         <div className="flex items-center justify-center bg-secondary w-1/2 m-4 rounded-[20px] border border-black/20 shadow-lg">
           <iframe
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d567.8421308116622!2d-72.85008154448731!3d5.721665664571183!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e6a492a8ae86e31%3A0x40a06b0a595c1e04!2shospedaje%20Florito%20y%20Leo!5e0!3m2!1ses!2sco!4v1757813254413!5m2!1ses!2sco"
-            className="rounded-[20px] w-[500px] h-[300px] border rounded-[20px] border-black/20 shadow-lg"
+            className="rounded-[20px] w-[500px] h-[300px] border border-black/20 shadow-lg"
           ></iframe>
         </div>
       </main>

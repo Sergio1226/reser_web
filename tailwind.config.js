@@ -10,7 +10,7 @@ export default {
         gradient_1:"rgba(232, 247, 232, 1)",
         button_primary:"#6EBCF7",
         button_secondary:"rgba(144, 245, 163, 1)",
-        
+        button_bookings:"#C6E4CB"
       },
       size:{
         icon: '20px',

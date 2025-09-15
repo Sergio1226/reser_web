@@ -43,7 +43,7 @@ export default function Login() {
                     <Button
                         text="Continuar"
                         style="w-40 h-[50px] bg-secondary"
-                        onClick={() => navigate("/")}
+                        onClick={() => navigate("/bookings")}
                         iconName="Next"
                     />
 
