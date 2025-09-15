@@ -40,12 +40,12 @@ export default function Login() {
             </button>
           </div>
 
-          <Button
-            text="Continuar"
-            style="w-40 h-[50px] bg-secondary"
-            onClick={() => navigate("/")}
-            iconName="Next"
-          />
+                    <Button
+                        text="Continuar"
+                        style="w-40 h-[50px] bg-secondary"
+                        onClick={() => navigate("/bookings")}
+                        iconName="Next"
+                    />
 
           <div className="text-center text-black text-base">
             ¿No está registrado?

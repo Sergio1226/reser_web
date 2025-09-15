@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "./Button"
+import ProfileButton from "./ProfileButton";
 
-export function HeaderForm({ navigateTo }) {
+export function HeaderMain() {
     const navigate = useNavigate();
 
     return (
@@ -14,12 +15,7 @@ export function HeaderForm({ navigateTo }) {
           </h1>
         </div>
         <div className="flex flex-col  items-center justify-center space-y-2">
-          <Button
-            text="Atras"
-            style=" w-auto bg-primary"
-            onClick={() => navigate(navigateTo)}
-            iconName="Back"
-          />
+          <ProfileButton />
         </div>
       </header>
     )
