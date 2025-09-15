@@ -5,9 +5,12 @@ export default {
     extend: {
       colors: {
         primary:"#f8b784ff",
-        secondary:"rgba(191, 247, 200, 1)",
-        gradient_1:"rgba(221, 247, 221, 1)",
+        contrast:"#0BA6DF",
+        secondary:"rgba(204, 248, 211, 1)",
+        gradient_1:"rgba(232, 247, 232, 1)",
         button_primary:"#6EBCF7",
+        button_secondary:"rgba(144, 245, 163, 1)",
+        
       },
       size:{
         icon: '20px',
@@ -15,6 +18,7 @@ export default {
       borderRadius: { 'button': '10px' },
       fontFamily: {
         kameron: ['Kameron', 'serif'],
+        primary: ['Open Sans', 'sans-serif'],
       },
     },
   },
