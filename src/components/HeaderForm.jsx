@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "./Button"
 
-export function HeaderForm() {
+export function HeaderForm({ navigateTo }) {
     const navigate = useNavigate();
 
     return (
@@ -17,7 +17,7 @@ export function HeaderForm() {
           <Button
             text="Atras"
             style=" w-auto bg-primary"
-            onClick={() => navigate("/")}
+            onClick={() => navigate(navigateTo)}
             iconName="Back"
           />
         </div>
