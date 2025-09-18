@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { IoMdArrowBack } from "react-icons/io";
 import { Header } from "../components/Header.jsx";
+import { HeaderForm } from "../components/HeaderForm.jsx";
 
 export default function LoginAdmin() {
   const navigate = useNavigate();
@@ -11,14 +12,14 @@ export default function LoginAdmin() {
 
   return (
     <div className="min-h-screen flex flex-col font-primary bg-white">
-      <Header />
+      <HeaderForm navigateTo = "/"/>
       <main className=" flex-1 bg-white pt-8 flex flex-row justify-center w-full">
         <div className=" bg-secondary mt-4 h-fit  border border-black/20  p-8 w-full">
           <form
             action=""
             className="bg-primary p-8 rounded-lg w-full max-w-md mx-auto border border-black/20 shadow-lg"
           >
-            <h2 className="text-black text-4xl font-normal text-center py-4 mb-4">
+            <h2 className="text-black text-4xl font-bold text-center py-4 mb-4">
               Iniciar sesión{" "}
             </h2>
             <div className="flex flex-col space-y-4">

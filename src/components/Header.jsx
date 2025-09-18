@@ -15,7 +15,7 @@ export function Header() {
           />
           <div className="flex flex-row items-start justify-center space-y-2 ">
             <h1 className="text-black text-4xl font-bold">
-              Hotel: Los Recuerdos de Florito y Leo
+              Hospedaje Los Recuerdos de Florito y Leo
             </h1>
           </div>
         </div>

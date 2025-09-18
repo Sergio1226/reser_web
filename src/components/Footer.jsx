@@ -14,7 +14,7 @@ export function Footer() {
 
 function Section({iconName, text}) {
     return (
-        <div className="flex flex-row items-center justify-center p-4 font-kameron">
+        <div className="flex flex-row items-center justify-center p-4 font-primary">
             <Icon name={iconName} />
             <h2 className="text-ls font-normal">{text}</h2>
         </div>

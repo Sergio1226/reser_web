@@ -15,7 +15,7 @@ export default function RegistUser() {
   const [paisDestino, setPaisDestino] = useState("");
 
   return (
-    <div className="bg-gray-500 min-h-screen flex flex-col font-kameron">
+    <div className="bg-gray-500 min-h-screen flex flex-col font-primary">
       <HeaderForm navigateTo="/login" />
 
       <main className="bg-gradient-to-b from-secondary to-gradient_1 flex flex-1 items-center justify-center p-8">
@@ -28,144 +28,216 @@ export default function RegistUser() {
             Datos Personales
           </label>
 
-          <input
-            type="text"
-            placeholder="Nombres"
-            required
-            className="w-96 h-12 px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 text-lg focus:outline-primary"
-          />
+          <div className="flex flex-col space-y-1 w-96">
+            <label className="text-black">
+              <span className="text-red-500">*</span> Nombres
+            </label>
+            <input
+              type="text"
+              placeholder="Nombres"
+              required
+              className="w-96  px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700  focus:outline-primary"
+            />
+          </div>
 
-          <input
-            type="text"
-            placeholder="Primer Apellido"
-            required
-            className="w-96 h-12 px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 text-lg focus:outline-primary"
-          />
+          <div className="flex flex-col space-y-1 w-96">
+            <label className="text-black">
+                <span className="text-red-500">*</span> Primer Apellido
+            </label>
 
-          <input
-            type="text"
-            placeholder="Segundo Apellido"
-            className="w-96 h-12 px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 text-lg focus:outline-primary"
-          />
+            <input
+              type="text"
+              placeholder="Primer Apellido"
+              required
+              className="w-96  px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700  focus:outline-primary"
+            />
+          </div>
+          
+          <div className="flex flex-col space-y-1 w-96">
+            <label className="text-black">
+                Segundo Apellido
+            </label>
 
-          <select
-            value={tipoDocumento}
-            onChange={(e) => setTipoDocumento(e.target.value)}
-            required
-            className="w-96 h-12 px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 text-lg focus:outline-primary"
-          >
-            <option value="">Tipo de documento</option>
-            <option value="CC">Cédula de Ciudadanía</option>
-            <option value="CE">Cédula de Extranjería</option>
-            <option value="TI">Tarjeta de Identidad</option>
-            <option value="PP">Pasaporte</option>
-          </select>
+            <input
+              type="text"
+              placeholder="Segundo Apellido"
+              className="w-96  px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700  focus:outline-primary"
+            />
+          </div>
 
-          <input
-            type="text"
-            placeholder="Numero de Documento"
-            required
-            className="w-96 h-12 px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 text-lg focus:outline-primary"
-          />
+          <div className="flex flex-col space-y-1 w-96">
+            <label className="text-black">
+                <span className="text-red-500">*</span> Tipo de Documento
+            </label>
 
-          <select
-            value={nacionalidad}
-            onChange={(e) => setNacionalidad(e.target.value)}
-            required
-            className="w-96 h-12 px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 text-lg focus:outline-primary"
-          >
-            <option value="">Nacionalidad</option>
-            <option value="AR">Argelia</option>
-            <option value="BR">Brasil</option>
-            <option value="CO">Colombia</option>
-            <option value="DI">Dinamarca</option>
-            //poner demas nacionalidades BD
-          </select>
+            <select
+              value={tipoDocumento}
+              onChange={(e) => setTipoDocumento(e.target.value)}
+              required
+              className="w-96  px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700  focus:outline-primary"
+            >
+              <option value="">Tipo de documento</option>
+              <option value="CC">Cédula de Ciudadanía</option>
+              <option value="CE">Cédula de Extranjería</option>
+              <option value="TI">Tarjeta de Identidad</option>
+              <option value="PP">Pasaporte</option>
+            </select>
+          </div>
 
-          <input
-            type="date"
-            value={fechaNacimiento}
-            onChange={(e) => setFechaNacimiento(e.target.value)}
-            className="w-96 h-12 px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 text-lg focus:outline-primary"
-          />
+          <div className="flex flex-col space-y-1 w-96">
+            <label className="text-black">
+                <span className="text-red-500">*</span> Numero de Documento
+            </label>
 
-          <select
-            value={paisProcedencia}
-            onChange={(e) => setPaisProcedencia(e.target.value)}
-            className="w-96 h-12 px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 text-lg focus:outline-primary"
-          >
-            <option value="">Pais Procedencia</option>
-            <option value="AR">Argelia</option>
-            <option value="BR">Brasil</option>
-            <option value="CO">Colombia</option>
-            <option value="DI">Dinamarca</option>
-            //poner demas nacionalidades BD
-          </select>
+            <input
+              type="text"
+              placeholder="Numero de Documento"
+              required
+              className="w-96  px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700  focus:outline-primary"
+            />
+          </div>
 
-          <select
-            value={paisDestino}
-            onChange={(e) => setPaisDestino(e.target.value)}
-            className="w-96 h-12 px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 text-lg focus:outline-primary"
-          >
-            <option value="">Pais Destino</option>
-            <option value="AR">Argelia</option>
-            <option value="BR">Brasil</option>
-            <option value="CO">Colombia</option>
-            <option value="DI">Dinamarca</option>
-            //poner demas nacionalidades BD
-          </select>
+          <div className="flex flex-col space-y-1 w-96">
+            <label className="text-black">
+                <span className="text-red-500">*</span> Nacionalidad
+            </label>
+
+            <select
+              value={nacionalidad}
+              onChange={(e) => setNacionalidad(e.target.value)}
+              required
+              className="w-96  px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700  focus:outline-primary"
+            >
+              <option value="">Nacionalidad</option>
+              <option value="AR">Argelia</option>
+              <option value="BR">Brasil</option>
+              <option value="CO">Colombia</option>
+              <option value="DI">Dinamarca</option>
+              //poner demas nacionalidades BD
+            </select>
+          </div>
+
+          <div className="flex flex-col space-y-1 w-96">
+            <label className="text-black">
+                Fecha de Nacimiento
+            </label>
+
+            <input
+              type="date"
+              value={fechaNacimiento}
+              onChange={(e) => setFechaNacimiento(e.target.value)}
+              className="w-96  px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700  focus:outline-primary"
+            />
+          </div>
+
+          <div className="flex flex-col space-y-1 w-96">
+            <label className="text-black">
+                Pais Procedencia
+            </label>
+
+            <select
+              value={paisProcedencia}
+              onChange={(e) => setPaisProcedencia(e.target.value)}
+              className="w-96  px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700  focus:outline-primary"
+            >
+              <option value="">Pais Procedencia</option>
+              <option value="AR">Argelia</option>
+              <option value="BR">Brasil</option>
+              <option value="CO">Colombia</option>
+              <option value="DI">Dinamarca</option>
+              //poner demas nacionalidades BD
+            </select>
+          </div>
+
+          <div className="flex flex-col space-y-1 w-96">
+            <label className="text-black">
+                Pais Destino
+            </label>
+
+            <select
+              value={paisDestino}
+              onChange={(e) => setPaisDestino(e.target.value)}
+              className="w-96  px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700  focus:outline-primary"
+            >
+              <option value="">Pais Destino</option>
+              <option value="AR">Argelia</option>
+              <option value="BR">Brasil</option>
+              <option value="CO">Colombia</option>
+              <option value="DI">Dinamarca</option>
+              //poner demas nacionalidades BD
+            </select>
+          </div>
 
           <label className="block text-gray-700 font-medium mb-2">
             Credenciales de Acceso
           </label>
 
-          <input
-            type="email"
-            placeholder="correo@dominio.com"
-            required
-            className="w-96 h-12 px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 text-lg focus:outline-primary"
-          />
+          <div className="flex flex-col space-y-1 w-96">
+            <label className="text-black">
+              <span className="text-red-500">*</span> Correo Electrónico
+            </label>
 
-          <div className="flex items-center w-96 relative">
             <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Contraseña"
+              type="email"
+              placeholder="correo@dominio.com"
               required
-              className="w-full h-12 px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 text-lg focus:outline-primary"
+              className=" px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700  focus:outline-primary"
             />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 text-xl text-gray-600"
-            >
-              {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
-            </button>
           </div>
 
-          <div className="flex items-center w-96 relative">
-            <input
-              type={showConfirmPassword ? "text" : "password"}
-              placeholder="Confirmar Contraseña"
-              required
-              className="w-full h-12 px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 text-lg focus:outline-primary"
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 text-xl text-gray-600"
-            >
-              {showConfirmPassword ? (
-                <AiOutlineEyeInvisible />
-              ) : (
-                <AiOutlineEye />
-              )}
-            </button>
+          <div className="flex flex-col space-y-1 w-96">
+            <label className="text-black items-start justify-start">
+                  {" "}
+                  <span className="text-red-500">*</span> Contraseña
+            </label>
+
+            <div className="flex items-center w-96 relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Contraseña"
+                className="w-full  px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700  focus:outline-primary"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 text-xl text-gray-600"
+              >
+                {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-col space-y-1 w-96">
+            <label className="text-black items-start justify-start">
+                  {" "}
+                  <span className="text-red-500">*</span> Confirmar Contraseña
+            </label>
+
+            <div className="flex items-center w-96 relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Confirmar Contraseña"
+                required
+                className="w-full  px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700  focus:outline-primary"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 text-xl text-gray-600"
+              >
+                {showConfirmPassword ? (
+                  <AiOutlineEyeInvisible />
+                ) : (
+                  <AiOutlineEye />
+                )}
+              </button>
+            </div>
           </div>
 
           <Button
             text="Continuar"
             style="w-40 h-[50px] bg-secondary"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/login")}
             iconName="Next"
           />
 

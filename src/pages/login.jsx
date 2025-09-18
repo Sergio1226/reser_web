@@ -9,43 +9,56 @@ export default function Login() {
   const [show, setShow] = useState(false);
 
   return (
-    <div className="bg-gray-500 min-h-screen flex flex-col font-kameron">
+    <div className="bg-gray-500 min-h-screen flex flex-col font-primary">
       <HeaderForm navigateTo="/" />
 
       <main className="bg-gradient-to-b from-secondary to-gradient_1 flex flex-1 items-center justify-center p-8">
-        <div className="w-[500px] bg-primary rounded-lg flex flex-col items-center space-y-6 p-8">
+        <div className="w-[500px] bg-primary rounded-lg flex flex-col items-center space-y-6 p-8 h-fit">
           <div className="text-center text-black text-4xl font-bold">
             Iniciar Sesión
           </div>
 
-          <input
-            type="email"
-            placeholder="correo@dominio.com"
-            required
-            className="w-96 h-12 px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 text-lg focus:outline-primary"
-          />
+          <div className="flex flex-col space-y-1 w-96">
+            <label className="text-black">
+              <span className="text-red-500">*</span> Correo Electrónico
+            </label>
 
-          <div className="flex items-center w-96 relative">
             <input
-              type={show ? "text" : "password"}
-              placeholder="Contraseña"
-              className="w-full h-12 px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 text-lg focus:outline-primary"
+              type="email"
+              placeholder="correo@dominio.com"
+              required
+              className="px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700  focus:outline-primary"
             />
-            <button
-              type="button"
-              onClick={() => setShow(!show)}
-              className="absolute right-3 text-xl text-gray-600"
-            >
-              {show ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
-            </button>
           </div>
 
-                    <Button
-                        text="Continuar"
-                        style="w-40 h-[50px] bg-secondary"
-                        onClick={() => navigate("/bookings")}
-                        iconName="Next"
-                    />
+          <div className="flex flex-col space-y-1 w-96">
+            <label className="text-black items-start justify-start">
+                  {" "}
+                  <span className="text-red-500">*</span> Contraseña
+            </label>
+
+            <div className="flex items-center w-96 relative">
+              <input
+                type={show ? "text" : "password"}
+                placeholder="Contraseña"
+                className="w-full px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 focus:outline-primary"
+              />
+              <button
+                type="button"
+                onClick={() => setShow(!show)}
+                className="absolute right-3 text-xl text-gray-600"
+              >
+                {show ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+              </button>
+            </div>
+          </div>
+
+          <Button
+              text="Continuar"
+              style="w-40 h-[50px] bg-secondary"
+              onClick={() => navigate("/bookings")}
+              iconName="Next"
+          />
 
           <div className="text-center text-black text-base">
             ¿No está registrado?

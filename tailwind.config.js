@@ -17,7 +17,6 @@ export default {
       },
       borderRadius: { 'button': '10px' },
       fontFamily: {
-        kameron: ['Kameron', 'serif'],
         primary: ['Open Sans', 'sans-serif'],
       },
     },

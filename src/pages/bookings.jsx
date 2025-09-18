@@ -6,7 +6,7 @@ import { BookingSearch } from "../components/BookingSearch.jsx";
 export default function Bookings() {
 
     return (
-        <div className="bg-gray-500 min-h-screen flex flex-col font-kameron">
+        <div className="bg-gray-500 min-h-screen flex flex-col font-primary">
             <HeaderMain/>
 
             <main className="bg-gradient-to-b from-secondary to-gradient_1 flex flex-col items-center justify-center p-8 space-y-8">
