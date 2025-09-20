@@ -1,43 +1,32 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button.jsx";
 import { Footer } from "../components/Footer.jsx";
+import { Header } from "../components/Header.jsx";
 
 export default function Home() {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen flex flex-col font-primary bg-white">
-      <div className="flex w-full bg-secondary shadow-lg border-b border-black/20">
-        <header className=" w-full   border-b border-black/20 bg-primary  pb-4 flex flex-col mb-8 shadow-md">
-          <div className="flex items-center justify-center space-x-8">
-            <img
-              src="/src/assets/logo.png"
-              alt="Logo"
-              className="w-[120px] h-[100px]"
-            />
-            <div className="flex flex-row items-start justify-center space-y-2 ">
-              <h1 className="text-black text-4xl font-bold">
-                Hospedaje Los Recuerdos de Florito y Leo
-              </h1>
-            </div>
-          </div>
-          <div className="flex flex-row justify-center items-center mt-4  space-x-8 ">
-            <Button
-              text="Reservar Ahora"
-              style="  bg-button_secondary"
-              onClick={() => navigate("/login")}
-              iconName="book"
-            />
-            <Button
-              text="Administrador"
-              style="  bg-button_primary"
-              onClick={() => navigate("/loginAdmin")}
-              iconName="lock"
-            />
-          </div>
-        </header>
-      </div>
+      <Header>
+        <div className="flex flex-col justify-center items-center space-y-2 mt-4 mr-8">
+          <Button
+            text="Reservar Ahora"
+            style="  bg-button_secondary"
+            onClick={() => {navigate("/login");console.log("reservar");
+            }}
+            iconName="book"
+          />
+          <Button
+            text="Administrador"
+            style="  bg-button_primary w-full"
+            onClick={() => navigate("/loginAdmin")}
+            iconName="lock"
+          />
+        </div>
+      </Header>
       <main className=" flex-1 bg-white p-8 flex flex-row items-stretch">
+        
         <div className=" bg-secondary w-1/2 m-4 h-fit rounded-[20px] border border-black/20 shadow-lg">
           <div className="text-center justify-start text-black text-xl font-normal font-primary pt-8">
             Tu hogar en Monguí

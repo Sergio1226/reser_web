@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { IoMdArrowBack } from "react-icons/io";
 import { Header } from "../components/Header.jsx";
-import { HeaderForm } from "../components/HeaderForm.jsx";
+import { TextField } from "../components/TextField.jsx";
 
 export default function LoginAdmin() {
   const navigate = useNavigate();
@@ -12,12 +12,19 @@ export default function LoginAdmin() {
 
   return (
     <div className="min-h-screen flex flex-col font-primary bg-white">
-      <HeaderForm navigateTo = "/"/>
-      <main className=" flex-1 bg-white pt-8 flex flex-row justify-center w-full">
-        <div className=" bg-secondary mt-4 h-fit  border border-black/20  p-8 w-full">
+      <Header>
+        <Button
+          text="Atras"
+          style=" w-fit bg-button_secondary"
+          onClick={() => navigate("/")}
+          iconName="Back"
+        />
+      </Header>
+      <main className=" flex-1 bg-secondary flex flex-row justify-center w-full">
+        <div className=" bg-secondary  border border-black/20  p-8 w-full">
           <form
             action=""
-            className="bg-primary p-8 rounded-lg w-full max-w-md mx-auto border border-black/20 shadow-lg"
+            className="bg-primary p-8 rounded-lg w-full max-w-md mx-auto border border-black/20 shadow-lg mt-8"
           >
             <h2 className="text-black text-4xl font-bold text-center py-4 mb-4">
               Iniciar sesión{" "}
@@ -28,21 +35,12 @@ export default function LoginAdmin() {
                 <span className="text-red-500">*</span> Identificador de
                 administrador
               </label>
-              <input
-                placeholder="Identificador"
-                className="bg-white rounded-lg p-[5px]"
-                type="text"
-              />
+              <TextField placeholder="Identificador" required type="email" />
               <label className="text-black">
                 {" "}
                 <span className="text-red-500">*</span> Contraseña
               </label>
-              <div className="relative bg-white rounded-lg items-center">
-                <input
-                  placeholder="Contraseña"
-                  className="bg-white rounded-lg p-[5px]"
-                  type={showPassword ? "text" : "password"}
-                />
+              <TextField placeholder="Contraseña" required type="password">
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
@@ -50,7 +48,8 @@ export default function LoginAdmin() {
                 >
                   {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
                 </button>
-              </div>
+              </TextField>
+
               <div className="flex justify-center mt-4 space-x-4">
                 <Button style="bg-button_primary" onClick={() => navigate("/")}>
                   <IoMdArrowBack />
