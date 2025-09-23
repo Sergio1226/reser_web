@@ -51,14 +51,15 @@ export default function LoginAdmin() {
               </TextField>
 
               <div className="flex justify-center mt-4 space-x-4">
-                <Button style="bg-button_primary" onClick={() => navigate("/")}>
+                {/*<Button style="bg-button_primary" onClick={() => navigate("/")}>
                   <IoMdArrowBack />
                   {" Atras"}
-                </Button>
+                </Button>*/}
                 <Button
                   style="bg-button_secondary"
                   onClick={() => navigate("/admin")}
                   text="Ingresar"
+                  iconName="Next"
                 />
               </div>
               <div className="text-center text-black text-sm mt-4">

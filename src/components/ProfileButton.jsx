@@ -21,7 +21,7 @@ export default function ProfileButton() {
     <div className="relative" ref={menuRef}>
       <Button
         text = "Perfil"
-        className = "px-4 py-2 bg-primary rounded-lg"
+        className = "px-4 py-2 bg-button_secondary rounded-lg"
         onClick = {() => setOpen(!open)}
         iconName = "User"
       />

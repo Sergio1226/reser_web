@@ -60,7 +60,7 @@ export default function Login() {
             </div>
 
             <Button
-              text="Continuar"
+              text="Ingresar"
               style=" bg-button_secondary"
               onClick={() => navigate("/bookings")}
               iconName="Next"
@@ -71,11 +71,18 @@ export default function Login() {
             </div>
             <Button
               text="Registrarse"
-              style=" bg-button_secondary"
+              style=" bg-button_primary"
               onClick={() => navigate("/registUser")}
               iconName="Contact form"
             />
+
+            <div className="text-center text-black text-sm mt-4">
+                <a href="">¿Olvidaste tu contraseña?</a>
+            </div>
+
           </form>
+
+          
 
           {/* 
           <div className="text-center text-sm leading-normal px-6">
