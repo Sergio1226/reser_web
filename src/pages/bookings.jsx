@@ -4,8 +4,26 @@ import { BookingSearch } from "../components/BookingSearch.jsx";
 import { Header } from "../components/Header.jsx";
 import  ProfileButton  from "../components/ProfileButton.jsx";
 import RoomCard from "../components/RoomCard.jsx";
+import { Button } from "../components/Button.jsx";
+import { useNavigate } from "react-router-dom";
 
 export default function Bookings() {
+    const navigate = useNavigate();
+
+    const options = [
+        {
+        id: "realizar",
+        title: "Realizar Reservas",
+        icon: "src/assets/icons/Booking.svg",
+        route: "/bookings",
+        },
+        {
+        id: "visualizar",
+        title: "Visualizar Reservas",
+        icon: "src/assets/icons/List.svg",
+        route: "/seeBookings",
+        },
+    ];
 
     const rooms = [
         {
@@ -51,14 +69,17 @@ export default function Bookings() {
     return (
         <div className="bg-gray-500 min-h-screen flex flex-col font-primary">
             <Header>
-                <ProfileButton/>
+                <ProfileButton
+                    toPag={"/login"}
+                />
             </Header>
 
             <main className="bg-gradient-to-b from-secondary to-gradient_1 flex flex-col items-center justify-center p-8 space-y-8">
                 <BookingsMenu 
                     state="realizar"
+                    options={options}
                 />
-                <div className="w-[1000px] h-auto flex flex-col border border-black space-y-5">
+                <div className="w-[1000px] h-auto flex flex-col border-2 border-black rounded-lg space-y-5">
                     <BookingSearch />
                     <div className="grid md:grid-cols-2 gap-6">
                         {rooms.map((r) => (
@@ -66,6 +87,12 @@ export default function Bookings() {
                         ))}
                     </div>
                 </div>
+                <Button
+                    text="Reservar"
+                    style=" bg-secondary"
+                    onClick={() => navigate("/addServices")}
+                    iconName="Contact form"
+                />
             </main>
 
             <Footer/>

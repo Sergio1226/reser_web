@@ -4,56 +4,40 @@ import { IoMdArrowBack } from "react-icons/io";
 import { useState } from "react";
 import {Icon} from "../components/Icon.jsx"
 import { Header } from "../components/Header.jsx";
+import ProfileButton from "../components/ProfileButton.jsx";
+import { BookingsMenu } from "../components/BookingsMenu.jsx";
 
 export default function AdminPage() {
   const [nav, setNav] = useState(0);
+
+  const options = [
+    {
+    id: "reservas",
+    title: "Administrar Reservas",
+    icon: "src/assets/icons/List.svg",
+    route: "/admin",
+    },
+    {
+    id: "clientes",
+    title: "Gestionar Clientes",
+    icon: "src/assets/icons/users.svg",
+    route: "/adminClients",
+    },
+  ];
+
   return (
-    <div className="min-h-screen flex flex-col font-primary bg-white">
-      <Header />
-      <main className=" flex-1 bg-white pt-8 flex flex-row justify-center w-full">
-        <div className=" bg-secondary mt-4 h-fit  border border-black/20  p-8 w-full">
-          <div className="bg-white p-8 rounded-lg w-3/4 mx-auto border border-black/20 shadow-lg">
-            <div className="flex flex-row justify-around mb-4 select-none text-lg">
-                <div className="font-bold  flex items-center" onClick={() => setNav(0)}>
-                    <Icon name={"list"} style={" w-12 h-12"}></Icon>
-                    <h3>Administrar  <br /> Reservas</h3> 
-                    
-                </div>
-                <div className="font-bold flex items-center" onClick={() => setNav(1)}>
-                    <Icon name={"bed"} style={" w-12 h-12"}></Icon>
-                    <h3>Gestion <br /> Habitaciones</h3>
-                </div>
-                <div className="font-bold  flex items-center" onClick={() => setNav(2)}>
-                    <Icon name={"users"} style={" w-12 h-12"}></Icon>
-                    <h3>Gestion Clientes</h3>
-                </div>
-            </div>
-            <div className="flex flex-row ">
-              <Selection
-                setSelection={() => { setNav(0); console.log(0); }}
-                value={nav === 0}
-              ></Selection>
-              <Selection
-                setSelection={() => setNav(1)}
-                value={nav === 1}
-              ></Selection>
-              <Selection
-                setSelection={() => setNav(2)}
-                value={nav === 2}
-              ></Selection>
-            </div>
-          </div>
-        </div>
+    <div className="bg-gray-500 min-h-screen flex flex-col font-primary">
+      <Header>
+        <ProfileButton
+          toPag={"/loginAdmin"}
+        />
+      </Header>
+      <main className="bg-gradient-to-b from-secondary to-gradient_1 flex flex-col items-center justify-center p-8 space-y-8">
+        <BookingsMenu
+          state={"reservas"}
+          options={options}
+        />
       </main>
     </div>
-  );
-}
-
-function Selection({ setSelection, value }) {
-  return (
-    <div
-      className={`w-full h-6 ${value ? "bg-green-500" : "bg-secondary"}`}
-      onClick={setSelection}
-    />
   );
 }

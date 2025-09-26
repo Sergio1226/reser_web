@@ -6,6 +6,21 @@ import { BookingsTable } from "../components/BookingsTable";
 
 export default function SeeBookings(){
 
+    const options = [
+        {
+        id: "realizar",
+        title: "Realizar Reservas",
+        icon: "src/assets/icons/Booking.svg",
+        route: "/bookings",
+        },
+        {
+        id: "visualizar",
+        title: "Visualizar Reservas",
+        icon: "src/assets/icons/List.svg",
+        route: "/seeBookings",
+        },
+    ];
+
     return (
         <div className="bg-gray-500 min-h-screen flex flex-col font-primary">
             <Header>
@@ -15,6 +30,7 @@ export default function SeeBookings(){
             <main className="bg-gradient-to-b from-secondary to-gradient_1 flex flex-col items-center justify-center p-8 space-y-8">
                 <BookingsMenu 
                     state="visualizar"
+                    options={options}
                 />
                 <div className="w-[1000px] h-auto flex flex-col border border-black">
                     <BookingsTable/>

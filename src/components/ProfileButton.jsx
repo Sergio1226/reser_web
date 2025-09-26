@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "./Button";
 
-export default function ProfileButton() {
+export default function ProfileButton({toPag}) {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const menuRef = useRef(null);
@@ -50,7 +50,7 @@ export default function ProfileButton() {
             <li
               className="cursor-pointer hover:underline"
               onClick={() => {
-                navigate("/login");
+                navigate(toPag);
                 setOpen(false);
               }}
             >

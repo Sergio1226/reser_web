@@ -20,7 +20,7 @@ export function BookingSearch(){
     ]);
 
     return(
-    <div className="w-full h-32 flex flex-row bg-white divide-x-2 divide-black">
+    <div className="w-full h-32 flex flex-row bg-white divide-x-2 divide-black border-b-2 border-black rounded-lg ">
         <div className="flex-1 flex flex-row items-center space-x-4">
 
             <div className="relative">
