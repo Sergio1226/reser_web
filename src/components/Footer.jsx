@@ -6,8 +6,6 @@ export function Footer() {
             <Section iconName="mail" text="hospedajefloritoyleo@gmail.com"></Section>
             <Section iconName="phone" text="3134470208"></Section>
             <Section iconName="map" text="Cra. 4 #3-13, Monguí, Boyacá"></Section>
-            {/* Por agregar picker de idiomas*/}
-            <Section iconName="net" text="Español"></Section>
         </footer>
     )
 }

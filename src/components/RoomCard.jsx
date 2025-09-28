@@ -8,29 +8,27 @@ const icons = {
   tv: Tv,
 };
 
-export default function RoomCard({ 
-  name, 
-  price, 
-  image, 
-  services, 
-  description, 
+export default function RoomCard({
+  name,
+  price,
+  image,
+  services,
+  description,
   details,
   capacity,
-  bedType 
+  bedType,
 }) {
   const [showDetails, setShowDetails] = useState(false);
   const [selected, setSelected] = useState(false);
 
   return (
     <div className="border rounded-xl shadow-md overflow-hidden mb-6 m-2 bg-white">
-
       <img src={image} alt={name} className="w-full h-48 object-cover" />
-
       <div className="p-4">
         <h2 className="text-xl font-semibold">{name}</h2>
 
         <p className="text-gray-600 text-sm mb-2">
-          Capacidad: <span className="font-medium">{capacity} personas</span> • 
+          Capacidad: <span className="font-medium">{capacity} personas</span> •
           Cama: <span className="font-medium">{bedType}</span>
         </p>
 
@@ -38,7 +36,10 @@ export default function RoomCard({
           {services.map((s, i) => {
             const Icon = icons[s.icon];
             return (
-              <div key={i} className="flex items-center gap-2 text-sm text-gray-700">
+              <div
+                key={i}
+                className="flex items-center gap-2 text-sm text-gray-700"
+              >
                 {Icon && <Icon size={18} />}
                 <span>{s.label}</span>
               </div>

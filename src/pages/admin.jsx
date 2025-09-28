@@ -5,7 +5,8 @@ import { useState } from "react";
 import {Icon} from "../components/Icon.jsx"
 import { Header } from "../components/Header.jsx";
 import ProfileButton from "../components/ProfileButton.jsx";
-import { BookingsMenu } from "../components/BookingsMenu.jsx";
+import { NavigationTab } from "../components/NavigationTab.jsx";
+import { Navigation } from "lucide-react";
 
 export default function AdminPage() {
   const [nav, setNav] = useState(0);
@@ -33,7 +34,7 @@ export default function AdminPage() {
         />
       </Header>
       <main className="bg-gradient-to-b from-secondary to-gradient_1 flex flex-col items-center justify-center p-8 space-y-8">
-        <BookingsMenu
+        <NavigationTab
           state={"reservas"}
           options={options}
         />

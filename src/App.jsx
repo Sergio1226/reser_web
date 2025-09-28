@@ -5,8 +5,6 @@ import RegistUser from "./pages/registUser.jsx";
 import LoginAdmin from "./pages/loginAdmin.jsx";
 import AdminPage from "./pages/admin.jsx";
 import Bookings from "./pages/bookings.jsx"
-import SeeBookings from "./pages/seeBookings.jsx";
-import AddServices from "./pages/addServices.jsx";
 
 function App() {
   return (
@@ -19,8 +17,6 @@ function App() {
           <Route path="/loginAdmin" element={<LoginAdmin />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/bookings" element={<Bookings />} />
-          <Route path="/seeBookings" element={<SeeBookings />} />
-          <Route path="/addServices" element={<AddServices />} />
         </Routes>
       </Router>
     </>
