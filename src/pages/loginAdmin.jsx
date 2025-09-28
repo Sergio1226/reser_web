@@ -16,7 +16,7 @@ export default function LoginAdmin() {
         <Button
           text="Atras"
           style=" w-fit bg-button_secondary"
-          onClick={() => navigate("/")}
+          onClick={() => navigate(-1)}
           iconName="Back"
         />
       </Header>
