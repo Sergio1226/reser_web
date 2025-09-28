@@ -21,7 +21,7 @@ export default function RegistUser() {
         <Button
           text="Atras"
           style=" w-fit bg-button_secondary"
-          onClick={() => navigate("/login")}
+          onClick={() => navigate(-1)}
           iconName="Back"
         />
       </Header>

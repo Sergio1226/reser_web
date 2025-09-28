@@ -19,6 +19,12 @@ export default function AdminPage() {
     route: "/admin",
     },
     {
+    id: "Habitaciones",
+    title: "Gestionar Habitaciones",
+    icon: "src/assets/icons/Booking.svg",
+    route: "/adminHabs",
+    },
+    {
     id: "clientes",
     title: "Gestionar Clientes",
     icon: "src/assets/icons/users.svg",
