@@ -50,7 +50,7 @@ export default function ProfileButton() {
             <li
               className="cursor-pointer hover:underline"
               onClick={() => {
-                navigate("/login");
+                navigate("/");
                 setOpen(false);
               }}
             >
