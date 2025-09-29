@@ -14,6 +14,7 @@ export default {
       },
       size:{
         icon: '20px',
+        item: '40px'
       },
       borderRadius: { 'button': '10px' },
       fontFamily: {

@@ -7,12 +7,12 @@ import { useNavigate } from "react-router-dom";
 import { NavigationTab } from "../components/NavigationTab.jsx";
 import { useState } from "react";
 import { format } from "date-fns";
-import { DateRange } from "react-date-range";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { Icon } from "../components/Icon.jsx";
 import { Counter } from "../components/Counter.jsx";
-import { Plus, Minus } from "lucide-react";
+import { Calendar } from "../components/Calendar.jsx";
+import { Table } from "../components/Table.jsx";
 
 const rooms = [
   {
@@ -67,7 +67,7 @@ const options = [
 ];
 
 export default function Bookings() {
-  //   const navigate = useNavigate();
+  const navigate = useNavigate();
   const [nav, setNav] = useState(0);
 
   return (
@@ -76,13 +76,13 @@ export default function Bookings() {
         <ProfileButton toPag={"/login"} />
       </Header>
 
-      <main className="bg-secondary flex flex-col flex-1 items-center justify-center p-8 space-y-8 shadow-lg">
+      <main className="bg-secondary flex flex-col flex-1 items-center justify-center p-8 space-y-8 shadow-lg ">
         {nav < 2 && (
           <NavigationTab state={nav} setState={setNav} options={options} />
         )}
         {nav === 0 && <BookingSearch setNav={setNav} />}
         {nav === 1 && <BookingTable />}
-        {nav === 2 && <ExtraServices setNav={setNav}/>}
+        {nav === 2 && <ExtraServices setNav={setNav} />}
       </main>
 
       <Footer />
@@ -91,7 +91,6 @@ export default function Bookings() {
 }
 
 function BookingSearch({ setNav }) {
-  const [showCalendar, setShowCalendar] = useState(false);
   const [countAdults, setCountAdults] = useState(1);
   const [countChildrens, setCountChildrens] = useState(0);
   const [countRooms, setCountRooms] = useState(1);
@@ -105,33 +104,10 @@ function BookingSearch({ setNav }) {
 
   return (
     <>
-      <div className=" flex flex-col border border-black/20 rounded-lg space-y-5 bg-primary ">
-        <div className="flex flex-row bg-white border-b border-black/20 rounded-t-lg justify-center">
+      <div className=" flex flex-col border border-black/20 rounded-lg space-y-5 bg-primary shadow-md  p-8">
+        <div className="flex md:flex-row flex-col bg-white border  border-black/20 rounded-lg justify-center shadow-md ">
           <div className="flex p-4 items-center relative">
-            <div>
-              <Icon
-                name={"Calendar"}
-                alt="Calendario"
-                style=" size-10 cursor-pointer hover:scale-110 transition active:scale-90"
-                onClick={() => setShowCalendar(!showCalendar)}
-              />
-              {showCalendar && (
-                <div className="absolute shadow-lg rounded-lg bg-white z-10">
-                  <DateRange
-                    editableDateInputs={true}
-                    onChange={(item) => {
-                      setRange([item.selection]);
-                      if (item.selection.startDate !== item.selection.endDate) {
-                        setShowCalendar(false);
-                      }
-                    }}
-                    moveRangeOnFirstSelection={false}
-                    ranges={range}
-                  />
-                </div>
-              )}
-            </div>
-
+            <Calendar range={range} setRange={setRange} />
             <div className="flex flex-col">
               <span className="text-sm font-medium">Check In - Check Out</span>
               <span className="text-gray-500 text-sm font-normal font-primary">
@@ -143,7 +119,7 @@ function BookingSearch({ setNav }) {
             </div>
           </div>
           <div className="flex flex-row items-center space-x-4 p-4 border-l border-black/20 ">
-            <Icon name={"Guest"} alt="Huespedes" style="size-10 " />
+            <Icon name={"Guest"} alt="Huespedes" style="size-item " />
             <div className="flex flex-col [&>*]:justify-center [&>*]:text-center space-y-2">
               <div className="text-neutral-700 text-sm font-medium">
                 Numero de Huespedes
@@ -157,7 +133,7 @@ function BookingSearch({ setNav }) {
           </div>
 
           <div className="flex flex-row items-center space-x-4 p-4 border-l border-black/20">
-            <Icon name={"Bed"} alt="Habitaciones" style="w-20 h-10" />
+            <Icon name={"Bed"} alt="Habitaciones" style="size-item " />
             <div className="flex flex-col space-y-2">
               <div className="text-neutral-700 text-sm font-medium">
                 Numero de Habitaciones
@@ -192,60 +168,78 @@ function BookingSearch({ setNav }) {
 
 function BookingTable() {
   const bookings = [
-    {
-      reservedOn: "19/04/2025",
-      checkIn: "21/05/2025",
-      checkOut: "25/05/2025",
-      room: "Pericos",
-      reservationDate: "20/04/2025",
-      status: "Confirmada",
-      price: "$600.000",
-    },
-    {
-      reservedOn: "23/04/2025",
-      checkIn: "17/02/2025",
-      checkOut: "27/05/2025",
-      room: "Zanoha",
-      reservationDate: "27/04/2025",
-      status: "Confirmada",
-      price: "$650.000",
-    },
-    {
-      reservedOn: "19/03/2025",
-      checkIn: "09/05/2025",
-      checkOut: "25/05/2025",
-      room: "Duzgua",
-      reservationDate: "20/04/2025",
-      status: "Confirmada",
-      price: "$530.000",
-    },
+    [
+      "19/04/2025",
+      "21/05/2025",
+      "25/05/2025",
+      "Pericos",
+      "20/04/2025",
+      "Confirmada",
+      "$600.000",
+    ],
+    [
+      "23/04/2025",
+      "17/02/2025",
+      "27/05/2025",
+      "Zanoha",
+      "27/04/2025",
+      "Confirmada",
+      "$650.000",
+    ],
+    [
+      "19/03/2025",
+      "09/05/2025",
+      "25/05/2025",
+      "Duzgua",
+      "20/04/2025",
+      "Confirmada",
+      "$530.000",
+    ],
+  ];
+  const headers = [
+    "Reservado en",
+    "Check-In",
+    "Check-Out",
+    "Habitación",
+    "Fecha de reserva",
+    "Estado de reserva",
+    "Precio",
   ];
 
   return (
-    <div className="w-fit border border-black/20 shadow-md rounded-md overflow-hidden">
-      <table className="w-full table-auto text-sm bg-white">
-        <thead
-          className=" border-b px-4 py-2 text-left text-xs
-  [&>*]:p-4 text-center text-xs"
-        >
-          <tr>
-            <th>Reservado en</th>
-            <th>Check-In</th>
-            <th>Check-Out</th>
-            <th>Habitación</th>
-            <th>Fecha de Reserva</th>
-            <th>Estado Reserva</th>
-            <th>Precio</th>
-            <th className="p-4 text-center">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {bookings.map((b, idx) => (
-            <BookingRow key={idx} booking={b} />
-          ))}
-        </tbody>
-      </table>
+    <div className="w-3/4">
+      <Table headers={headers} info={bookings}>
+        <div className=" flex flex-col items-center justify-center flex-1">
+          <Button style={"bg-red-400 text-white font-semibold"}>
+            CANCELAR
+          </Button>
+        </div>
+      </Table>
     </div>
+    //   <div className="w-fit border border-black/20 shadow-md rounded-md overflow-hidden">
+    //     <table className="w-full table-auto text-sm bg-white">
+    //       <thead
+    //         className=" border-b px-4 py-2 text-left text-xs
+    // [&>*]:p-4 text-center text-xs"
+    //       >
+    //         <tr>
+    //           <th>Reservado en</th>
+    //           <th>Check-In</th>
+    //           <th>Check-Out</th>
+    //           <th>Habitación</th>
+    //           <th>Fecha de Reserva</th>
+    //           <th>Estado Reserva</th>
+    //           <th>Precio</th>
+    //           <th className="p-4 text-center">Acciones</th>
+    //         </tr>
+    //       </thead>
+    //       <tbody>
+    //         {bookings.map((b, idx) => (
+    //           <BookingRow key={idx} booking={b} />
+    //         ))}
+    //       </tbody>
+    //     </table>
+    //   </div>
   );
 }
 
@@ -259,14 +253,11 @@ function BookingRow({ booking }) {
       <td>{booking.reservationDate}</td>
       <td className=" text-green-700 font-medium">{booking.status}</td>
       <td>{booking.price}</td>
-      <td className="px-4 py-2 flex items-center justify-center space-x-2">
-        <Button style={"bg-red-400 text-white font-semibold"}>CANCELAR</Button>
-      </td>
     </tr>
   );
 }
 
-function ExtraServices({setNav}) {
+function ExtraServices({ setNav }) {
   const reservationCode = "12345";
   const services = [
     {

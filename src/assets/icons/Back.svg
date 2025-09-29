@@ -1,9 +1,9 @@
-<svg width="80" height="38" viewBox="0 0 80 38" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<rect width="80" height="38" fill="url(#pattern0_199_342)"/>
-<defs>
-<pattern id="pattern0_199_342" patternContentUnits="objectBoundingBox" width="1" height="1">
-<use xlink:href="#image0_199_342" transform="matrix(0.00371094 0 0 0.0078125 0.2625 0)"/>
-</pattern>
-<image id="image0_199_342" width="128" height="128" preserveAspectRatio="none" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAAdbAAAHWwEVi0IEAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAKJQTFRF////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA6C3cNgAAADV0Uk5TAAECCQsMDg8QERIUFiAnKzJRU1dbYmdwiIupqqywsb/AwsjJysvMzdPX2Nvc6Onv8PP8/f6GljltAAABCUlEQVR42u3bSW7CQBBG4QICgUCAmJmEMWGeh7r/1ZCQsoFFVvHfUr+6wPck2y3Zcpn915R7k+Om/2GqSfZ+n6+Kxu/474wyWt+9LfZ9Jfb98qL13Wti/5zT+r4U+94U+0Oxvyjh4+Pjx+nP8fHx4/WL+Ep/ho+Pjx+p/4OPH7P/ih+z/42Pj5/StMT++0nr21DsZ09a36oP/jRlXx8gvwTym1D/GMoPIv1RTAEFFITyYkJBsAVFCiigIP2P1RRQQAEFYRfMKQihoEQBBRRQoPitlwIKKKAg7IKBqQsa6oKU1/2eCy55dUHdtAXXgmkL1mbaAsXis3712yzZaZffzd6648P288/1/xvGqsv12QiA6QAAAABJRU5ErkJggg=="/>
-</defs>
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+<svg fill="#000000" height="800px" width="800px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+	 viewBox="0 0 477.175 477.175" xml:space="preserve">
+<g>
+	<path d="M145.188,238.575l215.5-215.5c5.3-5.3,5.3-13.8,0-19.1s-13.8-5.3-19.1,0l-225.1,225.1c-5.3,5.3-5.3,13.8,0,19.1l225.1,225
+		c2.6,2.6,6.1,4,9.5,4s6.9-1.3,9.5-4c5.3-5.3,5.3-13.8,0-19.1L145.188,238.575z"/>
+</g>
 </svg>

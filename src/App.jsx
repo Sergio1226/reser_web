@@ -6,6 +6,7 @@ import LoginAdmin from "./pages/loginAdmin.jsx";
 import AdminPage from "./pages/admin.jsx";
 import Bookings from "./pages/bookings.jsx"
 import ModifyUser from "./pages/modifyUser.jsx";
+import Schedule from "./pages/schedule.jsx";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/bookings" element={<Bookings />} />
           <Route path="/modifyUser" element={<ModifyUser />} />
+          <Route path="/schedule" element={<Schedule />} />
         </Routes>
       </Router>
     </>
