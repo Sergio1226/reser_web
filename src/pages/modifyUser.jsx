@@ -6,9 +6,9 @@ import { Button } from "../components/Button.jsx";
 import { useRef, useState } from "react";
 
 export default function ModifyUser() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const defaultImage = "src/assets/default.jpg";
+  const defaultImage = "src/assets/default.jpg";
   const [image, setImage] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -26,18 +26,18 @@ export default function ModifyUser() {
 
   return (
     <div className="min-h-screen flex flex-col font-primary bg-white">
-        <Header>
-            <Button
-            text="Atras"
-            style=" w-fit bg-button_secondary"
-            onClick={() => navigate(-1)}
-            iconName="Back"
-            />
+      <Header>
+          <Button
+          text="Atras"
+          style=" w-fit bg-button_secondary"
+          onClick={() => navigate(-1)}
+          iconName="Back"
+          />
       </Header>
 
       <main className="bg-gradient-to-b from-secondary to-gradient_1 flex flex-col items-center justify-center p-8 space-y-8">
         
-      <h1 className="text-3xl font-bold">Cemelman gay</h1>
+      <h1 className="text-3xl font-bold">Camilin Perra</h1>
 
       <div className="border border-black/20 w-full flex">
 
@@ -149,8 +149,6 @@ export default function ModifyUser() {
           </div>
 
         </div>
-
-      <h1 className="text-3xl font-bold">Cemelman gay</h1>
 
       </main>
       <Footer />

@@ -13,6 +13,7 @@ import { Footer } from "../components/Footer.jsx";
 import { Calendar } from "../components/Calendar.jsx";
 import { Picker } from "../components/Picker.jsx";
 import { Table } from "../components/Table.jsx";
+import Schedule from "./schedule.jsx";
 
 function Reservations() {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ function Reservations() {
   ];
   const user = [
     [
-       "Juan Gonzalez",
+       "Ch homosexual",
        "29/11/2025",
        "31/11/2025",
        "Pericos",
@@ -76,16 +77,10 @@ function Reservations() {
       </div>
       <Table headers={headers} info={user}>
         <div className="flex flex-col items-center justify-center space-y-2 flex-1">
-          <Button text="Modificar" style="bg-blue-500 text-white w-full" />
-          <Button text="Cancelar" style="bg-red-500 text-white w-full" />
+          <Button text="No se presento" style="bg-red-500 text-white w-full" />
         </div>
       </Table>
       <div className="flex justify-center mt-6 space-x-4">
-        <Button
-          text="Calendario"
-          style="bg-yellow-400 text-white px-6 py-2"
-          onClick={() => navigate("/schedule")}
-        />
         <Button
           text="Hacer una reserva"
           style="bg-green-500 text-white px-6 py-2"
@@ -114,9 +109,9 @@ export default function AdminPage() {
       icon: "/src/assets/icons/List.svg",
     },
     {
-      id: "habitaciones",
-      title: "Gestionar Habitaciones",
-      icon: "/src/assets/icons/bed-double.svg",
+      id: "calendario",
+      title: "Calendario",
+      icon: "/src/assets/icons/calendar.svg",
     },
     {
       id: "clientes",
@@ -130,7 +125,7 @@ export default function AdminPage() {
       case 0:
         return <Reservations />;
       case 1:
-        return <Rooms />;
+        return <Schedule />;
       case 2:
         return <Clients />;
       default:

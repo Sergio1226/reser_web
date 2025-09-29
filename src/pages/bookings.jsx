@@ -125,10 +125,10 @@ function BookingSearch({ setNav }) {
                 Numero de Huespedes
               </div>
               <div className="text-zinc-500 text-base font-medium">Adultos</div>
-              <Counter count={countAdults} setCount={setCountAdults} />
+              <Counter count={countAdults} setCount={setCountAdults} min={1} />
 
               <div className="text-zinc-500 text-base font-medium">Niños</div>
-              <Counter count={countChildrens} setCount={setCountChildrens} />
+              <Counter count={countChildrens} setCount={setCountChildrens} min={0}/>
             </div>
           </div>
 
@@ -138,7 +138,7 @@ function BookingSearch({ setNav }) {
               <div className="text-neutral-700 text-sm font-medium">
                 Numero de Habitaciones
               </div>
-              <Counter count={countRooms} setCount={setCountRooms} />
+              <Counter count={countRooms} setCount={setCountRooms} min={1}/>
             </div>
           </div>
 
