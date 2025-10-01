@@ -42,12 +42,22 @@ export default function RegistUser() {
 
             <div className="flex flex-col space-y-1 w-96">
               <label className="text-black">
-                <span className="text-red-500">*</span> Nombres
+                <span className="text-red-500">*</span> Primer Nombre
               </label>
               <TextField
-                placeholder="Nombres"
+                placeholder="Primer Nombre"
                 type="text"
                 required
+              />
+            </div>
+
+            <div className="flex flex-col space-y-1 w-96">
+              <label className="text-black">
+                Segundo Nombre
+              </label>
+              <TextField
+                placeholder="Segundo Nombre"
+                type="text"
               />
             </div>
 

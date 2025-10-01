@@ -57,7 +57,7 @@ const rooms = [
 ];
 const options = [
   {
-    title: "Realizar Reservas",
+    title: "Realizar Reserva",
     icon: "src/assets/icons/Booking.svg",
   },
   {
