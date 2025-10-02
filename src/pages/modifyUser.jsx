@@ -3,156 +3,158 @@ import { Footer } from "../components/Footer.jsx";
 import { useNavigate } from "react-router-dom";
 import { TextField } from "../components/TextField.jsx";
 import { Button } from "../components/Button.jsx";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 export default function ModifyUser() {
   const navigate = useNavigate();
 
-  const defaultImage = "src/assets/default.jpg";
-  const [image, setImage] = useState(null);
-  const fileInputRef = useRef(null);
+  const [nombre, setNombre] = useState("");
+  const [tipoDocumento, setTipoDocumento] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [numeroDocumento, setNumeroDocumento] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setImage(imageUrl);
-    }
-  };
-
-  const handleClickCambiarImagen = () => {
-    fileInputRef.current.click();
+  const handleSave = () => {
+    alert("Cambios guardados");
   };
 
   return (
     <div className="min-h-screen flex flex-col font-primary bg-white">
       <Header>
-          <Button
-          text="Atras"
-          style=" w-fit bg-button_secondary"
+        <Button
+          text="Atrás"
+          style="w-fit bg-button_secondary"
           onClick={() => navigate(-1)}
           iconName="Back"
-          />
+        />
       </Header>
 
-      <main className="bg-gradient-to-b from-secondary to-gradient_1 flex flex-col items-center justify-center p-8 space-y-8">
-        
-      <h1 className="text-3xl font-bold">Camilin Perra</h1>
+      <main className="bg-gradient-to-b from-secondary to-gradient_1 flex flex-col items-center justify-start p-8 space-y-8 w-full">
+        <h1 className="text-3xl font-bold">Cemelman Perra traga semen</h1>
 
-      <div className="border border-black/20 w-full flex">
-
-            <div className="flex flex-col">
-
-                <div className="border border-black/20 border-b-0 w-[450px] h-[250px] flex flex-col justify-center items-center">
-                    <img
-                        className="rounded-[60px] w-[350px] h-[180px] border border-black/20 object-countain"
-                        src={image || defaultImage}
-                        alt="userImg"
+        <div className="border border-black/20 w-full max-w-[1100px] bg-white rounded-lg overflow-hidden">
+          <div className="flex flex-col md:flex-row">
+            <div className="flex-1 p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-2">
+                    Nombre completo
+                  </label>
+                  <div className="w-full max-w-[420px]">
+                    <TextField
+                      placeholder="Ej. Juan Pérez"
+                      type="text"
+                      required={true}
+                      value={nombre}
+                      onChange={(e) => setNombre(e.target.value)}
                     />
+                  </div>
                 </div>
 
-                <div className="border border-black/20 w-[450px] h-[250px] flex flex-col justify-center items-center gap-10">
-                    <Button 
-                        text="Cambiar Imagen" 
-                        style="bg-blue-500 text-white px-4 py-2" 
-                        onClick={handleClickCambiarImagen}
-                        iconName="image" 
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-2">
+                    Tipo de documento
+                  </label>
+                  <div className="w-full max-w-[420px]">
+                    <TextField
+                      placeholder="CC / Pasaporte"
+                      type="text"
+                      required={true}
+                      value={tipoDocumento}
+                      onChange={(e) => setTipoDocumento(e.target.value)}
                     />
-
-                    <Button 
-                        text="Cambiar de cuenta" 
-                        style="bg-green-500 text-white px-4 py-2" 
-                        onClick={() =>navigate("/loginAdmin")} 
-                        iconName="refresh-cw"
-                    />
+                  </div>
                 </div>
 
-                <input
-                    type="file"
-                    accept="image/*"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    className="hidden"
-                />
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-2">
+                    Teléfono
+                  </label>
+                  <div className="w-full max-w-[420px]">
+                    <TextField
+                      placeholder="300 123 4567"
+                      type="tel"
+                      required={true}
+                      value={telefono}
+                      onChange={(e) => setTelefono(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-2">
+                    Número de documento
+                  </label>
+                  <div className="w-full max-w-[420px]">
+                    <TextField
+                      placeholder="1234567890"
+                      type="text"
+                      required={true}
+                      value={numeroDocumento}
+                      onChange={(e) => setNumeroDocumento(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-2">
+                    Correo electrónico
+                  </label>
+                  <div className="w-full max-w-[420px]">
+                    <TextField
+                      placeholder="correo@ejemplo.com"
+                      type="email"
+                      required={true}
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-2">
+                    Contraseña
+                  </label>
+                  <div className="w-full max-w-[420px]">
+                    <TextField
+                      placeholder="••••••••"
+                      type="password"
+                      required={true}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 border-t border-black/20 mt-6">
+                <div className="max-w-[600px] mx-auto grid grid-cols-2 gap-4">
+                  <div className="flex">
+                    <Button
+                      text="Cambiar de cuenta"
+                      style="bg-green-500 text-white px-4 py-2 w-full"
+                      onClick={() => navigate("/loginAdmin")}
+                      iconName="refresh-cw"
+                    />
+                  </div>
+
+                  <div className="flex">
+                    <Button
+                      text="Guardar Cambios"
+                      style="bg-gray-500 text-white px-4 py-2 w-full"
+                      onClick={handleSave}
+                      iconName="save-all"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
-
-            <div className="border border-black/20 border-l-0 flex-1 h-[500px] flex flex-col">
-            
-            <div className="grid grid-cols-2 gap-4 flex-1 p-4">
-
-              <div className="flex items-center justify-center p-6">
-                <TextField 
-                  placeholder="Ingrese nombre" 
-                  className = "bg-white rounded-lg p-[5px] w-[100px]"
-                  type="text" 
-                  required={true} 
-                />
-              </div>
-              
-              <div className="flex items-center justify-center p-6">
-                <TextField 
-                  placeholder="Tipo de Documento" 
-                  className = "bg-white rounded-lg p-[5px] w-[100px]"
-                  type="text" 
-                  required={true} 
-                />
-              </div>
-
-              <div className="flex items-center justify-center p-6">
-                <TextField 
-                  placeholder="Telefono" 
-                  className = "bg-white rounded-lg p-[5px] w-[100px]"
-                  type="text" 
-                  required={true} 
-                />
-              </div>
-
-              <div className="flex items-center justify-center p-6">
-                <TextField 
-                  placeholder="Numero de documento" 
-                  className = "bg-white rounded-lg p-[5px] w-[100px]"
-                  type="text" 
-                  required={true} 
-                />
-              </div>
-
-              <div className="flex items-center justify-center p-6">
-                <TextField 
-                  placeholder="Correo electronico" 
-                  className = "bg-white rounded-lg p-[5px] w-[100px]"
-                  type="text" 
-                  required={true} 
-                />
-              </div>
-
-              <div className="flex items-center justify-center p-6">
-                <TextField 
-                  placeholder="Contraseña" 
-                  className = "bg-white rounded-lg p-[5px] w-[100px]"
-                  type="text" 
-                  required={true} 
-                />
-              </div>
-
-            </div>
-
-            <div className="p-4 border-t border-black/20 flex justify-end">
-
-              <Button 
-                  text="Guardar Cambios" 
-                  style="bg-gray-500 text-white px-4 py-2"  
-                  iconName="save-all"
-              />
-
-            </div>
-
           </div>
-
         </div>
-
       </main>
+
       <Footer />
     </div>
   );
 }
-

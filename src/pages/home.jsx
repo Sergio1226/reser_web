@@ -12,7 +12,7 @@ export default function Home() {
         <div className="flex flex-col justify-center items-center space-y-2 mt-4 mr-8">
           <Button
             text="Reservar Ahora"
-            style="  bg-button_secondary"
+            style="bg-button_secondary"
             onClick={() => {navigate("/login");console.log("reservar");
             }}
             iconName="book"
