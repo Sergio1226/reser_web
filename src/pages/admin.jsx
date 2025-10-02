@@ -367,7 +367,7 @@ export default function AdminPage() {
   const options = [
     {
       id: "reservas",
-      title: "Administrar Reservas",
+      title: "Gestionar Reservas",
       icon: "/src/assets/icons/List.svg",
     },
     {
