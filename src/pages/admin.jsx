@@ -320,17 +320,16 @@ function Clients() {
     "Correo electronico",
   ];
   const user = [
-    ["Juaca Correa", "Cédula de ciudadanía", "10203001310", "Venezuela", "+59 300000", "usuario1@example.com"],
+    ["Cemelmin chaperra ", "Cédula de ciudadanía", "10203001310", "Veneco Hpta", "+59 300000", "usuario1@example.com"],
     ["Cliente B", "Pasaporte", "PA1234567", "Colombia", "+57 3200000000", "clienteB@example.com"],
   ];
 
-  // nuevos estados para los dos TextField que reemplazan el calendario
   const [documento, setDocumento] = useState("");
   const [pais, setPais] = useState("");
 
   return (
     <div className="flex flex-col space-y-8 p-6 w-full">
-      <div className="w-full max-w-5xl mx-auto p-6 flex flex-col md:flex-row items-center justify-center gap-6 border rounded-lg border-black/20 bg-black/10 shadow-md">
+      <div className="w-full max-w-5xl mx-auto p-6 flex flex-col md:flex-row items-center justify-center gap-6 border rounded-lg border-black/20 bg-white">
         <Picker text="Tipo de documento" options={statuses} onChange={setStatus} />
 
 
@@ -350,9 +349,6 @@ function Clients() {
 
       <div className="w-full max-w-5xl mx-auto">
         <Table headers={headers} info={user}>
-          <div className="flex flex-col items-center justify-center space-y-2 flex-1">
-            <Button text="Modificar" style="bg-green-500 text-white w-full/2" />
-          </div>
         </Table>
       </div>
 
