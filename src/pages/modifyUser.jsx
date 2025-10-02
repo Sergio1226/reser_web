@@ -31,7 +31,7 @@ export default function ModifyUser() {
       </Header>
 
       <main className="bg-gradient-to-b from-secondary to-gradient_1 flex flex-col items-center justify-start p-8 space-y-8 w-full">
-        <h1 className="text-3xl font-bold">Cemelman Perra traga semen</h1>
+        <h1 className="text-3xl font-bold">Cemelmin Perra traga semen</h1>
 
         <div className="border border-black/20 w-full max-w-[1100px] bg-white rounded-lg overflow-hidden">
           <div className="flex flex-col md:flex-row">
@@ -63,21 +63,6 @@ export default function ModifyUser() {
                       required={true}
                       value={tipoDocumento}
                       onChange={(e) => setTipoDocumento(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-2">
-                    Teléfono
-                  </label>
-                  <div className="w-full max-w-[420px]">
-                    <TextField
-                      placeholder="300 123 4567"
-                      type="tel"
-                      required={true}
-                      value={telefono}
-                      onChange={(e) => setTelefono(e.target.value)}
                     />
                   </div>
                 </div>
