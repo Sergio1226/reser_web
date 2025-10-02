@@ -11,6 +11,7 @@ import { Footer } from "../components/Footer.jsx";
 import { Calendar } from "../components/Calendar.jsx";
 import { Picker } from "../components/Picker.jsx";
 import { Table } from "../components/Table.jsx";
+import { TextField } from "../components/TextField.jsx";
 
 function Reservations() {
   const navigate = useNavigate();
@@ -30,28 +31,28 @@ function Reservations() {
   ];
   const user = [
     [
-       "Ch homosexual",
-       "29/11/2025",
-       "31/11/2025",
-       "Pericos",
-       "30/09/2025",
-       "Confirmada",
-       "$840.000",
+      "Cliente A",
+      "29/11/2025",
+      "31/11/2025",
+      "Pericos",
+      "30/09/2025",
+      "Confirmada",
+      "$840.000",
     ],
     [
-       "Ch gay",
-       "29/11/2025",
-       "31/11/2025",
-       "Pericos",
-       "30/09/2025",
-       "Confirmada",
-       "$840.000",
+      "Cliente B",
+      "29/11/2025",
+      "31/11/2025",
+      "Pericos",
+      "30/09/2025",
+      "Confirmada",
+      "$840.000",
     ],
   ];
 
-  return (  
-    <div className="flex flex-col space-y-8 p-2 items-center">
-      <div className="w-fit  p-3 flex flex-col md:flex-row items-center justify-center space-x-4 border rounded-lg border-black/20">
+  return (
+    <div className="flex flex-col space-y-8 p-2 items-center w-full">
+      <div className="w-full max-w-5xl p-3 flex flex-col md:flex-row items-center justify-center gap-6 border rounded-lg border-black/20 bg-white">
         <Picker text="Fecha de" options={statuses} onChange={setStatus} />
 
         <div className="flex p-4 items-center relative">
@@ -67,17 +68,18 @@ function Reservations() {
           </div>
         </div>
 
-        <Button
-          text="Buscar"
-          style="bg-blue-500 text-white px-4 py-2 rounded-lg"
-        />
+        <Button text="Buscar" style="bg-blue-500 text-white px-4 py-2 rounded-lg" />
       </div>
-      <Table headers={headers} info={user}>
-        <div className="flex flex-col items-center justify-center space-y-2 flex-1">
-          <Button text="No se presento" style="bg-red-500 text-white w-full" />
-        </div>
-      </Table>
-      <div className="flex justify-center mt-6 space-x-4">
+
+      <div className="w-full max-w-5xl mx-auto">
+        <Table headers={headers} info={user}>
+          <div className="flex flex-col items-center justify-center space-y-2 flex-1">
+            <Button text="No se presento" style="bg-red-500 text-white w-full" />
+          </div>
+        </Table>
+      </div>
+
+      <div className="flex justify-center mt-6 space-x-4 w-full">
         <Button
           text="Hacer una reserva"
           style="bg-green-500 text-white px-6 py-2"
@@ -97,7 +99,7 @@ function Schedule() {
       room: "101",
       guest: "Carlos",
       startDate: "2025-09-29",
-      endDate: "2025-09-30", 
+      endDate: "2025-09-30",
     },
     {
       room: "102",
@@ -139,7 +141,11 @@ function Schedule() {
 
     setBlockedRooms([
       ...blockedRooms,
-      { room: selectedRoom, from, to },
+      {
+        room: selectedRoom,
+        from,
+        to,
+      },
     ]);
   };
 
@@ -195,12 +201,9 @@ function Schedule() {
   };
 
   return (
-
     <main className="p-6 flex flex-col lg:flex-row flex-1 overflow-hidden space-y-6 lg:space-y-0 lg:space-x-6">
       <div className="bg-white p-4 rounded-lg border-black/20 shadow-lg flex-1 overflow-x-auto">
-        <h1 className="text-xl font-bold mb-4 text-center">
-          Calendario de Reservas
-        </h1>
+        <h1 className="text-xl font-bold mb-4 text-center">Calendario de Reservas</h1>
 
         <div className="flex mb-4 items-center justify-center space-x-4">
           <Button
@@ -229,9 +232,7 @@ function Schedule() {
         <table className="table-fixed w-full border-collapse border border-gray-300 text-center text-xs">
           <thead>
             <tr>
-              <th className="w-20 bg-gray-200 border border-gray-300 p-1 text-xs">
-                Hab.
-              </th>
+              <th className="w-20 bg-gray-200 border border-gray-300 p-1 text-xs">Hab.</th>
               {days.map((day, index) => {
                 const cellDate = getCellDate(date, index);
                 return (
@@ -254,9 +255,7 @@ function Schedule() {
           <tbody>
             {rooms.map((room) => (
               <tr key={room}>
-                <td className="w-20 bg-gray-100 border border-gray-300 p-1 font-medium">
-                  {room}
-                </td>
+                <td className="w-20 bg-gray-100 border border-gray-300 p-1 font-medium">{room}</td>
                 {days.map((_, index) => {
                   const cellDate = getCellDate(date, index);
                   const res = getReservation(room, cellDate);
@@ -266,11 +265,7 @@ function Schedule() {
                     <td
                       key={room + index}
                       className={`border border-gray-300 p-1 text-[11px] ${
-                        res
-                          ? "bg-green-300 font-semibold"
-                          : blocked
-                          ? "bg-red-300 font-semibold"
-                          : "bg-white"
+                        res ? "bg-green-300 font-semibold" : blocked ? "bg-red-300 font-semibold" : "bg-white"
                       }`}
                     >
                       {res ? res.guest : blocked ? "Cerrada" : "Libre"}
@@ -286,11 +281,7 @@ function Schedule() {
       <div className="w-64 bg-white p-4 rounded-lg shadow-md flex-shrink-0">
         <h2 className="font-bold text-base mb-4">Gestión de Habitaciones</h2>
         <label className="block text-xs mb-2">Habitación:</label>
-        <select
-          className="border p-2 w-full mb-4"
-          value={selectedRoom}
-          onChange={(e) => setSelectedRoom(e.target.value)}
-        >
+        <select className="border p-2 w-full mb-4" value={selectedRoom} onChange={(e) => setSelectedRoom(e.target.value)}>
           {rooms.map((room) => (
             <option key={room} value={room}>
               {room}
@@ -299,37 +290,79 @@ function Schedule() {
         </select>
 
         <label className="block text-xs mb-2">Desde:</label>
-        <input
-          type="date"
-          className="border p-2 w-full mb-4 h-8"
-          value={fromDate}
-          onChange={(e) => setFromDate(e.target.value)}
-        />
+        <input type="date" className="border p-2 w-full mb-4 h-8" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
 
         <label className="block text-xs mb-2">Hasta:</label>
-        <input
-          type="date"
-          className="border p-2 w-full mb-4 h-8"
-          value={toDate}
-          onChange={(e) => setToDate(e.target.value)}
-        />
+        <input type="date" className="border p-2 w-full mb-4 h-8" value={toDate} onChange={(e) => setToDate(e.target.value)} />
 
         <div className="flex space-x-2">
           <Button text="Cerrar" onClick={handleBlockRoom} />
-          <Button
-            text="Abrir"
-            style="bg-green-500 hover:bg-green-600"
-            onClick={handleUnblockRoom}
-          />
+          <Button text="Abrir" style="bg-green-500 hover:bg-green-600" onClick={handleUnblockRoom} />
         </div>
       </div>
     </main>
-
   );
 }
 
 function Clients() {
-  return <div className="p-4">Contenido: Gestionar Clientes</div>;
+  const navigate = useNavigate();
+  const [status, setStatus] = useState(0);
+  const [range, setRange] = useState([
+    { startDate: new Date(), endDate: new Date(), key: "selection" },
+  ]);
+  const statuses = ["Cédula de ciudadanía", "Cédula de extranjería", "Pasaporte"];
+  const headers = [
+    "Nombre del cliente",
+    "Tipo de documento",
+    "Número de documento",
+    "País de nacimiento",
+    "Telefono",
+    "Correo electronico",
+  ];
+  const user = [
+    ["Juaca Correa", "Cédula de ciudadanía", "10203001310", "Venezuela", "+59 300000", "usuario1@example.com"],
+    ["Cliente B", "Pasaporte", "PA1234567", "Colombia", "+57 3200000000", "clienteB@example.com"],
+  ];
+
+  // nuevos estados para los dos TextField que reemplazan el calendario
+  const [documento, setDocumento] = useState("");
+  const [pais, setPais] = useState("");
+
+  return (
+    <div className="flex flex-col space-y-8 p-6 w-full">
+      <div className="w-full max-w-5xl mx-auto p-6 flex flex-col md:flex-row items-center justify-center gap-6 border rounded-lg border-black/20 bg-black/10 shadow-md">
+        <Picker text="Tipo de documento" options={statuses} onChange={setStatus} />
+
+
+            <TextField placeholder="Número de documento" 
+            type="text" required={true} 
+            value={documento} 
+            onChange={(e) => setDocumento(e.target.value)} 
+            className="border border-black/30 rounded-lg p-2"/>
+
+            <TextField placeholder="País de nacimiento" 
+            type="text" required={true} value={pais} 
+            onChange={(e) => setPais(e.target.value)} />
+
+
+        <Button text="Buscar" style="bg-blue-500 text-white px-6 py-3 rounded-lg" />
+      </div>
+
+      <div className="w-full max-w-5xl mx-auto">
+        <Table headers={headers} info={user}>
+          <div className="flex flex-col items-center justify-center space-y-2 flex-1">
+            <Button text="Modificar" style="bg-green-500 text-white w-full/2" />
+          </div>
+        </Table>
+      </div>
+
+      <div className="flex justify-center mt-6 w-full">
+        <Button text="Registrar un cliente" 
+        style="bg-green-500 text-white px-8 py-3" 
+        onClick={() => navigate("/registUser")} />
+      </div>
+    </div>
+  );
 }
 
 export default function AdminPage() {
@@ -375,9 +408,7 @@ export default function AdminPage() {
       <main className="bg-secondary flex-1 flex flex-col items-center p-8 space-y-8 w-full">
         <NavigationTab state={nav} setState={setNav} options={options} />
 
-        <div className="w-fit  bg-white rounded-xl  shadow p-4">
-          {renderContent()}
-        </div>
+        <div className="w-fit  bg-white rounded-xl  shadow p-4">{renderContent()}</div>
       </main>
       <Footer />
     </div>

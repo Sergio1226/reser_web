@@ -233,6 +233,7 @@ export default function RegistUser() {
               style=" bg-button_secondary"
               iconName="Next"
               type="submit"
+              onClick={() => navigate(-1)}
             />
           </form>
 
