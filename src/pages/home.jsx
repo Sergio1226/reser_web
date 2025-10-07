@@ -2,31 +2,66 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button.jsx";
 import { Footer } from "../components/Footer.jsx";
 import { Header } from "../components/Header.jsx";
+import { UserAuth } from "../utils/AuthContext.jsx";
 
 export default function Home() {
   const navigate = useNavigate();
+  const { session, role, signOut } = UserAuth();
+
+  const handleLogout = async () => {
+    await signOut();
+  };
+
+  const handleLogin = () => {
+    if (session) {
+      if (role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/bookings");
+      }
+    } else {
+      navigate("/login");
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col font-primary bg-white">
       <Header>
         <div className="flex flex-col justify-center items-center space-y-2 mt-4 mr-8">
-          <Button
-            text="Reservar Ahora"
-            style="bg-button_secondary"
-            onClick={() => {navigate("/login");console.log("reservar");
-            }}
-            iconName="book"
-          />
-          <Button
-            text="Administrador"
-            style="  bg-button_primary w-full"
-            onClick={() => navigate("/loginAdmin")}
-            iconName="lock"
-          />
+          {role === "admin" ? (
+            <Button
+              text="Cerrar sesion"
+              style="  bg-button_exit w-full"
+              onClick={() => handleLogout()}
+              iconName="signOut"
+            />
+          ) : (
+            <Button
+              text="Reservar Ahora"
+              style="bg-button_secondary"
+              onClick={handleLogin}
+              iconName="book"
+            />
+          )}
+
+          {role === "client" ? (
+            <Button
+              text="Cerrar sesion"
+              style="  bg-button_exit w-full"
+              onClick={() => handleLogout()}
+              iconName="signOut"
+            />
+          ) : (
+            <Button
+              text="Administrador"
+              style="  bg-button_primary w-full"
+              onClick={() => handleLogin()}
+              iconName="lock"
+            />
+          )}
         </div>
       </Header>
       <main className=" flex-1 bg-white p-8 flex flex-row items-stretch">
-        
         <div className=" bg-secondary w-1/2 m-4 h-fit rounded-[20px] border border-black/20 shadow-lg">
           <div className="text-center justify-start text-black text-xl font-normal font-primary pt-8">
             Tu hogar en Monguí

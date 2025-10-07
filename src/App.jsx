@@ -1,25 +1,44 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./pages/home.jsx";
-import Login from "./pages/login.jsx";
-import LoginAdmin from "./pages/loginAdmin.jsx";
+import Login from "./pages/login/login.jsx";
 import AdminPage from "./pages/admin.jsx";
-import Bookings from "./pages/bookings.jsx"
+import Bookings from "./pages/bookings.jsx";
 import ModifyUser from "./pages/modifyUser.jsx";
+import ProtectedRoute from "./utils/ProtectedRoute.jsx";
 
 function App() {
   return (
-    <>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/loginAdmin" element={<LoginAdmin />} />
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="/bookings" element={<Bookings />} />
-          <Route path="/modifyUser" element={<ModifyUser />} />
-        </Routes>
-      </Router>
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/bookings"
+          element={
+            <ProtectedRoute allowedRoles={["client", "admin"]}>
+              <Bookings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/modifyUser"
+          element={
+            <ProtectedRoute allowedRoles={["client", "admin"]}>
+              <ModifyUser />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/unauthorized" element={<h1>No autorizado</h1>} />
+      </Routes>
+    </Router>
   );
 }
 
