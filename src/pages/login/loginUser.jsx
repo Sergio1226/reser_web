@@ -8,7 +8,6 @@ import { usePopup } from "../../utils/PopupContext.jsx";
 
 export function LoginUser({ setNav }) {
   const navigate = useNavigate();
-
   const { signIn } = UserAuth();
   const { openPopup } = usePopup();
 
@@ -17,15 +16,15 @@ export function LoginUser({ setNav }) {
   const [password, setPassword] = useState("");
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (password.length < 6) {
       openPopup("La contraseña debe tener al menos 6 caracteres", "warning");
-      return; 
+      return;
     }
-    
+
     try {
       const rol = await signIn({ email, password });
-      
+
       if (rol === "admin") {
         navigate("/admin");
       } else {
@@ -34,22 +33,25 @@ export function LoginUser({ setNav }) {
     } catch (err) {
       console.error("Error en login:", err);
       openPopup("Datos erróneos o usuario no existe", "error");
-    } 
+    }
   };
 
   return (
-    <div className="w-fit flex flex-col items-center p-8 h-fit mx-auto">
+    <div className="flex flex-col items-center justify-center">
       <form
         onSubmit={handleSubmit}
-        className="bg-primary p-8 rounded-lg w-full max-w-md mx-auto border border-black/20 shadow-lg mt-8 flex flex-col items-center space-y-4"
+        className="bg-white/90 backdrop-blur-md p-10 rounded-2xl w-[380px] border border-primary_dark/20 shadow-xl space-y-6"
       >
-        <div className="text-center text-black text-4xl mt-4 font-bold">
+        <h2 className="text-4xl font-bold text-primary_dark text-center mb-2">
           Iniciar Sesión
-        </div>
+        </h2>
+        <p className="text-gray-600 text-center mb-6">
+          Accede a tu cuenta para continuar
+        </p>
 
-        <div className="flex flex-col space-y-1 w-96">
-          <label className="text-black">
-            <span className="text-red-500">*</span> Correo Electrónico
+        <div className="flex flex-col space-y-2">
+          <label className="text-sm text-gray-700 font-medium">
+            Correo Electrónico <span className="text-red-500">*</span>
           </label>
           <TextField
             placeholder="correo@dominio.com"
@@ -60,12 +62,12 @@ export function LoginUser({ setNav }) {
           />
         </div>
 
-        <div className="flex flex-col space-y-1 w-96">
-          <label className="text-black items-start justify-start">
-            <span className="text-red-500">*</span> Contraseña
+        <div className="flex flex-col space-y-2">
+          <label className="text-sm text-gray-700 font-medium">
+            Contraseña <span className="text-red-500">*</span>
           </label>
           <TextField
-            placeholder="Contraseña"
+            placeholder="••••••••"
             type={showPassword ? "text" : "password"}
             required
             value={password}
@@ -74,33 +76,37 @@ export function LoginUser({ setNav }) {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute top-1/2 right-2 transform -translate-y-1/2 text-xl text-gray-600"
+              className="absolute top-1/2 right-2 transform -translate-y-1/2 text-xl text-gray-600 hover:text-primary_dark"
             >
               {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
             </button>
           </TextField>
         </div>
 
-        <Button
-          text="Ingresar"
-          style=" bg-button_secondary"
-          type="submit"
-          iconName="Next"
-        />
-
-        <div className="text-center text-black text-base">
-          ¿No está registrado?
+        <div className="flex justify-center mt-6">
+          <Button
+            text="Ingresar"
+            style="secondary"
+            type="submit"
+            iconName="Next"
+          />
         </div>
-        <Button
-          text="Registrarse"
-          style=" bg-button_primary"
-          onClick={() => setNav(1)}
-          iconName="Contact form"
-          type="button"
-        />
 
-        {/* <div className="text-center text-black text-sm mt-4">
-          <a href="">¿Olvidaste tu contraseña?</a>
+        <div className="text-center text-gray-700 mt-6 text-sm">
+          ¿No tienes una cuenta?
+        </div>
+        <div className="flex justify-center">
+          <Button
+            text="Registrarse"
+            style="primary"
+            onClick={() => setNav(1)}
+            iconName="Contact form"
+            type="button"
+          />
+        </div>
+
+        {/* <div className="text-center text-gray-500 text-sm mt-4 hover:underline cursor-pointer">
+          ¿Olvidaste tu contraseña?
         </div> */}
       </form>
     </div>

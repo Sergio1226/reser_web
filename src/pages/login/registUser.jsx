@@ -312,14 +312,14 @@ export function RegistUser({ setNav }) {
         <div className="flex flex-row space-x-4">
           <Button
             text="Atras"
-            style=" bg-button_primary"
+            style="exit"
             iconName="Back"
             type="button"
             onClick={() => setNav(0)}
           />
           <Button
             text="Continuar"
-            style=" bg-button_secondary"
+            style="primary"
             iconName="Next"
             type="submit"
           />

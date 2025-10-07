@@ -24,7 +24,7 @@ export default function ModifyUser() {
       <Header>
         <Button
           text="Atrás"
-          style="w-fit bg-button_secondary"
+          style="exit"
           onClick={() => navigate(-1)}
           iconName="Back"
         />
@@ -118,7 +118,7 @@ export default function ModifyUser() {
                   <div className="flex">
                     <Button
                       text="Cambiar de cuenta"
-                      style="bg-green-500 text-white px-4 py-2 w-full"
+                      style="primary"
                       onClick={() => navigate("/loginAdmin")}
                       iconName="refresh-cw"
                     />
@@ -127,7 +127,7 @@ export default function ModifyUser() {
                   <div className="flex">
                     <Button
                       text="Guardar Cambios"
-                      style="bg-gray-500 text-white px-4 py-2 w-full"
+                      style="secondary"
                       onClick={handleSave}
                       iconName="save-all"
                     />

@@ -68,7 +68,7 @@ function Reservations() {
           </div>
         </div>
 
-        <Button text="Buscar" style="bg-blue-500 text-white px-4 py-2 rounded-lg" />
+        <Button text="Buscar" style="secondary" />
       </div>
 
       <div className="w-full max-w-5xl mx-auto">
@@ -82,7 +82,7 @@ function Reservations() {
       <div className="flex justify-center mt-6 space-x-4 w-full">
         <Button
           text="Hacer una reserva"
-          style="bg-green-500 text-white px-6 py-2"
+          style="primary"
           onClick={() => navigate("/")}
         />
       </div>
@@ -296,8 +296,8 @@ function Schedule() {
         <input type="date" className="border p-2 w-full mb-4 h-8" value={toDate} onChange={(e) => setToDate(e.target.value)} />
 
         <div className="flex space-x-2">
-          <Button text="Cerrar" onClick={handleBlockRoom} />
-          <Button text="Abrir" style="bg-green-500 hover:bg-green-600" onClick={handleUnblockRoom} />
+          <Button text="Cerrar" onClick={handleBlockRoom} style={"exit"}/>
+          <Button text="Abrir" style="secondary" onClick={handleUnblockRoom} />
         </div>
       </div>
     </main>
@@ -344,7 +344,7 @@ function Clients() {
             onChange={(e) => setPais(e.target.value)} />
 
 
-        <Button text="Buscar" style="bg-blue-500 text-white px-6 py-3 rounded-lg" />
+        <Button text="Buscar" style="secondary" />
       </div>
 
       <div className="w-full max-w-5xl mx-auto">
@@ -354,7 +354,7 @@ function Clients() {
 
       <div className="flex justify-center mt-6 w-full">
         <Button text="Registrar un cliente" 
-        style="bg-green-500 text-white px-8 py-3" 
+        style="primary" 
         onClick={() => navigate("/registUser")} />
       </div>
     </div>

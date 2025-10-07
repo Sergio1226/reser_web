@@ -145,7 +145,7 @@ function BookingSearch({ setNav }) {
           <div className="flex items-center justify-center p-4 border-l border-black/20">
             <Button
               text="Buscar"
-              style="w-40 h-[50px] bg-secondary"
+              style="secondary"
               iconName="Search"
             />
           </div>
@@ -158,7 +158,7 @@ function BookingSearch({ setNav }) {
       </div>
       <Button
         text="Reservar"
-        style=" bg-button_primary"
+        style="primary"
         onClick={() => setNav(2)}
         iconName="Contact form"
       />
@@ -216,30 +216,6 @@ function BookingTable() {
         </div>
       </Table>
     </div>
-    //   <div className="w-fit border border-black/20 shadow-md rounded-md overflow-hidden">
-    //     <table className="w-full table-auto text-sm bg-white">
-    //       <thead
-    //         className=" border-b px-4 py-2 text-left text-xs
-    // [&>*]:p-4 text-center text-xs"
-    //       >
-    //         <tr>
-    //           <th>Reservado en</th>
-    //           <th>Check-In</th>
-    //           <th>Check-Out</th>
-    //           <th>Habitación</th>
-    //           <th>Fecha de Reserva</th>
-    //           <th>Estado Reserva</th>
-    //           <th>Precio</th>
-    //           <th className="p-4 text-center">Acciones</th>
-    //         </tr>
-    //       </thead>
-    //       <tbody>
-    //         {bookings.map((b, idx) => (
-    //           <BookingRow key={idx} booking={b} />
-    //         ))}
-    //       </tbody>
-    //     </table>
-    //   </div>
   );
 }
 
@@ -345,12 +321,12 @@ function ExtraServices({ setNav }) {
       </div>
       <div className="flex items-center justify-center mt-3 py-4 space-x-2">
         <Button
-          style={"bg-button_primary h-fit"}
+          style={"exit"}
           iconName={"back"}
           text={"Atras"}
           onClick={() => setNav(0)}
         />
-        <Button style={" bg-black text-white rounded-lg hover:bg-gray-900"}>
+        <Button style={"primary"}>
           Continuar con la reserva
         </Button>
       </div>
