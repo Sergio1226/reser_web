@@ -4,7 +4,6 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { TextField } from "../../components/TextField.jsx";
 import { supabase } from "../../utils/supabase.js";
 import { UserAuth } from "../../utils/AuthContext.jsx";
-import { usePopup } from "../../utils/PopupContext.jsx";
 
 export function RegistUser({ setNav }) {
   const { openPopup } = usePopup();
@@ -87,51 +86,56 @@ export function RegistUser({ setNav }) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (password !== passwordConfirm) {
-      openPopup("Las contraseñas no coinciden", "error");
-      return;
-    }
+  const checkDuplicateDocument = async (tipo_documento, documento) => {
+    const { data, error } = await supabase
+    .from("clientes")
+    .select("documento")
+    .eq("tipo_documento", tipo_documento)
+    .eq("documento", documento);
 
-    if (password.length < 6) {
-      openPopup("La contraseñas debe tener al menos 6 caracteres", "warning");
-      return;
-    }
-
-    try {
-    setLoading(true);
-    await signUpNewUser({ 
-      email, 
-      password, 
-      user: normalizeUser(form) 
-    });
-
-    openPopup("Registro exitoso ✅", "success");
-    setNav(-1);
-
-  } catch (err) {
-    console.log("Error en registro:", err);
-
-      if (
-        err.message?.includes("duplicate key") ||
-        err.message?.includes("already registered") ||
-        err?.status === 400
-      ) {
-        openPopup("Un usuario ya está registrado con ese correo ⚠️", "warning");
-      } else {
-        openPopup("Ocurrió un error al registrar el usuario ❌", "error");
-      }
-    } finally {
-      setLoading(false);
-    }
+    if (error) throw error;
+    return data && data.length > 0;
   };
-  if (loading)
-    return (
-      <div className="flex justify-center items-center h-screen text-xl font-semibold text-gray-700">
-        Cargando datos...
-      </div>
-  );
+
+  const handleSubmit = async (e) => { 
+    e.preventDefault(); 
+    if (password !== passwordConfirm) { 
+      openPopup("Las contraseñas no coinciden", "error"); 
+      return; 
+    } 
+    if (password.length < 6) { 
+      openPopup("La contraseñas debe tener al menos 6 caracteres", "warning"); 
+      return; 
+    } 
+    setLoading(true); 
+    try { 
+      const exists = await checkDuplicateDocument(form.tipo_documento, form.documento); 
+      if (exists) { openPopup("Ya existe un usuario con ese tipo de documento y número ⚠️", "warning"); 
+        setLoading(false); 
+        return; 
+      } 
+      const { data: authData, error: authError } = await signUpNewUser(
+        { email, password, user: normalizeUser(form), }
+      ); 
+      if (authError) throw authError; 
+      const { data: clienteData, error: clienteError } = await supabase 
+      .from("clientes") 
+      .insert([normalizeUser(form)], 
+      { returning: "minimal" }); 
+      
+      if (clienteError) throw clienteError; 
+      openPopup("Registro exitoso ✅", "success"); 
+      setNav(-1); } 
+      catch (err) { console.log("Error en registro:", err); 
+        
+      const errorMsg = err.message || JSON.stringify(err); openPopup(`Ocurrió un error al registrar el usuario ❌\n${errorMsg}`, "error"); 
+      if ( err.message?.includes("duplicate key") || err.message?.includes("already registered") || err?.status === 400 ) { 
+        openPopup(`Un usuario ya está registrado con ese correo ⚠️\n${errorMsg}`, "warning"); } 
+      } 
+      finally { 
+        setLoading(false); 
+      } 
+    };
 
   const normalizeUser = (user) => ({
     ...user,
