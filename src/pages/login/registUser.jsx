@@ -33,7 +33,7 @@ export function RegistUser({ setNav }) {
     id_nacionalidad: ""
   });
 
-    const [isColombian, setIsColombian] = useState(false);
+  const [isColombian, setIsColombian] = useState(false);
 
   useEffect(() => {
     const fetchCountries = async () => {
@@ -76,8 +76,9 @@ export function RegistUser({ setNav }) {
     if (colombia) {
       setForm((prev) => ({
         ...prev,
-        fecha_nacimiento: "",
-        id_pais_origen: "",
+        fecha_nacimiento: null,
+        id_pais_origen: null,
+        id_pais_destino: null
       }));
     }
   }, [form.id_nacionalidad, countries]);
@@ -99,13 +100,28 @@ export function RegistUser({ setNav }) {
     }
 
     try {
-      setLoading(true);
-      await signUpNewUser({ email, password, user: form });
-      openPopup("Registro exitoso", "success");
-      setNav(-1);
-    } catch (err) {
-      console.log(err);
-      openPopup("Error en el registro", "error");
+    setLoading(true);
+    await signUpNewUser({ 
+      email, 
+      password, 
+      user: normalizeUser(form) 
+    });
+
+    openPopup("Registro exitoso ✅", "success");
+    setNav(-1);
+
+  } catch (err) {
+    console.log("Error en registro:", err);
+
+      if (
+        err.message?.includes("duplicate key") ||
+        err.message?.includes("already registered") ||
+        err?.status === 400
+      ) {
+        openPopup("Un usuario ya está registrado con ese correo ⚠️", "warning");
+      } else {
+        openPopup("Ocurrió un error al registrar el usuario ❌", "error");
+      }
     } finally {
       setLoading(false);
     }
@@ -115,7 +131,16 @@ export function RegistUser({ setNav }) {
       <div className="flex justify-center items-center h-screen text-xl font-semibold text-gray-700">
         Cargando datos...
       </div>
-    );
+  );
+
+  const normalizeUser = (user) => ({
+    ...user,
+    fecha_nacimiento: user.fecha_nacimiento || null,
+    id_pais_origen: user.id_pais_origen || null,
+    id_pais_destino: user.id_pais_destino || null,
+    id_nacionalidad: user.id_nacionalidad || null,
+    tipo_documento: user.tipo_documento || null
+  })
 
   return (
     <div className="w-fit flex flex-col items-center p-8 h-fit mx-auto">
@@ -362,13 +387,6 @@ export function RegistUser({ setNav }) {
         )}
 
         <div className="flex flex-row space-x-4">
-          <Button
-            text="Atras"
-            style="exit"
-            iconName="Back"
-            type="button"
-            onClick={() => setNav(-1)}
-          />
           <Button
             text="Continuar"
             style="primary"
