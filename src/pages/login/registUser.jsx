@@ -30,7 +30,10 @@ export function RegistUser({ setNav }) {
     fecha_nacimiento: "",
     id_pais_origen: "",
     id_pais_destino: "",
+    id_nacionalidad: ""
   });
+
+    const [isColombian, setIsColombian] = useState(false);
 
   useEffect(() => {
     const fetchCountries = async () => {
@@ -62,6 +65,23 @@ export function RegistUser({ setNav }) {
     fetchDocuments();
   }, []);
 
+  useEffect(() => {
+    const colombia = countries.find(
+      (country) =>
+        country.nombre.toLowerCase().includes("colombia") &&
+        parseInt(form.id_nacionalidad) === country.id
+    );
+    setIsColombian(!!colombia);
+
+    if (colombia) {
+      setForm((prev) => ({
+        ...prev,
+        fecha_nacimiento: "",
+        id_pais_origen: "",
+      }));
+    }
+  }, [form.id_nacionalidad, countries]);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -82,7 +102,7 @@ export function RegistUser({ setNav }) {
       setLoading(true);
       await signUpNewUser({ email, password, user: form });
       openPopup("Registro exitoso", "success");
-      setNav(0);
+      setNav(-1);
     } catch (err) {
       console.log(err);
       openPopup("Error en el registro", "error");
@@ -122,6 +142,7 @@ export function RegistUser({ setNav }) {
             required
             value={form.primer_nombre}
             onChange={handleChange}
+            mode="text"
           />
         </div>
 
@@ -133,6 +154,7 @@ export function RegistUser({ setNav }) {
             type="text"
             value={form.segundo_nombre}
             onChange={handleChange}
+            mode="text"
           />
         </div>
 
@@ -147,6 +169,7 @@ export function RegistUser({ setNav }) {
             name="primer_apellido"
             value={form.primer_apellido}
             onChange={handleChange}
+            mode="text"
           />
         </div>
 
@@ -158,6 +181,7 @@ export function RegistUser({ setNav }) {
             name="segundo_apellido"
             value={form.segundo_apellido}
             onChange={handleChange}
+            mode="text"
           />
         </div>
 
@@ -192,26 +216,52 @@ export function RegistUser({ setNav }) {
             name="documento"
             value={form.documento}
             onChange={handleChange}
+            mode="mixed"
           />
         </div>
 
+         <div className="flex flex-col space-y-1 w-96">
+          <label className="text-black">
+            <span className="text-red-500">*</span> Nacionalidad
+          </label>
+          <select
+            name="id_nacionalidad"
+            value={form.id_nacionalidad}
+            onChange={handleChange}
+            required
+            className="w-96 px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 focus:outline-primary"
+          >
+            <option value="">Nacionalidad</option>
+            {countries.map((country) => (
+              <option key={country.id} value={country.id}>
+                {country.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="flex flex-col space-y-1 w-96">
-          <label className="text-black">Fecha de Nacimiento</label>
+          <label className="text-black">
+            <span className={`${!isColombian ? "text-red-500" : "text-gray-400"}`}>*</span>{" "} Fecha de Nacimiento</label>
           <input
             type="date"
             name="fecha_nacimiento"
             value={form.fecha_nacimiento}
             onChange={handleChange}
+            disabled={isColombian}
+            required={!isColombian}
             className="w-96 px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 focus:outline-primary"
           />
         </div>
 
         <div className="flex flex-col space-y-1 w-96">
-          <label className="text-black">País Procedencia</label>
+          <label className="text-black"> <span className={`${!isColombian ? "text-red-500" : "text-gray-400"}`}>*</span>{" "} País Procedencia</label>
           <select
             name="id_pais_origen"
             value={form.id_pais_origen}
             onChange={handleChange}
+            disabled={isColombian}
+            required={!isColombian}
             className="w-96 px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 focus:outline-primary"
           >
             <option value="">País Procedencia</option>
@@ -224,11 +274,13 @@ export function RegistUser({ setNav }) {
         </div>
 
         <div className="flex flex-col space-y-1 w-96">
-          <label className="text-black">País Destino</label>
+          <label className="text-black"> <span className={`${!isColombian ? "text-red-500" : "text-gray-400"}`}>*</span>{" "} País Destino</label>
           <select
             name="id_pais_destino"
             value={form.id_pais_destino}
             onChange={handleChange}
+            disabled={isColombian}
+            required={!isColombian}
             className="w-96 px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 focus:outline-primary"
           >
             <option value="">País Destino</option>
@@ -315,7 +367,7 @@ export function RegistUser({ setNav }) {
             style="exit"
             iconName="Back"
             type="button"
-            onClick={() => setNav(0)}
+            onClick={() => setNav(-1)}
           />
           <Button
             text="Continuar"
