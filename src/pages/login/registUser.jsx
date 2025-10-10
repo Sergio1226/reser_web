@@ -5,6 +5,7 @@ import { TextField } from "../../components/TextField.jsx";
 import { supabase } from "../../utils/supabase.js";
 import { UserAuth } from "../../utils/AuthContext.jsx";
 import { usePopup } from "../../utils/PopupContext.jsx";
+import { Card } from "../../components/Card.jsx"; // Asegúrate de importar tu Card
 
 export function RegistUser({ setNav }) {
   const { openPopup } = usePopup();
@@ -30,10 +31,10 @@ export function RegistUser({ setNav }) {
     fecha_nacimiento: "",
     id_pais_origen: "",
     id_pais_destino: "",
-    id_nacionalidad: ""
+    id_nacionalidad: "",
   });
 
-    const [isColombian, setIsColombian] = useState(false);
+  const [isColombian, setIsColombian] = useState(false);
 
   useEffect(() => {
     const fetchCountries = async () => {
@@ -49,6 +50,7 @@ export function RegistUser({ setNav }) {
         setLoading(false);
       }
     };
+
     const fetchDocuments = async () => {
       try {
         const { data: tipos_documentos, error } = await supabase
@@ -110,6 +112,7 @@ export function RegistUser({ setNav }) {
       setLoading(false);
     }
   };
+
   if (loading)
     return (
       <div className="flex justify-center items-center h-screen text-xl font-semibold text-gray-700">
@@ -118,20 +121,15 @@ export function RegistUser({ setNav }) {
     );
 
   return (
-    <div className="w-fit flex flex-col items-center p-8 h-fit mx-auto">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-primary p-8 rounded-lg w-full max-w-md mx-auto border border-black/20 shadow-lg mt-8 flex flex-col items-center space-y-4"
-      >
-        <div className="text-center text-black text-4xl mt-4 font-bold">
-          Registrarse
-        </div>
+    <div className="flex justify-center items-center min-h-screen">
+      <Card onSubmit={handleSubmit}>
+        <h2>Registrarse</h2>
 
         <label className="block text-gray-700 font-medium mb-2">
           Datos Personales
         </label>
 
-        <div className="flex flex-col space-y-1 w-96">
+        <div className="flex flex-col space-y-1 w-full">
           <label className="text-black">
             <span className="text-red-500">*</span> Primer Nombre
           </label>
@@ -146,7 +144,7 @@ export function RegistUser({ setNav }) {
           />
         </div>
 
-        <div className="flex flex-col space-y-1 w-96">
+        <div className="flex flex-col space-y-1 w-full">
           <label className="text-black">Segundo Nombre</label>
           <TextField
             placeholder="Segundo Nombre"
@@ -158,7 +156,7 @@ export function RegistUser({ setNav }) {
           />
         </div>
 
-        <div className="flex flex-col space-y-1 w-96">
+        <div className="flex flex-col space-y-1 w-full">
           <label className="text-black">
             <span className="text-red-500">*</span> Primer Apellido
           </label>
@@ -173,7 +171,7 @@ export function RegistUser({ setNav }) {
           />
         </div>
 
-        <div className="flex flex-col space-y-1 w-96">
+        <div className="flex flex-col space-y-1 w-full">
           <label className="text-black">Segundo Apellido</label>
           <TextField
             placeholder="Segundo Apellido"
@@ -185,7 +183,7 @@ export function RegistUser({ setNav }) {
           />
         </div>
 
-        <div className="flex flex-col space-y-1 w-96">
+        <div className="flex flex-col space-y-1 w-full">
           <label className="text-black">
             <span className="text-red-500">*</span> Tipo de Documento
           </label>
@@ -194,7 +192,7 @@ export function RegistUser({ setNav }) {
             value={form.tipo_documento}
             onChange={handleChange}
             required
-            className="w-96 px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 focus:outline-primary"
+            className="w-full px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 focus:outline-primary"
           >
             <option value="">Tipo Documento</option>
             {documents.map((document) => (
@@ -205,7 +203,7 @@ export function RegistUser({ setNav }) {
           </select>
         </div>
 
-        <div className="flex flex-col space-y-1 w-96">
+        <div className="flex flex-col space-y-1 w-full">
           <label className="text-black">
             <span className="text-red-500">*</span> Numero de Documento
           </label>
@@ -220,7 +218,7 @@ export function RegistUser({ setNav }) {
           />
         </div>
 
-         <div className="flex flex-col space-y-1 w-96">
+        <div className="flex flex-col space-y-1 w-full">
           <label className="text-black">
             <span className="text-red-500">*</span> Nacionalidad
           </label>
@@ -229,7 +227,7 @@ export function RegistUser({ setNav }) {
             value={form.id_nacionalidad}
             onChange={handleChange}
             required
-            className="w-96 px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 focus:outline-primary"
+            className="w-full px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 focus:outline-primary"
           >
             <option value="">Nacionalidad</option>
             {countries.map((country) => (
@@ -240,9 +238,15 @@ export function RegistUser({ setNav }) {
           </select>
         </div>
 
-        <div className="flex flex-col space-y-1 w-96">
+        <div className="flex flex-col space-y-1 w-full">
           <label className="text-black">
-            <span className={`${!isColombian ? "text-red-500" : "text-gray-400"}`}>*</span>{" "} Fecha de Nacimiento</label>
+            <span
+              className={`${!isColombian ? "text-red-500" : "text-gray-400"}`}
+            >
+              *
+            </span>{" "}
+            Fecha de Nacimiento
+          </label>
           <input
             type="date"
             name="fecha_nacimiento"
@@ -250,19 +254,26 @@ export function RegistUser({ setNav }) {
             onChange={handleChange}
             disabled={isColombian}
             required={!isColombian}
-            className="w-96 px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 focus:outline-primary"
+            className="w-full px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 focus:outline-primary"
           />
         </div>
 
-        <div className="flex flex-col space-y-1 w-96">
-          <label className="text-black"> <span className={`${!isColombian ? "text-red-500" : "text-gray-400"}`}>*</span>{" "} País Procedencia</label>
+        <div className="flex flex-col space-y-1 w-full">
+          <label className="text-black">
+            <span
+              className={`${!isColombian ? "text-red-500" : "text-gray-400"}`}
+            >
+              *
+            </span>{" "}
+            País Procedencia
+          </label>
           <select
             name="id_pais_origen"
             value={form.id_pais_origen}
             onChange={handleChange}
             disabled={isColombian}
             required={!isColombian}
-            className="w-96 px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 focus:outline-primary"
+            className="w-full px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 focus:outline-primary"
           >
             <option value="">País Procedencia</option>
             {countries.map((country) => (
@@ -273,15 +284,22 @@ export function RegistUser({ setNav }) {
           </select>
         </div>
 
-        <div className="flex flex-col space-y-1 w-96">
-          <label className="text-black"> <span className={`${!isColombian ? "text-red-500" : "text-gray-400"}`}>*</span>{" "} País Destino</label>
+        <div className="flex flex-col space-y-1 w-full">
+          <label className="text-black">
+            <span
+              className={`${!isColombian ? "text-red-500" : "text-gray-400"}`}
+            >
+              *
+            </span>{" "}
+            País Destino
+          </label>
           <select
             name="id_pais_destino"
             value={form.id_pais_destino}
             onChange={handleChange}
             disabled={isColombian}
             required={!isColombian}
-            className="w-96 px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 focus:outline-primary"
+            className="w-full px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 focus:outline-primary"
           >
             <option value="">País Destino</option>
             {countries.map((country) => (
@@ -296,7 +314,7 @@ export function RegistUser({ setNav }) {
           Credenciales de Acceso
         </label>
 
-        <div className="flex flex-col space-y-1 w-96">
+        <div className="flex flex-col space-y-1 w-full">
           <label className="text-black">
             <span className="text-red-500">*</span> Correo Electrónico
           </label>
@@ -309,8 +327,8 @@ export function RegistUser({ setNav }) {
           />
         </div>
 
-        <div className="flex flex-col space-y-1 w-96">
-          <label className="text-black items-start justify-start">
+        <div className="flex flex-col space-y-1 w-full">
+          <label className="text-black">
             <span className="text-red-500">*</span> Contraseña
           </label>
           <TextField
@@ -330,8 +348,8 @@ export function RegistUser({ setNav }) {
           </TextField>
         </div>
 
-        <div className="flex flex-col space-y-1 w-96">
-          <label className="text-black items-start justify-start">
+        <div className="flex flex-col space-y-1 w-full">
+          <label className="text-black">
             <span className="text-red-500">*</span> Confirmar Contraseña
           </label>
           <TextField
@@ -361,13 +379,13 @@ export function RegistUser({ setNav }) {
           </div>
         )}
 
-        <div className="flex flex-row space-x-4">
+        <div className="flex flex-row justify-between">
           <Button
-            text="Atras"
+            text="Atrás"
             style="exit"
             iconName="Back"
             type="button"
-            onClick={() => setNav(-1)}
+            onClick={() => setNav(0)}
           />
           <Button
             text="Continuar"
@@ -376,7 +394,7 @@ export function RegistUser({ setNav }) {
             type="submit"
           />
         </div>
-      </form>
+      </Card>
     </div>
   );
 }

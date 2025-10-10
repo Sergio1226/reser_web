@@ -92,9 +92,6 @@ export const AuthContextProvider = ({ children }) => {
       });
 
       if (error) throw error;
-
-      console.log("Login exitoso, datos:", data);
-      console.log("aca", data.user.id);
       
       const { data: userRole, error: errorRol } = await supabase.rpc(
         "get_role",
@@ -102,7 +99,6 @@ export const AuthContextProvider = ({ children }) => {
           uid: data.user.id,
         }
       );
-      console.log("aca2", userRole);
 
       if (errorRol) throw errorRol;
 

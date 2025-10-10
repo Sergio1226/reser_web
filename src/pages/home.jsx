@@ -11,8 +11,9 @@ export default function Home() {
   const handleLogout = async () => await signOut();
 
   const handleLogin = () => {
-    if (!session) return navigate("/login");
-    navigate(role === "admin" ? "/admin" : "/bookings");
+    if (!session)  navigate("/login");
+    if (role === "") navigate("/login");
+    else navigate(role === "admin" ? "/admin" : "/bookings");
   };
 
   return (
@@ -25,6 +26,7 @@ export default function Home() {
               style="exit"
               onClick={handleLogout}
               iconName="signOut"
+              className={"w-full"}
             />
           ) : (
             <Button

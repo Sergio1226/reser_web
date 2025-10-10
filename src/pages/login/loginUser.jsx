@@ -5,6 +5,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { TextField } from "../../components/TextField.jsx";
 import { UserAuth } from "../../utils/AuthContext.jsx";
 import { usePopup } from "../../utils/PopupContext.jsx";
+import { Card } from "../../components/Card.jsx";
 
 export function LoginUser({ setNav }) {
   const navigate = useNavigate();
@@ -38,17 +39,9 @@ export function LoginUser({ setNav }) {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white/90 backdrop-blur-md p-10 rounded-2xl w-[380px] border border-primary_dark/20 shadow-xl space-y-6"
-      >
-        <h2 className="text-4xl font-bold text-primary_dark text-center mb-2">
-          Iniciar Sesión
-        </h2>
-        <p className="text-gray-600 text-center mb-6">
-          Accede a tu cuenta para continuar
-        </p>
-
+      <Card onSubmit={handleSubmit}>
+        <h2 className="mb-6">Iniciar Sesión</h2>
+        <p className=" mb-6">Accede a tu cuenta para continuar</p>
         <div className="flex flex-col space-y-2">
           <label className="text-sm text-gray-700 font-medium">
             Correo Electrónico <span className="text-red-500">*</span>
@@ -61,7 +54,6 @@ export function LoginUser({ setNav }) {
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
-
         <div className="flex flex-col space-y-2">
           <label className="text-sm text-gray-700 font-medium">
             Contraseña <span className="text-red-500">*</span>
@@ -89,6 +81,7 @@ export function LoginUser({ setNav }) {
             style="secondary"
             type="submit"
             iconName="Next"
+            onClick={handleSubmit}
           />
         </div>
 
@@ -104,11 +97,7 @@ export function LoginUser({ setNav }) {
             type="button"
           />
         </div>
-
-        {/* <div className="text-center text-gray-500 text-sm mt-4 hover:underline cursor-pointer">
-          ¿Olvidaste tu contraseña?
-        </div> */}
-      </form>
+      </Card>
     </div>
   );
 }
