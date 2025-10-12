@@ -131,11 +131,10 @@ function BookingSearch({ setNav }) {
             estado_reserva
           )
         `)
-        .not("reservas.id", "is", null); // para evitar nulos si no hay relación
+        .not("reservas.id", "is", null);
 
       if (errReserved) throw errReserved;
 
-      // Filtrar las reservas que realmente se solapan en fechas
       const reservedIds = (reservedData || [])
         .filter(
           (r) =>
@@ -144,7 +143,6 @@ function BookingSearch({ setNav }) {
         )
         .map((r) => r.id_habitacion);
 
-      // 🔹 2) Consultar habitaciones disponibles
       let roomsQuery = supabase
       .from("habitaciones")
       .select(`
@@ -162,7 +160,6 @@ function BookingSearch({ setNav }) {
       `)
       .eq("estado_habitacion", "Libre");
 
-      // Si hay reservas confirmadas, excluimos esas habitaciones
       if (reservedIds.length > 0) {
         roomsQuery = roomsQuery.not("id", "in", `(${reservedIds.join(",")})`);
       }
@@ -170,7 +167,6 @@ function BookingSearch({ setNav }) {
       const { data: roomsData, error: errRooms } = await roomsQuery;
       if (errRooms) throw errRooms;
 
-      // 🔹 3) Filtrar por capacidad suficiente
       const filtered = (roomsData || []).filter((room) => {
         const rows = room.habitaciones_camas || [];
         const capacity = rows.reduce((acc, hc) => {
@@ -180,7 +176,6 @@ function BookingSearch({ setNav }) {
         return capacity >= people;
       });
 
-      // 🔹 4) Limitar por cantidad de habitaciones solicitadas
       const limited = filtered.slice(0, countRooms);
 
       if (limited.length === 0) {
@@ -201,7 +196,7 @@ function BookingSearch({ setNav }) {
   return (
     <>
       <div className="flex flex-col border border-black/20 rounded-lg space-y-5 bg-primary shadow-md p-8">
-        {/* 🔸 Barra de búsqueda */}
+
         <div className="flex md:flex-row flex-col bg-white border border-black/20 rounded-lg justify-center shadow-md">
           <div className="flex p-4 items-center relative">
             <Calendar range={range} setRange={setRange} />
@@ -254,66 +249,61 @@ function BookingSearch({ setNav }) {
           </div>
         </div>
 
-/* 🔸 Resultados */
-<div className="grid md:grid-cols-2 p-4 gap-4">
-  {searchLoading ? (
-    <p className="text-center text-gray-500 col-span-2">
-      🔄 Buscando habitaciones...
-    </p>
-  ) : availableRooms.length > 0 ? (
-    availableRooms.map((r) => {
-      // 🧮 Calcular la capacidad total según las camas
-      const capacity = (r.habitaciones_camas || []).reduce((acc, hc) => {
-        const cap = hc?.camas?.capacidad || 1;
-        return acc + (hc.cantidad || 0) * cap;
-      }, 0);
+        <div className="grid md:grid-cols-2 p-4 gap-4">
+          {searchLoading ? (
+            <p className="text-center text-gray-500 col-span-2">
+              🔄 Buscando habitaciones...
+            </p>
+          ) : availableRooms.length > 0 ? (
+            availableRooms.map((r) => {
+              const capacity = (r.habitaciones_camas || []).reduce((acc, hc) => {
+                const cap = hc?.camas?.capacidad || 1;
+                return acc + (hc.cantidad || 0) * cap;
+              }, 0);
 
-      // 🛏️ Extraer tipos de camas (nombre + cantidad)
-      const bedType =
-        (r.habitaciones_camas || []).map((hc) => ({
-          tipo: hc?.camas?.nombre || "Cama sin nombre",
-          cantidad: hc?.cantidad || 0,
-        })) || [];
+              const bedType =
+                (r.habitaciones_camas || []).map((hc) => ({
+                  tipo: hc?.camas?.nombre || "Cama sin nombre",
+                  cantidad: hc?.cantidad || 0,
+                })) || [];
 
-      // 🧩 Extraer características
-      const services =
-        r.habitaciones_caracteristicas?.map((hc) => ({
-          icon: hc.caracteristicas?.icono || "wifi",
-          label: hc.caracteristicas?.nombre || "Servicio",
-        })) || [];
+              const services =
+                r.habitaciones_caracteristicas?.map((hc) => ({
+                  icon: hc.caracteristicas?.icono || "wifi",
+                  label: hc.caracteristicas?.nombre || "Servicio",
+                })) || [];
 
-      return (
-        <RoomCard
-          key={r.id}
-          name={r.name ?? r.descripcion ?? `Habitación ${r.id}`}
-          price={r.precio ?? 0}
-          image={
-            r.imagen_url ??
-            "https://via.placeholder.com/400x250?text=Habitación"
-          }
-          services={services}
-          description={`Habitación con ${services.length} característica${
-            services.length !== 1 ? "s" : ""
-          } disponibles.`}
-          details={services.map((s) => s.label)}
-          capacity={capacity}
-          bedType={bedType} // <-- ahora es un array con tipo y cantidad
-        />
-      );
-    })
-  ) : searched ? (
-    <p className="text-center text-gray-600 col-span-2">
-      😕 No hay habitaciones disponibles con los criterios seleccionados.
-    </p>
-  ) : (
-    <p className="text-center text-gray-400 col-span-2">
-      🔍 Realiza una búsqueda para ver habitaciones disponibles.
-    </p>
-  )}
-</div>
+              return (
+                <RoomCard
+                  key={r.id}
+                  name={r.name ?? r.descripcion ?? `Habitación ${r.id}`}
+                  price={r.precio ?? 0}
+                  image={
+                    r.imagen_url ??
+                    "https://via.placeholder.com/400x250?text=Habitación"
+                  }
+                  services={services}
+                  description={`Habitación con ${services.length} característica${
+                    services.length !== 1 ? "s" : ""
+                  } disponibles.`}
+                  details={services.map((s) => s.label)}
+                  capacity={capacity}
+                  bedType={bedType}
+                />
+              );
+            })
+          ) : searched ? (
+            <p className="text-center text-gray-600 col-span-2">
+              😕 No hay habitaciones disponibles con los criterios seleccionados.
+            </p>
+          ) : (
+            <p className="text-center text-gray-400 col-span-2">
+              🔍 Realiza una búsqueda para ver habitaciones disponibles.
+            </p>
+          )}
+        </div>
       </div>
 
-      {/* 🔸 Botón reservar */}
       <Button
         text="Reservar"
         style="primary"
