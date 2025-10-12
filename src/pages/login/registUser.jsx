@@ -85,17 +85,6 @@ export function RegistUser({ setNav }) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const checkDuplicateDocument = async (tipo_documento, documento) => {
-    const { data, error } = await supabase
-      .from("clientes")
-      .select("documento")
-      .eq("tipo_documento", tipo_documento)
-      .eq("documento", documento);
-
-    if (error) throw error;
-    return data && data.length > 0;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(e);
@@ -110,18 +99,6 @@ export function RegistUser({ setNav }) {
     }
     setLoading(true);
     try {
-      const exists = await checkDuplicateDocument(
-        form.tipo_documento,
-        form.documento
-      );
-      if (exists) {
-        openPopup(
-          "Ya existe un usuario con ese tipo de documento y número ⚠️",
-          "warning"
-        );
-        setLoading(false);
-        return;
-      }
       const { error } = await signUpNewUser({
         email,
         password,
@@ -134,23 +111,7 @@ export function RegistUser({ setNav }) {
       }
       setNav(0);
     } catch (err) {
-      console.log("Error en registro:", err);
-
-      const errorMsg = err.message || JSON.stringify(err);
-      openPopup(
-        `Ocurrió un error al registrar el usuario ❌\n${errorMsg}`,
-        "error"
-      );
-      if (
-        err.message?.includes("duplicate key") ||
-        err.message?.includes("already registered") ||
-        err?.status === 400
-      ) {
-        openPopup(
-          `Un usuario ya está registrado con ese correo ⚠️\n${errorMsg}`,
-          "warning"
-        );
-      }
+      openPopup(err.message, "error");
     } finally {
       setLoading(false);
     }
