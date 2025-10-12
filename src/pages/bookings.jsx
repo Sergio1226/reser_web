@@ -13,8 +13,11 @@ import { Icon } from "../components/Icon.jsx";
 import { Counter } from "../components/Counter.jsx";
 import { Calendar } from "../components/Calendar.jsx";
 import { Table } from "../components/Table.jsx";
+import { supabase } from "../utils/supabase";
+import { usePopup } from "../utils/PopupContext.jsX"; 
 
 const rooms = [
+
   {
     id: 1,
     name: "Habitación Pericos",
@@ -55,6 +58,7 @@ const rooms = [
     ],
   },
 ];
+
 const options = [
   {
     title: "Realizar Reserva",
@@ -91,6 +95,7 @@ export default function Bookings() {
 }
 
 function BookingSearch({ setNav }) {
+  const { openPopup } = usePopup();
   const [countAdults, setCountAdults] = useState(1);
   const [countChildrens, setCountChildrens] = useState(0);
   const [countRooms, setCountRooms] = useState(1);
@@ -102,10 +107,102 @@ function BookingSearch({ setNav }) {
     },
   ]);
 
+  const [availableRooms, setAvailableRooms] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searched, setSearched] = useState(false);
+
+  async function handleSearch() {
+    try {
+      setSearchLoading(true);
+      setSearched(true);
+
+      const start = range[0].startDate.toISOString().slice(0, 10);
+      const end = range[0].endDate.toISOString().slice(0, 10);
+      const people = countAdults + countChildrens;
+
+      const { data: reservedData, error: errReserved } = await supabase
+        .from("reservas_habitaciones")
+        .select(`
+          id_habitacion,
+          reservas (
+            id,
+            fecha_entrada,
+            fecha_salida,
+            estado_reserva
+          )
+        `)
+        .not("reservas.id", "is", null); // para evitar nulos si no hay relación
+
+      if (errReserved) throw errReserved;
+
+      // Filtrar las reservas que realmente se solapan en fechas
+      const reservedIds = (reservedData || [])
+        .filter(
+          (r) =>
+            r.reservas?.estado_reserva === "Confirmada" &&
+            !(r.reservas.fecha_salida <= start || r.reservas.fecha_entrada >= end)
+        )
+        .map((r) => r.id_habitacion);
+
+      // 🔹 2) Consultar habitaciones disponibles
+      let roomsQuery = supabase
+      .from("habitaciones")
+      .select(`
+        id,
+        name: descripcion,
+        precio,
+        estado_habitacion,
+        habitaciones_camas (
+          cantidad,
+          camas ( id, nombre , capacidad )
+        ),
+        habitaciones_caracteristicas (
+          caracteristicas ( id, nombre)
+        )
+      `)
+      .eq("estado_habitacion", "Libre");
+
+      // Si hay reservas confirmadas, excluimos esas habitaciones
+      if (reservedIds.length > 0) {
+        roomsQuery = roomsQuery.not("id", "in", `(${reservedIds.join(",")})`);
+      }
+
+      const { data: roomsData, error: errRooms } = await roomsQuery;
+      if (errRooms) throw errRooms;
+
+      // 🔹 3) Filtrar por capacidad suficiente
+      const filtered = (roomsData || []).filter((room) => {
+        const rows = room.habitaciones_camas || [];
+        const capacity = rows.reduce((acc, hc) => {
+          const camaCap = hc?.camas?.capacidad || 1;
+          return acc + (hc.cantidad || 0) * camaCap;
+        }, 0);
+        return capacity >= people;
+      });
+
+      // 🔹 4) Limitar por cantidad de habitaciones solicitadas
+      const limited = filtered.slice(0, countRooms);
+
+      if (limited.length === 0) {
+        openPopup("⚠️ No hay habitaciones disponibles con esos criterios.", "info");
+      } else {
+        openPopup("✅ Habitaciones disponibles encontradas.", "success");
+      }
+
+      setAvailableRooms(limited);
+    } catch (err) {
+      console.error("Error buscando habitaciones:", err);
+      openPopup(`❌ Error al buscar habitaciones:\n${err.message}`, "warning");
+    } finally {
+      setSearchLoading(false);
+    }
+  }
+
   return (
     <>
-      <div className=" flex flex-col border border-black/20 rounded-lg space-y-5 bg-primary shadow-md  p-8">
-        <div className="flex md:flex-row flex-col bg-white border  border-black/20 rounded-lg justify-center shadow-md ">
+      <div className="flex flex-col border border-black/20 rounded-lg space-y-5 bg-primary shadow-md p-8">
+        {/* 🔸 Barra de búsqueda */}
+        <div className="flex md:flex-row flex-col bg-white border border-black/20 rounded-lg justify-center shadow-md">
           <div className="flex p-4 items-center relative">
             <Calendar range={range} setRange={setRange} />
             <div className="flex flex-col">
@@ -118,7 +215,8 @@ function BookingSearch({ setNav }) {
               </span>
             </div>
           </div>
-          <div className="flex flex-row items-center space-x-4 p-4 border-l border-black/20 ">
+
+          <div className="flex flex-row items-center space-x-4 p-4 border-l border-black/20">
             <Icon name={"Guest"} alt="Huespedes" style="size-item " />
             <div className="flex flex-col [&>*]:justify-center [&>*]:text-center space-y-2">
               <div className="text-neutral-700 text-sm font-medium">
@@ -126,9 +224,12 @@ function BookingSearch({ setNav }) {
               </div>
               <div className="text-zinc-500 text-base font-medium">Adultos</div>
               <Counter count={countAdults} setCount={setCountAdults} min={1} />
-
               <div className="text-zinc-500 text-base font-medium">Niños</div>
-              <Counter count={countChildrens} setCount={setCountChildrens} min={0}/>
+              <Counter
+                count={countChildrens}
+                setCount={setCountChildrens}
+                min={0}
+              />
             </div>
           </div>
 
@@ -138,29 +239,87 @@ function BookingSearch({ setNav }) {
               <div className="text-neutral-700 text-sm font-medium">
                 Numero de Habitaciones
               </div>
-              <Counter count={countRooms} setCount={setCountRooms} min={1}/>
+              <Counter count={countRooms} setCount={setCountRooms} min={1} />
             </div>
           </div>
 
           <div className="flex items-center justify-center p-4 border-l border-black/20">
             <Button
-              text="Buscar"
+              text={searchLoading ? "Buscando..." : "Buscar"}
               style="secondary"
               iconName="Search"
+              onClick={handleSearch}
+              disabled={searchLoading}
             />
           </div>
         </div>
-        <div className="grid md:grid-cols-2 p-4 gap-4">
-          {rooms.map((r) => (
-            <RoomCard key={r.id} {...r} />
-          ))}
-        </div>
+
+/* 🔸 Resultados */
+<div className="grid md:grid-cols-2 p-4 gap-4">
+  {searchLoading ? (
+    <p className="text-center text-gray-500 col-span-2">
+      🔄 Buscando habitaciones...
+    </p>
+  ) : availableRooms.length > 0 ? (
+    availableRooms.map((r) => {
+      // 🧮 Calcular la capacidad total según las camas
+      const capacity = (r.habitaciones_camas || []).reduce((acc, hc) => {
+        const cap = hc?.camas?.capacidad || 1;
+        return acc + (hc.cantidad || 0) * cap;
+      }, 0);
+
+      // 🛏️ Extraer tipos de camas (nombre + cantidad)
+      const bedType =
+        (r.habitaciones_camas || []).map((hc) => ({
+          tipo: hc?.camas?.nombre || "Cama sin nombre",
+          cantidad: hc?.cantidad || 0,
+        })) || [];
+
+      // 🧩 Extraer características
+      const services =
+        r.habitaciones_caracteristicas?.map((hc) => ({
+          icon: hc.caracteristicas?.icono || "wifi",
+          label: hc.caracteristicas?.nombre || "Servicio",
+        })) || [];
+
+      return (
+        <RoomCard
+          key={r.id}
+          name={r.name ?? r.descripcion ?? `Habitación ${r.id}`}
+          price={r.precio ?? 0}
+          image={
+            r.imagen_url ??
+            "https://via.placeholder.com/400x250?text=Habitación"
+          }
+          services={services}
+          description={`Habitación con ${services.length} característica${
+            services.length !== 1 ? "s" : ""
+          } disponibles.`}
+          details={services.map((s) => s.label)}
+          capacity={capacity}
+          bedType={bedType} // <-- ahora es un array con tipo y cantidad
+        />
+      );
+    })
+  ) : searched ? (
+    <p className="text-center text-gray-600 col-span-2">
+      😕 No hay habitaciones disponibles con los criterios seleccionados.
+    </p>
+  ) : (
+    <p className="text-center text-gray-400 col-span-2">
+      🔍 Realiza una búsqueda para ver habitaciones disponibles.
+    </p>
+  )}
+</div>
       </div>
+
+      {/* 🔸 Botón reservar */}
       <Button
         text="Reservar"
         style="primary"
         onClick={() => setNav(2)}
         iconName="Contact form"
+        disabled={!availableRooms.length}
       />
     </>
   );

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { PopupContext } from "./PopupContext";
+import { PopupContext } from "./PopupContext.jsX";
 import { Popup } from "../components/Popup.jsx";
 
 export function PopupProvider({ children }) {

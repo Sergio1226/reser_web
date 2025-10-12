@@ -4,8 +4,7 @@ import { Button } from "../../components/Button.jsx";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { TextField } from "../../components/TextField.jsx";
 import { UserAuth } from "../../utils/AuthContext.jsx";
-import { usePopup } from "../../utils/PopupContext.jsx";
-import { Card } from "../../components/Card.jsx";
+import { usePopup } from "../../utils/PopupContext.jsX";
 
 export function LoginUser({ setNav }) {
   const navigate = useNavigate();

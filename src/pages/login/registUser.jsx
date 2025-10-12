@@ -4,10 +4,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { TextField } from "../../components/TextField.jsx";
 import { supabase } from "../../utils/supabase.js";
 import { UserAuth } from "../../utils/AuthContext.jsx";
-import { usePopup } from "../../utils/PopupContext.jsx";
-import { Card } from "../../components/Card.jsx";
-
-const countryId=40;
+import { usePopup } from "../../utils/PopupContext.jsX";
 
 export function RegistUser({ setNav }) {
   const { openPopup } = usePopup();
