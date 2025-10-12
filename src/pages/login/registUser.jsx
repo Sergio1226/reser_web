@@ -5,6 +5,7 @@ import { TextField } from "../../components/TextField.jsx";
 import { supabase } from "../../utils/supabase.js";
 import { UserAuth } from "../../utils/AuthContext.jsx";
 import { usePopup } from "../../utils/PopupContext.jsX";
+import { Card } from "../../components/Card.jsx";
 
 export function RegistUser({ setNav }) {
   const { openPopup } = usePopup();
@@ -67,16 +68,23 @@ export function RegistUser({ setNav }) {
   }, []);
 
   useEffect(() => {
-    setIsColombian(parseInt(form.id_nacionalidad) === countryId);
-    
-    if (isColombian) {
-      setForm((prev) => ({
-        ...prev,
-        id_pais_origen: null,
-        id_pais_destino: null,
-      }));
+    const colombia = countries.find(
+      (country) => country.nombre.toLowerCase() === "colombia"
+    );
+
+    if (colombia) {
+      const isUserColombian = parseInt(form.id_nacionalidad) === colombia.id;
+      setIsColombian(isUserColombian);
+
+      if (isUserColombian) {
+        setForm((prev) => ({
+          ...prev,
+          id_pais_origen: null,
+          id_pais_destino: null,
+        }));
+      }
     }
-  }, [form.id_nacionalidad, countries, isColombian]);
+  }, [form.id_nacionalidad, countries]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -239,20 +247,25 @@ export function RegistUser({ setNav }) {
           </select>
         </div>
 
-        <div className="flex flex-col space-y-1 w-full">
-          <label className="text-black">
-            <span className="text-red-500">*</span> Fecha de Nacimiento
-          </label>
-          <input
-            type="date"
-            name="fecha_nacimiento"
-            value={form.fecha_nacimiento}
-            onChange={handleChange}
-            className="w-full px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 focus:outline-primary"
-          />
-        </div>
+        
         {!isColombian && (
           <>
+
+            <div className="flex flex-col space-y-1 w-full">
+              <label className="text-black">
+                <span className="text-red-500">*</span> Fecha de Nacimiento
+              </label>
+              <input
+                type="date"
+                name="fecha_nacimiento"
+                value={form.fecha_nacimiento}
+                onChange={handleChange}
+                disabled={isColombian}
+                required={!isColombian}
+                className="w-full px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 focus:outline-primary"
+              />
+            </div>
+
             <div className="flex flex-col space-y-1 w-full">
               <label className="text-black">
                 <span className="text-red-500">*</span> País Procedencia
@@ -372,12 +385,6 @@ export function RegistUser({ setNav }) {
         )}
 
         <div className="flex flex-row space-x-4 justify-center">
-          <Button
-            text="Atras"
-            style="exit"
-            iconName="Back"
-            onClick={() => setNav(0)}
-          />
           <Button
             text="Continuar"
             style="primary"
