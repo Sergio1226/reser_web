@@ -16,7 +16,13 @@ export default function Login() {
         <Button
           text="Atrás"
           style="exit"
-          onClick={() => navigate(-1)}
+          onClick={() => {
+            if (nav === 0) {
+              navigate(-1);
+            } else {
+              setNav(0);
+            }
+          }}
           iconName="Back"
         />
       </Header>

@@ -5,7 +5,6 @@ import { TextField } from "../../components/TextField.jsx";
 import { supabase } from "../../utils/supabase.js";
 import { UserAuth } from "../../utils/AuthContext.jsx";
 import { usePopup } from "../../utils/PopupContext.jsx";
-import { Card } from "../../components/Card.jsx"; // Asegúrate de importar tu Card
 
 export function RegistUser({ setNav }) {
   const { openPopup } = usePopup();
@@ -78,8 +77,9 @@ export function RegistUser({ setNav }) {
     if (colombia) {
       setForm((prev) => ({
         ...prev,
-        fecha_nacimiento: "",
-        id_pais_origen: "",
+        fecha_nacimiento: null,
+        id_pais_origen: null,
+        id_pais_destino: null
       }));
     }
   }, [form.id_nacionalidad, countries]);
@@ -88,30 +88,64 @@ export function RegistUser({ setNav }) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (password !== passwordConfirm) {
-      openPopup("Las contraseñas no coinciden", "error");
-      return;
-    }
+  const checkDuplicateDocument = async (tipo_documento, documento) => {
+    const { data, error } = await supabase
+    .from("clientes")
+    .select("documento")
+    .eq("tipo_documento", tipo_documento)
+    .eq("documento", documento);
 
-    if (password.length < 6) {
-      openPopup("La contraseñas debe tener al menos 6 caracteres", "warning");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      await signUpNewUser({ email, password, user: form });
-      openPopup("Registro exitoso", "success");
-      setNav(-1);
-    } catch (err) {
-      console.log(err);
-      openPopup("Error en el registro", "error");
-    } finally {
-      setLoading(false);
-    }
+    if (error) throw error;
+    return data && data.length > 0;
   };
+   const handleSubmit = async (e) => { 
+    e.preventDefault(); 
+    if (password !== passwordConfirm) { 
+      openPopup("Las contraseñas no coinciden", "error"); 
+      return; 
+    } 
+    if (password.length < 6) { 
+      openPopup("La contraseñas debe tener al menos 6 caracteres", "warning"); 
+      return; 
+    } 
+    setLoading(true); 
+    try { 
+      const exists = await checkDuplicateDocument(form.tipo_documento, form.documento); 
+      if (exists) { openPopup("Ya existe un usuario con ese tipo de documento y número ⚠️", "warning"); 
+        setLoading(false); 
+        return; 
+      } 
+      const { data: authData, error: authError } = await signUpNewUser(
+        { email, password, user: normalizeUser(form), }
+      ); 
+      if (authError) throw authError; 
+      const { data: clienteData, error: clienteError } = await supabase 
+      .from("clientes") 
+      .insert([normalizeUser(form)], 
+      { returning: "minimal" }); 
+      
+      if (clienteError) throw clienteError; 
+      openPopup("Registro exitoso ✅", "success"); 
+      setNav(-1); } 
+      catch (err) { console.log("Error en registro:", err); 
+        
+      const errorMsg = err.message || JSON.stringify(err); openPopup(`Ocurrió un error al registrar el usuario ❌\n${errorMsg}`, "error"); 
+      if ( err.message?.includes("duplicate key") || err.message?.includes("already registered") || err?.status === 400 ) { 
+        openPopup(`Un usuario ya está registrado con ese correo ⚠️\n${errorMsg}`, "warning"); } 
+      } 
+      finally { 
+        setLoading(false); 
+      } 
+    };
+
+  const normalizeUser = (user) => ({
+    ...user,
+    fecha_nacimiento: user.fecha_nacimiento || null,
+    id_pais_origen: user.id_pais_origen || null,
+    id_pais_destino: user.id_pais_destino || null,
+    id_nacionalidad: user.id_nacionalidad || null,
+    tipo_documento: user.tipo_documento || null
+  })
 
   if (loading)
     return (
@@ -379,13 +413,13 @@ export function RegistUser({ setNav }) {
           </div>
         )}
 
-        <div className="flex flex-row justify-between">
+        <div className="flex flex-row space-x-4">
           <Button
-            text="Atrás"
+            text="Atras"
             style="exit"
             iconName="Back"
             type="button"
-            onClick={() => setNav(0)}
+            onClick={() => setNav(-1)}
           />
           <Button
             text="Continuar"
