@@ -11,9 +11,10 @@ const colors = {
   info:
     "bg-gradient-to-br from-button_bookings to-button_bookings_dark text-green-800 shadow-button-bookings hover:shadow-button-bookings-hover",
 };
-export function Button({ text, onClick, style, iconName, children, className }) {
+export function Button({ text, onClick, style, iconName, children, className ,type="button"}) {
   return (
     <button
+      type={type}
       className={` px-4 py-2.5 rounded-lg font-semibold
         shadow-md hover:shadow-lg
         transition-all duration-300

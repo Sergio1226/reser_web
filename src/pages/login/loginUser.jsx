@@ -15,6 +15,8 @@ export function LoginUser({ setNav }) {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -24,6 +26,7 @@ export function LoginUser({ setNav }) {
     }
 
     try {
+      setLoading(true);
       const rol = await signIn({ email, password });
 
       if (rol === "admin") {
@@ -34,12 +37,23 @@ export function LoginUser({ setNav }) {
     } catch (err) {
       console.error("Error en login:", err);
       openPopup("Datos erróneos o usuario no existe", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
+   if (loading)
+    return (
+      <div className="flex justify-center items-center h-screen text-xl font-semibold text-gray-700 bg-white/90 h-fit p-10 rounded-2xl w-[380px] border border-primary_dark/20 shadow-xl">
+        Cargando datos...
+      </div>
+    );
+
+
   return (
     <div className="flex flex-col items-center justify-center">
-      <Card>
+      {loading && <div className="loader">Cargando...</div>}
+      <Card onSubmit={handleSubmit}>
         <h2 className="mb-6">Iniciar Sesión</h2>
         <p className=" mb-6">Accede a tu cuenta para continuar</p>
         <div className="flex flex-col space-y-2">
@@ -81,7 +95,6 @@ export function LoginUser({ setNav }) {
             style="secondary"
             type="submit"
             iconName="Next"
-            onClick={handleSubmit}
           />
         </div>
 
@@ -94,7 +107,6 @@ export function LoginUser({ setNav }) {
             style="primary"
             onClick={() => setNav(1)}
             iconName="Contact form"
-            type="button"
           />
         </div>
       </Card>

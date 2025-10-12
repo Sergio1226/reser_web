@@ -26,12 +26,12 @@ export function RegistUser({ setNav }) {
     segundo_nombre: "",
     primer_apellido: "",
     segundo_apellido: "",
-    tipo_documento: "",
+    tipo_documento: -1,
     documento: "",
-    fecha_nacimiento: "",
-    id_pais_origen: "",
-    id_pais_destino: "",
-    id_nacionalidad: "",
+    fecha_nacimiento: null,
+    id_pais_origen: -1,
+    id_pais_destino: -1,
+    id_nacionalidad: -1,
   });
 
   const [isColombian, setIsColombian] = useState(false);
@@ -92,8 +92,6 @@ export function RegistUser({ setNav }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(e);
-    
     if (password !== passwordConfirm) {
       openPopup("Las contraseñas no coinciden", "error");
       return;
@@ -109,10 +107,10 @@ export function RegistUser({ setNav }) {
         password,
         user: form,
       });
-      if (error){
+      if (error) {
         openPopup("Error en registro", "error");
-      } else{
-        openPopup("Registro exitoso ✅", "success");
+      } else {
+        openPopup("Registro exitoso", "success");
       }
       setNav(0);
     } catch (err) {
@@ -122,16 +120,17 @@ export function RegistUser({ setNav }) {
     }
   };
 
-  if (loading)
+   if (loading)
     return (
-      <div className="flex justify-center items-center h-screen text-xl font-semibold text-gray-700">
+      <div className="flex justify-center items-center h-screen text-xl font-semibold text-gray-700 bg-white/90 h-fit p-10 rounded-2xl w-[380px] border border-primary_dark/20 shadow-xl">
         Cargando datos...
       </div>
     );
 
+
   return (
     <div className="flex justify-center items-center min-h-screen">
-      <Card >
+      <Card onSubmit={handleSubmit}>
         <h2>Registrarse</h2>
 
         <label className="block text-gray-700 font-medium mb-2">
@@ -247,10 +246,8 @@ export function RegistUser({ setNav }) {
           </select>
         </div>
 
-        
         {!isColombian && (
           <>
-
             <div className="flex flex-col space-y-1 w-full">
               <label className="text-black">
                 <span className="text-red-500">*</span> Fecha de Nacimiento
@@ -386,10 +383,16 @@ export function RegistUser({ setNav }) {
 
         <div className="flex flex-row space-x-4 justify-center">
           <Button
+            text="Atras"
+            style="exit"
+            iconName="Back"
+            onClick={() => setNav(0)}
+          />
+          <Button
             text="Continuar"
             style="primary"
             iconName="Next"
-            onClick={handleSubmit}
+            type="submit"
           />
         </div>
       </Card>
