@@ -28,20 +28,19 @@ export default function RoomCard({
         <h2 className="text-xl font-semibold">{name}</h2>
 
         <p className="text-gray-600 text-sm mb-2">
-  Capacidad: <span className="font-medium">{capacity} personas</span>
-</p>
+          Capacidad: <span className="font-medium">{capacity} personas</span>
+        </p>
 
-{/* 🛏️ Mostrar las camas */}
-{bedType && bedType.length > 0 && (
-  <p className="text-gray-600 text-sm mb-2">
-    🛏️ {bedType.map((b, i) => (
-      <span key={i} className="font-medium">
-        {b.cantidad}x {b.tipo}
-        {i < bedType.length - 1 ? ", " : ""}
-      </span>
-    ))}
-  </p>
-)}
+        {bedType && bedType.length > 0 && (
+          <p className="text-gray-600 text-sm mb-2">
+            🛏️ {bedType.map((b, i) => (
+              <span key={i} className="font-medium">
+                {b.cantidad}x {b.tipo}
+                {i < bedType.length - 1 ? ", " : ""}
+              </span>
+            ))}
+          </p>
+        )}
 
         <div className="flex flex-wrap gap-4 my-2">
           {services.map((s, i) => {
