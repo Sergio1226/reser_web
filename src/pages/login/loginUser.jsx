@@ -39,7 +39,7 @@ export function LoginUser({ setNav }) {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <Card onSubmit={handleSubmit}>
+      <Card>
         <h2 className="mb-6">Iniciar Sesión</h2>
         <p className=" mb-6">Accede a tu cuenta para continuar</p>
         <div className="flex flex-col space-y-2">

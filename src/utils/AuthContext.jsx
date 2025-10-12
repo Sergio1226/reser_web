@@ -28,58 +28,39 @@ export const AuthContextProvider = ({ children }) => {
     };
 
     initializeAuth();
-
-    // const { data: authListener } = supabase.auth.onAuthStateChange(
-    //   async (event, currentSession) => {
-    //     console.log("Auth state changed:", event);
-
-    //     if (currentSession) {
-    //       try {
-    //         const { data: userRole, error: errorRol } = await supabase.rpc(
-    //           "get_role",
-    //           {
-    //             uid: currentSession.user.id,
-    //           }
-    //         );
-
-    //         if (errorRol) throw errorRol;
-
-    //         setSession(currentSession);
-    //         setRole(userRole);
-    //       } catch (error) {
-    //         console.error("Error al obtener rol:", error);
-    //       }
-    //     } else {
-    //       setSession(null);
-    //       setRole(null);
-    //     }
-
-    //     setLoading(false);
-    //   }
-    // );
-
-    // return () => {
-    //   authListener?.subscription?.unsubscribe();
-    // };
   }, []);
 
+  
+  useEffect(() => {
+    if(session===undefined||session===""){
+      setRole("");
+      setSession(undefined);
+      return;
+    }
+  }, [session,role]);
+
+
+
   const signUpNewUser = async ({ user, email, password }) => {
+    const { data: documentExists } = await supabase.rpc("document_exist", { p_documento:user.documento ,p_tipo:user.tipo_documento });
+    if (documentExists) {
+      throw new Error("El documento ya está en uso");
+    }
     const { data, error } = await supabase.auth.signUp({
       email: email,
       password: password,
     });
-    if (error) throw error;
+    if (error) throw  new Error("Error al crear el usuario");
     user.user_id = data.user.id;
     await addUser({ user });
     return data;
   };
-
   const addUser = async ({ user }) => {
     const { data, error } = await supabase
       .from("clientes")
       .insert(user)
       .select();
-    if (error) throw error;
+    if (error) throw new Error("Error al agregar el usuario");
     await supabase.from("roles_users").insert({id_rol: 1, user_id: user.user_id});
     return data;
   };

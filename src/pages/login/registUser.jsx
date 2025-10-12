@@ -5,6 +5,9 @@ import { TextField } from "../../components/TextField.jsx";
 import { supabase } from "../../utils/supabase.js";
 import { UserAuth } from "../../utils/AuthContext.jsx";
 import { usePopup } from "../../utils/PopupContext.jsx";
+import { Card } from "../../components/Card.jsx";
+
+const countryId=40;
 
 export function RegistUser({ setNav }) {
   const { openPopup } = usePopup();
@@ -67,22 +70,16 @@ export function RegistUser({ setNav }) {
   }, []);
 
   useEffect(() => {
-    const colombia = countries.find(
-      (country) =>
-        country.nombre.toLowerCase().includes("colombia") &&
-        parseInt(form.id_nacionalidad) === country.id
-    );
-    setIsColombian(!!colombia);
-
-    if (colombia) {
+    setIsColombian(parseInt(form.id_nacionalidad) === countryId);
+    
+    if (isColombian) {
       setForm((prev) => ({
         ...prev,
-        fecha_nacimiento: null,
         id_pais_origen: null,
-        id_pais_destino: null
+        id_pais_destino: null,
       }));
     }
-  }, [form.id_nacionalidad, countries]);
+  }, [form.id_nacionalidad, countries, isColombian]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -90,62 +87,74 @@ export function RegistUser({ setNav }) {
 
   const checkDuplicateDocument = async (tipo_documento, documento) => {
     const { data, error } = await supabase
-    .from("clientes")
-    .select("documento")
-    .eq("tipo_documento", tipo_documento)
-    .eq("documento", documento);
+      .from("clientes")
+      .select("documento")
+      .eq("tipo_documento", tipo_documento)
+      .eq("documento", documento);
 
     if (error) throw error;
     return data && data.length > 0;
   };
-   const handleSubmit = async (e) => { 
-    e.preventDefault(); 
-    if (password !== passwordConfirm) { 
-      openPopup("Las contraseñas no coinciden", "error"); 
-      return; 
-    } 
-    if (password.length < 6) { 
-      openPopup("La contraseñas debe tener al menos 6 caracteres", "warning"); 
-      return; 
-    } 
-    setLoading(true); 
-    try { 
-      const exists = await checkDuplicateDocument(form.tipo_documento, form.documento); 
-      if (exists) { openPopup("Ya existe un usuario con ese tipo de documento y número ⚠️", "warning"); 
-        setLoading(false); 
-        return; 
-      } 
-      const { data: authData, error: authError } = await signUpNewUser(
-        { email, password, user: normalizeUser(form), }
-      ); 
-      if (authError) throw authError; 
-      const { data: clienteData, error: clienteError } = await supabase 
-      .from("clientes") 
-      .insert([normalizeUser(form)], 
-      { returning: "minimal" }); 
-      
-      if (clienteError) throw clienteError; 
-      openPopup("Registro exitoso ✅", "success"); 
-      setNav(-1); } 
-      catch (err) { console.log("Error en registro:", err); 
-        
-      const errorMsg = err.message || JSON.stringify(err); openPopup(`Ocurrió un error al registrar el usuario ❌\n${errorMsg}`, "error"); 
-      if ( err.message?.includes("duplicate key") || err.message?.includes("already registered") || err?.status === 400 ) { 
-        openPopup(`Un usuario ya está registrado con ese correo ⚠️\n${errorMsg}`, "warning"); } 
-      } 
-      finally { 
-        setLoading(false); 
-      } 
-    };
 
-  const normalizeUser = (user) => ({
-    ...user,
-    fecha_nacimiento: user.fecha_nacimiento || null,
-    id_pais_origen: user.id_pais_origen || null,
-    id_pais_destino: user.id_pais_destino || null,
-    id_nacionalidad: user.id_nacionalidad || null,
-    tipo_documento: user.tipo_documento || null
-  })
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log(e);
+    
+    if (password !== passwordConfirm) {
+      openPopup("Las contraseñas no coinciden", "error");
+      return;
+    }
+    if (password.length < 6) {
+      openPopup("La contraseñas debe tener al menos 6 caracteres", "warning");
+      return;
+    }
+    setLoading(true);
+    try {
+      const exists = await checkDuplicateDocument(
+        form.tipo_documento,
+        form.documento
+      );
+      if (exists) {
+        openPopup(
+          "Ya existe un usuario con ese tipo de documento y número ⚠️",
+          "warning"
+        );
+        setLoading(false);
+        return;
+      }
+      const { error } = await signUpNewUser({
+        email,
+        password,
+        user: form,
+      });
+      if (error){
+        openPopup("Error en registro", "error");
+      } else{
+        openPopup("Registro exitoso ✅", "success");
+      }
+      setNav(0);
+    } catch (err) {
+      console.log("Error en registro:", err);
+
+      const errorMsg = err.message || JSON.stringify(err);
+      openPopup(
+        `Ocurrió un error al registrar el usuario ❌\n${errorMsg}`,
+        "error"
+      );
+      if (
+        err.message?.includes("duplicate key") ||
+        err.message?.includes("already registered") ||
+        err?.status === 400
+      ) {
+        openPopup(
+          `Un usuario ya está registrado con ese correo ⚠️\n${errorMsg}`,
+          "warning"
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading)
     return (
@@ -156,7 +165,7 @@ export function RegistUser({ setNav }) {
 
   return (
     <div className="flex justify-center items-center min-h-screen">
-      <Card onSubmit={handleSubmit}>
+      <Card >
         <h2>Registrarse</h2>
 
         <label className="block text-gray-700 font-medium mb-2">
@@ -243,7 +252,7 @@ export function RegistUser({ setNav }) {
           </label>
           <TextField
             placeholder="Numero de Documento"
-            type="text"
+            type="number"
             required
             name="documento"
             value={form.documento}
@@ -274,76 +283,67 @@ export function RegistUser({ setNav }) {
 
         <div className="flex flex-col space-y-1 w-full">
           <label className="text-black">
-            <span
-              className={`${!isColombian ? "text-red-500" : "text-gray-400"}`}
-            >
-              *
-            </span>{" "}
-            Fecha de Nacimiento
+            <span className="text-red-500">*</span> Fecha de Nacimiento
           </label>
           <input
             type="date"
             name="fecha_nacimiento"
             value={form.fecha_nacimiento}
             onChange={handleChange}
-            disabled={isColombian}
-            required={!isColombian}
             className="w-full px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 focus:outline-primary"
           />
         </div>
-
-        <div className="flex flex-col space-y-1 w-full">
-          <label className="text-black">
-            <span
-              className={`${!isColombian ? "text-red-500" : "text-gray-400"}`}
-            >
-              *
-            </span>{" "}
-            País Procedencia
-          </label>
-          <select
-            name="id_pais_origen"
-            value={form.id_pais_origen}
-            onChange={handleChange}
-            disabled={isColombian}
-            required={!isColombian}
-            className="w-full px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 focus:outline-primary"
-          >
-            <option value="">País Procedencia</option>
-            {countries.map((country) => (
-              <option key={country.id} value={country.id}>
-                {country.nombre}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="flex flex-col space-y-1 w-full">
-          <label className="text-black">
-            <span
-              className={`${!isColombian ? "text-red-500" : "text-gray-400"}`}
-            >
-              *
-            </span>{" "}
-            País Destino
-          </label>
-          <select
-            name="id_pais_destino"
-            value={form.id_pais_destino}
-            onChange={handleChange}
-            disabled={isColombian}
-            required={!isColombian}
-            className="w-full px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 focus:outline-primary"
-          >
-            <option value="">País Destino</option>
-            {countries.map((country) => (
-              <option key={country.id} value={country.id}>
-                {country.nombre}
-              </option>
-            ))}
-          </select>
-        </div>
-
+        {!isColombian && (
+          <>
+            <div className="flex flex-col space-y-1 w-full">
+              <label className="text-black">
+                <span className="text-red-500">*</span> País Procedencia
+              </label>
+              <select
+                name="id_pais_origen"
+                value={form.id_pais_origen}
+                onChange={handleChange}
+                disabled={isColombian}
+                required={!isColombian}
+                className="w-full px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 focus:outline-primary"
+              >
+                <option value="">País Procedencia</option>
+                {countries.map((country) => (
+                  <option key={country.id} value={country.id}>
+                    {country.nombre}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-col space-y-1 w-full">
+              <label className="text-black">
+                <span
+                  className={`${
+                    !isColombian ? "text-red-500" : "text-gray-400"
+                  }`}
+                >
+                  *
+                </span>{" "}
+                País Destino
+              </label>
+              <select
+                name="id_pais_destino"
+                value={form.id_pais_destino}
+                onChange={handleChange}
+                disabled={isColombian}
+                required={!isColombian}
+                className="w-full px-4 py-2 bg-white rounded-lg outline outline-1 outline-neutral-200 text-zinc-700 focus:outline-primary"
+              >
+                z<option value="">País Destino</option>
+                {countries.map((country) => (
+                  <option key={country.id} value={country.id}>
+                    {country.nombre}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </>
+        )}
         <label className="block text-gray-900 font-medium mb-2">
           Credenciales de Acceso
         </label>
@@ -413,19 +413,18 @@ export function RegistUser({ setNav }) {
           </div>
         )}
 
-        <div className="flex flex-row space-x-4">
+        <div className="flex flex-row space-x-4 justify-center">
           <Button
             text="Atras"
             style="exit"
             iconName="Back"
-            type="button"
-            onClick={() => setNav(-1)}
+            onClick={() => setNav(0)}
           />
           <Button
             text="Continuar"
             style="primary"
             iconName="Next"
-            type="submit"
+            onClick={handleSubmit}
           />
         </div>
       </Card>
