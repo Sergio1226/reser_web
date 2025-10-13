@@ -18,7 +18,7 @@ export default function Login() {
           style="exit"
           onClick={() => {
             if (nav === 0) {
-              navigate(-1);
+              navigate("/");
             } else {
               setNav(0);
             }

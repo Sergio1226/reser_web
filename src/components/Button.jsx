@@ -15,12 +15,7 @@ export function Button({ text, onClick, style, iconName, children, className ,ty
   return (
     <button
       type={type}
-      className={` px-4 py-2.5 rounded-lg font-semibold
-        shadow-md hover:shadow-lg
-        transition-all duration-300
-        hover:-translate-y-0.5
-        flex items-center gap-2
-        active:scale-95 ${colors[style]} ${className}`}
+      className={` px-4 py-2.5 rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 flex items-center gap-2 active:scale-95 ${colors[style]} ${className}`}
       onClick={onClick}
     >
       {iconName && <Icon name={iconName} />}
