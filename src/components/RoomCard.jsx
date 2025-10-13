@@ -1,20 +1,21 @@
 import { useState } from "react";
-import { Bath, Wifi, Tv } from "lucide-react";
+import { Bath, Tv, Mountain, ShowerHead} from "lucide-react";
 import { Plus, Minus } from "lucide-react";
 
-const icons = {
-  bath: Bath,
-  wifi: Wifi,
-  tv: Tv,
+const iconMap = {
+  "Baño privado": Bath,
+  "Baño compartido": ShowerHead,
+  "TV": Tv,
+  "Agua caliente": ShowerHead,
+  "Vista a la montaña": Mountain,
 };
 
 export default function RoomCard({
-  name,
+  id,
   price,
   image,
   services,
   description,
-  details,
   capacity,
   bedType,
 }) {
@@ -23,9 +24,10 @@ export default function RoomCard({
 
   return (
     <div className="border rounded-xl shadow-md overflow-hidden mb-6 m-2 bg-white">
-      <img src={image} alt={name} className="w-full h-48 object-cover" />
+      <img src={image} alt={`Habitación ${id}`} className="w-full h-48 object-cover" />
+      
       <div className="p-4">
-        <h2 className="text-xl font-semibold">{name}</h2>
+        <h2 className="text-xl font-semibold">Habitación {id}</h2>
 
         <p className="text-gray-600 text-sm mb-2">
           Capacidad: <span className="font-medium">{capacity} personas</span>
@@ -33,7 +35,8 @@ export default function RoomCard({
 
         {bedType && bedType.length > 0 && (
           <p className="text-gray-600 text-sm mb-2">
-            🛏️ {bedType.map((b, i) => (
+            🛏️{" "}
+            {bedType.map((b, i) => (
               <span key={i} className="font-medium">
                 {b.cantidad}x {b.tipo}
                 {i < bedType.length - 1 ? ", " : ""}
@@ -44,13 +47,10 @@ export default function RoomCard({
 
         <div className="flex flex-wrap gap-4 my-2">
           {services.map((s, i) => {
-            const Icon = icons[s.icon];
+            const Icon = iconMap[s.label];
             return (
-              <div
-                key={i}
-                className="flex items-center gap-2 text-sm text-gray-700"
-              >
-                {Icon && <Icon size={18} />}
+              <div key={i} className="flex items-center gap-2 text-sm text-gray-700">
+                {Icon ? <Icon size={18} /> : "•"} {}
                 <span>{s.label}</span>
               </div>
             );
@@ -75,12 +75,9 @@ export default function RoomCard({
 
       {showDetails && (
         <div className="px-4 pb-4 text-sm text-gray-600">
-          <p className="mb-2">{description}:</p>
-          <ul className="list-disc list-inside space-y-1">
-            {details.map((d, i) => (
-              <li key={i}>{d}</li>
-            ))}
-          </ul>
+          <p className="whitespace-pre-line">
+            {description || "Sin descripción disponible."}
+          </p>
         </div>
       )}
 

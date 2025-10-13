@@ -16,49 +16,6 @@ import { Table } from "../components/Table.jsx";
 import { supabase } from "../utils/supabase";
 import { usePopup } from "../utils/PopupContext.jsX"; 
 
-const rooms = [
-
-  {
-    id: 1,
-    name: "Habitación Pericos",
-    price: 160000,
-    image: "https://picsum.photos/800/600",
-    services: [
-      { icon: "bath", label: "Baño Privado" },
-      { icon: "wifi", label: "Wifi" },
-      { icon: "tv", label: "Televisión" },
-    ],
-    description:
-      "Disfruta de una estadía cómoda y tranquila con todas las comodidades que necesitas",
-    details: [
-      "Baño privado con ducha de agua caliente",
-      "WiFi gratuito de alta velocidad",
-      "Televisión por cable",
-      "Limpieza diaria bajo solicitud",
-      "Cama cómoda y ropa de cama limpia",
-      "Buena ventilación e iluminación",
-      "Artículos de aseo incluidos",
-    ],
-  },
-  {
-    id: 2,
-    name: "Habitación Duzgua",
-    price: 120000,
-    image: "https://picsum.photos/800/600",
-    services: [
-      { icon: "bath", label: "Baño compartido" },
-      { icon: "wifi", label: "Wifi" },
-      { icon: "tv", label: "Televisión" },
-    ],
-    description: "Ideal para quienes buscan comodidad a buen precio",
-    details: [
-      "Vista a la montaña",
-      "Camas dobles con sábanas limpias",
-      "Espacio ventilado",
-    ],
-  },
-];
-
 const options = [
   {
     title: "Realizar Reserva",
@@ -102,7 +59,7 @@ function BookingSearch({ setNav }) {
   const [range, setRange] = useState([
     {
       startDate: new Date(),
-      endDate: new Date(),
+      endDate: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
       key: "selection",
     },
   ]);
@@ -144,21 +101,21 @@ function BookingSearch({ setNav }) {
         .map((r) => r.id_habitacion);
 
       let roomsQuery = supabase
-      .from("habitaciones")
-      .select(`
-        id,
-        name: descripcion,
-        precio,
-        estado_habitacion,
-        habitaciones_camas (
-          cantidad,
-          camas ( id, nombre , capacidad )
-        ),
-        habitaciones_caracteristicas (
-          caracteristicas ( id, nombre)
-        )
-      `)
-      .eq("estado_habitacion", "Libre");
+        .from("habitaciones")
+        .select(`
+          id,
+          descripcion,
+          precio,
+          estado_habitacion,
+          habitaciones_camas (
+            cantidad,
+            camas ( id, nombre , capacidad )
+          ),
+          habitaciones_caracteristicas (
+            caracteristicas ( id, nombre )
+          )
+        `)
+        .eq("estado_habitacion", "Libre");
 
       if (reservedIds.length > 0) {
         roomsQuery = roomsQuery.not("id", "in", `(${reservedIds.join(",")})`);
@@ -167,27 +124,53 @@ function BookingSearch({ setNav }) {
       const { data: roomsData, error: errRooms } = await roomsQuery;
       if (errRooms) throw errRooms;
 
-      const filtered = (roomsData || []).filter((room) => {
-        const rows = room.habitaciones_camas || [];
-        const capacity = rows.reduce((acc, hc) => {
+      const allRooms = (roomsData || []).map((room) => {
+        const capacidad_total = (room.habitaciones_camas || []).reduce((acc, hc) => {
           const camaCap = hc?.camas?.capacidad || 1;
           return acc + (hc.cantidad || 0) * camaCap;
         }, 0);
-        return capacity >= people;
+        return { ...room, capacidad_total };
       });
 
-      const limited = filtered.slice(0, countRooms);
-
-      if (limited.length === 0) {
-        openPopup("⚠️ No hay habitaciones disponibles con esos criterios.", "info");
-      } else {
-        openPopup("✅ Habitaciones disponibles encontradas.", "success");
+      function getCombinationsOfSize(arr, k) {
+        const results = [];
+        function helper(start, combo) {
+          if (combo.length === k) {
+            results.push(combo);
+            return;
+          }
+          for (let i = start; i < arr.length; i++) {
+            helper(i + 1, combo.concat(arr[i]));
+          }
+        }
+        helper(0, []);
+        return results;
       }
 
-      setAvailableRooms(limited);
+      const combos = getCombinationsOfSize(allRooms, countRooms);
+
+      const validCombos = combos.filter(combo =>
+        combo.reduce((sum, room) => sum + room.capacidad_total, 0) >= people
+      );
+
+      validCombos.sort((a, b) => {
+        const capA = a.reduce((s, r) => s + r.capacidad_total, 0);
+        const capB = b.reduce((s, r) => s + r.capacidad_total, 0);
+        return (capA - people) - (capB - people);
+      });
+
+      setAvailableRooms(validCombos);
+
+      if (validCombos.length === 0) {
+        openPopup("⚠️ No hay combinaciones disponibles con esos criterios.", "info");
+      } else {
+        openPopup("✅ Se encontraron combinaciones de habitaciones disponibles.", "success");
+      }
+
     } catch (err) {
       console.error("Error buscando habitaciones:", err);
-      openPopup(`❌ Error al buscar habitaciones:\n${err.message}`, "warning");
+      openPopup(`❌ Error al buscar habitaciones:\n${err.message || err}`, "warning");
+      setAvailableRooms([]);
     } finally {
       setSearchLoading(false);
     }
@@ -203,10 +186,7 @@ function BookingSearch({ setNav }) {
             <div className="flex flex-col">
               <span className="text-sm font-medium">Check In - Check Out</span>
               <span className="text-gray-500 text-sm font-normal font-primary">
-                {`${format(range[0].startDate, "dd/MM/yy")} - ${format(
-                  range[0].endDate,
-                  "dd/MM/yy"
-                )}`}
+                {`${format(range[0].startDate, "dd/MM/yy")} - ${format(range[0].endDate, "dd/MM/yy")}`}
               </span>
             </div>
           </div>
@@ -214,26 +194,18 @@ function BookingSearch({ setNav }) {
           <div className="flex flex-row items-center space-x-4 p-4 border-l border-black/20">
             <Icon name={"Guest"} alt="Huespedes" style="size-item " />
             <div className="flex flex-col [&>*]:justify-center [&>*]:text-center space-y-2">
-              <div className="text-neutral-700 text-sm font-medium">
-                Numero de Huespedes
-              </div>
+              <div className="text-neutral-700 text-sm font-medium">Número de Huéspedes</div>
               <div className="text-zinc-500 text-base font-medium">Adultos</div>
               <Counter count={countAdults} setCount={setCountAdults} min={1} />
               <div className="text-zinc-500 text-base font-medium">Niños</div>
-              <Counter
-                count={countChildrens}
-                setCount={setCountChildrens}
-                min={0}
-              />
+              <Counter count={countChildrens} setCount={setCountChildrens} min={0} />
             </div>
           </div>
 
           <div className="flex flex-row items-center space-x-4 p-4 border-l border-black/20">
             <Icon name={"Bed"} alt="Habitaciones" style="size-item " />
             <div className="flex flex-col space-y-2">
-              <div className="text-neutral-700 text-sm font-medium">
-                Numero de Habitaciones
-              </div>
+              <div className="text-neutral-700 text-sm font-medium">Número de Habitaciones</div>
               <Counter count={countRooms} setCount={setCountRooms} min={1} />
             </div>
           </div>
@@ -255,46 +227,109 @@ function BookingSearch({ setNav }) {
               🔄 Buscando habitaciones...
             </p>
           ) : availableRooms.length > 0 ? (
-            availableRooms.map((r) => {
-              const capacity = (r.habitaciones_camas || []).reduce((acc, hc) => {
-                const cap = hc?.camas?.capacidad || 1;
-                return acc + (hc.cantidad || 0) * cap;
-              }, 0);
+            <>
+              <div className="col-span-2 text-green-700 font-semibold mb-2">
+                Opciones exactas ({countAdults + countChildrens} huéspedes)
+              </div>
 
-              const bedType =
-                (r.habitaciones_camas || []).map((hc) => ({
-                  tipo: hc?.camas?.nombre || "Cama sin nombre",
-                  cantidad: hc?.cantidad || 0,
-                })) || [];
+              {availableRooms
+                .filter(combo =>
+                  combo.reduce((sum, r) => sum + r.capacidad_total, 0) === (countAdults + countChildrens)
+                )
+                .slice(0, 10)
+                .map((combo, idx) => (
+                  <div key={idx} className="border border-green-300 rounded-lg p-3 mb-4 shadow-sm bg-green-50">
+                    <div className="text-sm text-gray-600 font-semibold mb-2">
+                      Opción {idx + 1} – Capacidad total:{" "}
+                      {combo.reduce((s, r) => s + r.capacidad_total, 0)} personas
+                    </div>
+                    {combo.map(r => {
+                      const capacity = r.capacidad_total;
+                      const bedType = (r.habitaciones_camas || []).map(hc => ({
+                        tipo: hc?.camas?.nombre || "Cama sin nombre",
+                        cantidad: hc?.cantidad || 0
+                      }));
 
-              const services =
-                r.habitaciones_caracteristicas?.map((hc) => ({
-                  icon: hc.caracteristicas?.icono || "wifi",
-                  label: hc.caracteristicas?.nombre || "Servicio",
-                })) || [];
+                      const services = (r.habitaciones_caracteristicas || []).map(hc => ({
+                        icon: hc.caracteristicas?.icono || "wifi",
+                        label: hc.caracteristicas?.nombre || "Servicio"
+                      }));
 
-              return (
-                <RoomCard
-                  key={r.id}
-                  name={r.name ?? r.descripcion ?? `Habitación ${r.id}`}
-                  price={r.precio ?? 0}
-                  image={
-                    r.imagen_url ??
-                    "https://via.placeholder.com/400x250?text=Habitación"
-                  }
-                  services={services}
-                  description={`Habitación con ${services.length} característica${
-                    services.length !== 1 ? "s" : ""
-                  } disponibles.`}
-                  details={services.map((s) => s.label)}
-                  capacity={capacity}
-                  bedType={bedType}
-                />
-              );
-            })
+                      return (
+                        <div key={r.id} className="mb-2">
+                          <RoomCard
+                            id={r.id}
+                            price={r.precio ?? 0}
+                            image="https://via.placeholder.com/400x250?text=Habitación"
+                            services={services}
+                            description={r.descripcion ?? "Sin descripción disponible"}
+                            capacity={capacity}
+                            bedType={bedType}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+
+              <div className="col-span-2 text-blue-700 font-semibold mt-6 mb-2">
+                Otras opciones cercanas (capacidad superior)
+              </div>
+
+              {availableRooms
+                .filter(combo =>
+                  combo.reduce((sum, r) => sum + r.capacidad_total, 0) > (countAdults + countChildrens)
+                )
+            
+                .filter(combo =>
+                  combo.reduce((sum, r) => sum + r.capacidad_total, 0) === (countAdults + countChildrens + 1)
+                )
+                .sort((a, b) => {
+                  const capA = a.reduce((s, r) => s + r.capacidad_total, 0);
+                  const capB = b.reduce((s, r) => s + r.capacidad_total, 0);
+                  return capA - capB;
+                })
+                .map((combo, idx) => (
+                  <div
+                    key={idx}
+                    className="border border-blue-200 rounded-lg p-3 mb-4 shadow-sm bg-blue-50"
+                  >
+                    <div className="text-sm text-gray-600 font-semibold mb-2">
+                      Opción {idx + 1} – Capacidad total:{" "}
+                      {combo.reduce((s, r) => s + r.capacidad_total, 0)} personas
+                    </div>
+                    {combo.map(r => {
+                      const capacity = r.capacidad_total;
+                      const bedType = (r.habitaciones_camas || []).map(hc => ({
+                        tipo: hc?.camas?.nombre || "Cama sin nombre",
+                        cantidad: hc?.cantidad || 0,
+                      }));
+
+                      const services = (r.habitaciones_caracteristicas || []).map(hc => ({
+                        icon: hc.caracteristicas?.icono || "wifi",
+                        label: hc.caracteristicas?.nombre || "Servicio",
+                      }));
+
+                      return (
+                        <div key={r.id} className="mb-2">
+                          <RoomCard
+                            id={r.id}
+                            price={r.precio ?? 0}
+                            image="https://via.placeholder.com/400x250?text=Habitación"
+                            services={services}
+                            description={r.descripcion ?? "Sin descripción disponible"}
+                            capacity={capacity}
+                            bedType={bedType}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+            </>
           ) : searched ? (
             <p className="text-center text-gray-600 col-span-2">
-              😕 No hay habitaciones disponibles con los criterios seleccionados.
+              😕 No hay combinaciones disponibles con los criterios seleccionados.
             </p>
           ) : (
             <p className="text-center text-gray-400 col-span-2">
