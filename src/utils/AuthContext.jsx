@@ -10,21 +10,26 @@ export const AuthContextProvider = ({ children }) => {
 
   useEffect(() => {
     const initializeAuth = async () => {
-      const { data: currentSession, error } = await supabase.auth.getSession();
+      try {
+        const { data: currentSession, error } = await supabase.auth.getSession();
+        if (error) throw error;
 
-      if (error) throw error;
-
-      if (currentSession.session) {
-        const { data: userRole, error: errorRol } = await supabase.rpc(
-          "get_role",
-          {
+        if (currentSession.session) {
+          const { data: userRole, error: errorRol } = await supabase.rpc("get_role", {
             uid: currentSession.session.user.id,
-          }
-        );
-        setSession(currentSession.session);
-        setRole(userRole);
+          });
+          if (errorRol) throw errorRol;
+
+          setSession(currentSession.session);
+          setRole(userRole);
+        } else {
+          setSession(null);
+          setRole("");
+        }
+      } catch (err) {
+        console.error("Error inicializando sesión:", err);
+      } finally {
         setLoading(false);
-        if (errorRol) throw errorRol;
       }
     };
 
@@ -32,12 +37,10 @@ export const AuthContextProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (session === undefined || session === "") {
+    if (!session) {
       setRole("");
-      setSession(undefined);
-      return;
     }
-  }, [session, role]);
+  }, [session]);
 
   const signUpNewUser = async ({ user, email, password }) => {
     const { data: documentExists } = await supabase.rpc("document_exist", {

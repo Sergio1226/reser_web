@@ -73,8 +73,8 @@ function BookingSearch({ setNav }) {
       setSearchLoading(true);
       setSearched(true);
 
-      const start = range[0].startDate.toISOString().slice(0, 10);
-      const end = range[0].endDate.toISOString().slice(0, 10);
+      const start = new Date(range[0].startDate);
+      const end = new Date(range[0].endDate);
       const people = countAdults + countChildrens;
 
       const { data: reservedData, error: errReserved } = await supabase
@@ -93,12 +93,25 @@ function BookingSearch({ setNav }) {
       if (errReserved) throw errReserved;
 
       const reservedIds = (reservedData || [])
-        .filter(
-          (r) =>
-            r.reservas?.estado_reserva === "Confirmada" &&
-            !(r.reservas.fecha_salida <= start || r.reservas.fecha_entrada >= end)
-        )
-        .map((r) => r.id_habitacion);
+      .filter((r) => {
+        if (r.reservas?.estado_reserva !== "Confirmada") return false;
+
+        const entrada = new Date(r.reservas.fecha_entrada);
+        const salida = new Date(r.reservas.fecha_salida);
+
+        const inicioBusqueda = new Date(start);
+        const finBusqueda = new Date(end);
+
+        entrada.setHours(0, 0, 0, 0);
+        salida.setHours(0, 0, 0, 0);
+        inicioBusqueda.setHours(0, 0, 0, 0);
+        finBusqueda.setHours(0, 0, 0, 0);
+
+        const seCruzan = entrada < finBusqueda && salida > inicioBusqueda;
+
+        return seCruzan;
+      })
+      .map((r) => r.id_habitacion);
 
       let roomsQuery = supabase
         .from("habitaciones")
@@ -273,7 +286,7 @@ function BookingSearch({ setNav }) {
                 ))}
 
               <div className="col-span-2 text-blue-700 font-semibold mt-6 mb-2">
-                Otras opciones cercanas (capacidad superior)
+                Otras opciones (capacidad superior)
               </div>
 
               {availableRooms
@@ -340,10 +353,10 @@ function BookingSearch({ setNav }) {
       </div>
 
       <Button
-        text="Reservar"
+        text="Continuar"
         style="primary"
         onClick={() => setNav(2)}
-        iconName="Contact form"
+        iconName="Next"
         disabled={!availableRooms.length}
       />
     </>
