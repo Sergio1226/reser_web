@@ -122,7 +122,7 @@ export function RegistUser({ setNav }) {
 
    if (loading)
     return (
-      <div className="flex justify-center items-center h-screen text-xl font-semibold text-gray-700 bg-white/90 h-fit p-10 rounded-2xl w-[380px] border border-primary_dark/20 shadow-xl">
+      <div className="flex justify-center items-center h-screen text-xl font-semibold text-gray-700 bg-white/90 p-10 rounded-2xl w-[380px] border border-primary_dark/20 shadow-xl">
         Cargando datos...
       </div>
     );
@@ -382,12 +382,6 @@ export function RegistUser({ setNav }) {
         )}
 
         <div className="flex flex-row space-x-4 justify-center">
-          <Button
-            text="Atras"
-            style="exit"
-            iconName="Back"
-            onClick={() => setNav(0)}
-          />
           <Button
             text="Continuar"
             style="primary"
