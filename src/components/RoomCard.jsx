@@ -18,9 +18,10 @@ export default function RoomCard({
   description,
   capacity,
   bedType,
+  onClick,
+  state=false
 }) {
   const [showDetails, setShowDetails] = useState(false);
-  const [selected, setSelected] = useState(false);
 
   return (
     <div className="border rounded-xl shadow-md overflow-hidden mb-6 m-2 bg-white">
@@ -62,13 +63,13 @@ export default function RoomCard({
 
           <button
             className={`p-2 rounded ${
-              selected
+              state
                 ? "bg-red-400 text-white hover:bg-red-600"
                 : "bg-secondary hover:bg-gray-300"
             }`}
-            onClick={() => setSelected(!selected)}
+            onClick={onClick}
           >
-            {selected ? <Minus size={18} /> : <Plus size={18} />}
+            {state ? <Minus size={18} /> : <Plus size={18} />}
           </button>
         </div>
       </div>

@@ -19,14 +19,15 @@ export function Table({ headers, info, children }) {
         </div>
         <div className="divide-y divide-black/10">
           {info.map((item, index) => (
-            <div
-              className="flex items-center p-3 [&>*]:text-sm [&>*]:text-center [&>*]:flex-1 "
-              key={index}
-            >
+            <div className="flex items-center p-3 [&>*]:text-sm [&>*]:text-center [&>*]:flex-1 ">
               {item.map((sec) => (
                 <div>{sec}</div>
               ))}
-              {children && <div>{children}</div>}
+              {children && (
+                <div className="flex items-center justify-center px-2">
+                  {typeof children === "function" ? children(index) : children}
+                </div>
+              )}
             </div>
           ))}
         </div>
