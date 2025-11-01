@@ -13,7 +13,7 @@ export default function Home() {
   const handleLogin = () => {
     if (!session)  navigate("/login");
     if (role === "") navigate("/login");
-    else navigate(role === "admin" ? "/admin" : "/bookings");
+    else navigate(role === "admin" ? "/dashboard" : "/bookings");
   };
 
   return (

@@ -43,6 +43,7 @@ export const AuthContextProvider = ({ children }) => {
   }, [session]);
 
   const signUpNewUser = async ({ user, email, password }) => {
+    user.email=email;
     const { data: documentExists } = await supabase.rpc("document_exist", {
       p_documento: user.documento,
       p_tipo: user.tipo_documento,

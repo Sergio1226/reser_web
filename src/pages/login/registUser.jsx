@@ -5,7 +5,7 @@ import { TextField } from "../../components/TextField.jsx";
 import { supabase } from "../../utils/supabase.js";
 import { UserAuth } from "../../utils/AuthContext.jsx";
 import { usePopup } from "../../utils/PopupContext.jsX";
-import { Card } from "../../components/Card.jsx";
+import { CardForm } from "../../components/CardForm.jsx";
 
 export function RegistUser({ setNav }) {
   const { openPopup } = usePopup();
@@ -130,7 +130,7 @@ export function RegistUser({ setNav }) {
 
   return (
     <div className="flex justify-center items-center min-h-screen">
-      <Card onSubmit={handleSubmit}>
+      <CardForm onSubmit={handleSubmit}>
         <h2>Registrarse</h2>
 
         <label className="block text-gray-700 font-medium mb-2">
@@ -389,7 +389,7 @@ export function RegistUser({ setNav }) {
             type="submit"
           />
         </div>
-      </Card>
+      </CardForm>
     </div>
   );
 }

@@ -22,7 +22,7 @@ export default function Bookings() {
   const [showReservationSummary, setShowReservationSummary] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col font-primary bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen flex flex-col font-primary bg-gradient-to-br from-gradient_1 to-secondary">
       <Header>
         <ProfileButton toPag={"/login"} />
       </Header>

@@ -28,7 +28,7 @@ function Section({ iconName, text }) {
 export function SmallFooter() {
   return (
     <footer className="text-center py-4 text-sm text-gray-600 bg-gradient-to-t from-primary_dark/20 to-transparent">
-      © 2025 SiRest - Todos los derechos reservados
+      © 2025 Reser - Todos los derechos reservados
     </footer>
   );
 }

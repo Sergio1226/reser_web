@@ -176,7 +176,7 @@ export default function BookingList() {
   }
 
   return (
-    <div className="">
+    <div >
       <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-6 shadow-lg mb-6">
         <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
           <span className="text-3xl">📋</span>

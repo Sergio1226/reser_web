@@ -24,7 +24,6 @@ export function Calendar({ range, setRange }) {
             }}
             moveRangeOnFirstSelection={false}
             ranges={range}
-            minDate={new Date()}
           />
         </div>
       )}

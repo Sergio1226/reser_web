@@ -23,7 +23,7 @@ export function Header({ children }) {
           className="absolute left-1/2 transform -translate-x-1/2 text-center cursor-pointer group z-10"
           onClick={() => navigate("/")}
         >
-          <div className="transition-transform duration-300 group-hover:scale-105">
+          <div className="transition-transform duration-300 ">
             <p className="text-white/90 text-sm font-semibold tracking-widest uppercase mb-1 drop-shadow-sm">
               Hotel
             </p>

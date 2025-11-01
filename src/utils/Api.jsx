@@ -1,5 +1,5 @@
 import { supabase } from "./supabase.js";
-
+import { formatBookings } from "./Format.js";
 /**
  * Obtiene las habitaciones disponibles en un rango de fechas y para una cantidad de personas
  * @param {string} start - Fecha de entrada (YYYY-MM-DD)
@@ -308,41 +308,104 @@ export async function getBookingById(reservaId) {
     throw error;
   }
 }
-
 /**
- * Formatea las reservas para mostrar en la tabla
- * @param {Array} bookings - Array de reservas con precio_total
- * @returns {Array} Array formateado [Cliente, Check-in, Check-out, Habitaciones, Fecha reserva, Estado, Precio, ID]
+ * 
+ * @returns {Promise<Array>} Array de reservas
  */
-function formatBookings(bookings) {
-  const formatted = [];
-  const ids=[];
-  for (const reserva of bookings) {
-    const nombreCompleto = [
-      reserva.clientes?.primer_nombre || "",
-      reserva.clientes?.segundo_nombre || "",
-      reserva.clientes?.primer_apellido || "",
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .trim();
 
-    const habitacionesIds = (reserva.reservas_habitaciones || [])
-      .map((rh) => rh.id_habitacion)
-      .join(", ");
-
-    const precioTotal = reserva.precio_total || 0;
-
-    formatted.push([
-      nombreCompleto,
-      reserva.fecha_entrada,
-      reserva.fecha_salida,
-      habitacionesIds,
-      reserva.fecha_reservacion,
-      reserva.estado_reserva,
-      `$${precioTotal}`,
-    ]);
-    ids.push(reserva.id);
+export async function getReservations(){
+  try{
+    const {data, error} = await supabase.from("reservas").select("*");
+    if(error) throw new Error("Error al obtener las reservas");
+    return data;
+  }catch(error){
+    console.error("Error en getReservations:", error);
+    throw error;
   }
-  return { formatted, ids };
 }
+
+export async function getClients(){
+  try{
+    const {data, error} = await supabase.rpc("get_clients");
+    if(error) throw new Error("Error al obtener los clientes"+error.message);
+    return data.map((obj) => [
+    obj.nombre,
+    obj.tipo_documento,
+    obj.documento,
+    obj.pais_de_nacimiento,
+    obj.correo,
+  ])
+  }catch(error){
+    console.error("Error en getClients:", error);
+    throw error;
+  }
+}
+/**
+ * Obtiene a un cliente por su documento
+ * @param {number} tipo_documento id del tipo de documento 
+ * @param {number} documento documento del cliente
+ * @returns {Promise<Object>} Datos del cliente
+ */
+export async function getClient(tipo_documento,documento){
+  try{
+    const {data, error} = await supabase.rpc("get_client",{p_tipo:tipo_documento,p_doc:documento});
+    if(error||!data||data.length===0) throw new Error("Error al obtener el cliente");
+    return data[0];
+  }catch(error){
+    console.error("Error en getClients:", error);
+    throw error;
+  }
+}
+/**
+ * Añadir cliente sin cuenta
+ * @param {number} tipo_documento id del tipo de documento 
+ * @param {number} documento documento del cliente
+ * @returns {Promise<Object>} Datos del cliente
+ */
+export async function addClient(client){
+  try{
+    const id = crypto.randomUUID();
+    client.es_anonimo=true;
+    const { error} = await signUpNewUser({user:client,email:client.email,password:id});
+    return {error};
+  }catch(error){
+    console.error("Error en addClient:", error);
+    throw error;
+  }
+}
+
+const signUpNewUser = async ({ user, email, password }) => {
+    user.email=email;
+    const { data: documentExists } = await supabase.rpc("document_exist", {
+      p_documento: user.documento,
+      p_tipo: user.tipo_documento,
+    });
+    if (documentExists) {
+      throw new Error("El documento ya está en uso");
+    }
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+    });
+
+    if (error) {
+      console.log(error.message);
+      if (error.message === "User already registered")
+        throw new Error("Correo ya registrado");
+      throw new Error("Error al crear el usuario");
+    }
+    user.user_id = data.user.id;
+    await addUser({ user });
+    return data;
+  };
+  const addUser = async ({ user }) => {
+    const { data, error } = await supabase
+      .from("clientes")
+      .insert(user)
+      .select();
+    if (error) throw new Error("Error al agregar el usuario");
+    await supabase
+      .from("roles_users")
+      .insert({ id_rol: 1, user_id: user.user_id });
+    return data;
+  };

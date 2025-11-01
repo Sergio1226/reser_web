@@ -5,7 +5,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { TextField } from "../../components/TextField.jsx";
 import { UserAuth } from "../../utils/AuthContext.jsx";
 import { usePopup } from "../../utils/PopupContext.jsX";
-import { Card } from "../../components/Card.jsx";
+import { CardForm } from "../../components/CardForm.jsx";
 
 export function LoginUser({ setNav }) {
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ export function LoginUser({ setNav }) {
       const rol = await signIn({ email, password });
 
       if (rol === "admin") {
-        navigate("/admin");
+        navigate("/dashboard");
       } else {
         navigate("/bookings");
       }
@@ -52,7 +52,7 @@ export function LoginUser({ setNav }) {
   return (
     <div className="flex flex-col items-center justify-center">
       {loading && <div className="loader">Cargando...</div>}
-      <Card onSubmit={handleSubmit}>
+      <CardForm onSubmit={handleSubmit}>
         <h2 className="mb-6">Iniciar Sesión</h2>
         <p className=" mb-6">Accede a tu cuenta para continuar</p>
         <div className="flex flex-col space-y-2">
@@ -108,7 +108,7 @@ export function LoginUser({ setNav }) {
             iconName="Contact form"
           />
         </div>
-      </Card>
+      </CardForm>
     </div>
   );
 }

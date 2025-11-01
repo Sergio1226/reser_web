@@ -1,6 +1,6 @@
 export function Table({ headers, info, children }) {
   return (
-    <div className="w-full bg-white rounded-lg border border-black/20 overflow-x-auto">
+    <div className="w-full bg-white rounded-lg border border-black/20 overflow-x-auto shadow-md">
       <div>
         <div className="flex bg-gray-100 p-3 border-b border-black/10 items-center">
           {headers.map((item, index) => (

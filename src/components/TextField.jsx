@@ -6,7 +6,8 @@ export function TextField({
   children,
   name,
   onChange,
-  mode = "mixed"
+  mode = "mixed",
+  className
 }) {
   const handleKeyDown = (e) => {
     const key = e.key;
@@ -34,10 +35,10 @@ export function TextField({
   };
 
   return (
-    <div className="relative w-full">
+    <div className={`relative w-full ${className}`}>
       <input
         placeholder={placeholder}
-        className="bg-white rounded-lg p-[5px] w-full border border-black/20"
+        className="bg-white rounded-lg p-[5px] w-full border border-black/20 "
         type={type}
         required={required}
         value={value}
