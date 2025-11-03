@@ -16,7 +16,6 @@ import { useState } from "react";
 import { useExtraServices } from "../utils/useExtraServices";
 import { useUserBookings } from "../utils/useUserBookings";
 import { useConfirmReservation } from "../utils/useConfirmReservation";
-import { supabase } from "../utils/supabase";
 
 const options = [
   {
@@ -373,134 +372,111 @@ function BookingSearch({ setNav }) {
 }
 
 export function BookingTable() {
-  const { bookings, loading, refetchBookings } = useUserBookings();
   const { openPopup } = usePopup();
-  const [cancelling, setCancelling] = useState(null);
+  const { bookings, loading, cancelling, cancelBooking } = useUserBookings();
+
+  const [page, setPage] = useState(1);
+  const rowsPerPage = 10;
+  const totalPages = Math.ceil(bookings.length / rowsPerPage);
+
+  const paginatedBookings = bookings.slice(
+    (page - 1) * rowsPerPage,
+    page * rowsPerPage
+  );
 
   const headers = [
-    { label: "Reservado en", key: "reservedOn" },
+    { label: "Fecha de reserva", key: "reservationDate" },
     { label: "Check-In", key: "checkIn" },
     { label: "Check-Out", key: "checkOut" },
     { label: "Habitación", key: "room" },
-    { label: "Fecha de reserva", key: "reservationDate" },
     { label: "Estado de reserva", key: "status" },
     { label: "Precio", key: "price" },
   ];
 
-  const handleCancel = async (booking) => {
-    const now = new Date();
+  if (loading)
+    return <div className="text-center py-6 font-medium text-gray-600">Cargando tus reservas...</div>;
 
-    // Parsear manualmente la fecha de check-in (YYYY-MM-DD)
-    const [year, month, day] = booking.checkIn.split("-").map(Number);
-    const checkInDate = new Date(year, month - 1, day);
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const isTodayCheckIn = checkInDate.getTime() === today.getTime();
-    const canCancel = checkInDate.getTime() > today.getTime() || (isTodayCheckIn && now.getHours() < 14);
-
-    if (!canCancel) {
-      openPopup("❌ No se puede cancelar después de las 2 PM del día de check-in.", "error");
-      return;
-    }
-
-    try {
-      setCancelling(booking.id);
-
-      const { data, error } = await supabase
-        .from("reservas")
-        .update({ estado_reserva: "Cancelada" })
-        .eq("id", Number(booking.id)); // asegurarse que sea número
-
-      console.log("data:", data);
-      console.log("error:", error);
-
-      if (error) throw error;
-
-      openPopup("✅ Reserva cancelada con éxito.", "success");
-
-      // Si refetchBookings no existe, usa otra forma de actualizar las reservas
-      if (refetchBookings) refetchBookings();
-
-    } catch (err) {
-      console.error(err);
-      openPopup("❌ Error al cancelar la reserva.", "error");
-    } finally {
-      setCancelling(null);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="text-center py-6 font-medium text-gray-600">
-        Cargando tus reservas...
-      </div>
-    );
-  }
-
-  if (bookings.length === 0) {
-    return (
-      <div className="text-center py-6 font-medium text-gray-600">
-        No tienes reservas registradas.
-      </div>
-    );
-  }
+  if (bookings.length === 0)
+    return <div className="text-center py-6 font-medium text-gray-600">No tienes reservas registradas.</div>;
 
   return (
-    <div className="w-full max-w-6xl mx-auto overflow-x-auto rounded-lg border border-black/20">
-      <table className="w-full table-auto border-collapse text-sm">
-        <thead className="bg-gray-100">
-          <tr>
-            {headers.map((header, index) => (
-              <th
-                key={index}
-                className="text-base font-semibold text-center px-6 py-4 border-b border-black/10 break-words"
-              >
-                {header.label}
-              </th>
-            ))}
-            <th className="text-base font-semibold text-center px-6 py-4 border-b border-black/10">
-              Acciones
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {bookings.map((booking, index) => (
-            <tr
-              key={index}
-              className={`border-b ${index % 2 === 0 ? "bg-white" : "bg-gray-50"}`}
-            >
-              {headers.map((header, i) => (
-                <td
-                  key={i}
-                  className="text-center px-6 py-4 border-b border-black/10 break-words"
-                  style={{ minWidth: "120px" }}
+    <div className="w-full max-w-6xl mx-auto">
+      <div className="overflow-x-auto rounded-lg border border-black/20">
+        <table className="w-full table-auto border-collapse text-sm">
+          <thead className="bg-gray-100">
+            <tr>
+              {headers.map((header) => (
+                <th
+                  key={header.key}
+                  className="text-center px-6 py-4 border-b border-black/10"
                 >
-                  {booking[header.key] ?? "—"}
-                </td>
+                  {header.label}
+                </th>
               ))}
-              <td className="text-center px-6 py-4 border-b border-black/10">
-                {booking.status === "Confirmada" ? (
-                  <Button
-                    style="bg-red-400 text-white font-semibold px-4 py-2"
-                    onClick={() => handleCancel(booking)}
-                    disabled={cancelling === booking.id}
-                  >
-                    {cancelling === booking.id ? "Cancelando..." : "CANCELAR"}
-                  </Button>
-                ) : (
-                  <span className="text-gray-500 font-semibold">—</span>
-                )}
-              </td>
+              <th className="text-center px-6 py-4 border-b border-black/10">Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {paginatedBookings.map((booking) => (
+              <tr
+                key={booking.id}
+                className={`${paginatedBookings.indexOf(booking) % 2 === 0 ? "bg-white" : "bg-gray-50"}`}
+              >
+                {headers.map((header) => (
+                  <td
+                    key={header.key}
+                    className="text-center px-6 py-4 border-b border-black/10"
+                    style={{ minWidth: "120px" }}
+                  >
+                    {booking[header.key] ?? "—"}
+                  </td>
+                ))}
+                <td className="text-center px-4 py-4 border-b border-black/10">
+                  {booking.status === "Confirmada" ? (
+                    <Button
+                      style=""
+                      className="bg-gray-200 text-gray-700 px-2 py-2 rounded"
+                      onClick={() => cancelBooking(booking, openPopup)}
+                      disabled={cancelling === booking.id}
+                    >
+                      {cancelling === booking.id ? "Cancelando..." : "CANCELAR"}
+                    </Button>
+                  ) : (
+                    <span className="text-gray-500 font-semibold">—</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="flex justify-between items-center mt-4">
+        <Button
+          style=""
+          className="bg-gray-200 text-gray-700 px-4 py-1 rounded disabled:opacity-50"
+          onClick={() => setPage((p) => Math.max(p - 1, 1))}
+          disabled={page === 1}
+        >
+          Anterior
+        </Button>
+
+        <span className="font-medium text-gray-700">
+          Página {page} de {totalPages}
+        </span>
+
+        <Button
+          style=""
+          className="bg-gray-200 text-gray-700 px-4 py-1 rounded disabled:opacity-50"
+          onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+          disabled={page === totalPages}
+        >
+          Siguiente
+        </Button>
+      </div>
     </div>
   );
 }
-
 
 function ExtraServices({ setNav, navState }) {
   const storedSubtotal = Number(localStorage.getItem("reservaSubtotal") || 0);

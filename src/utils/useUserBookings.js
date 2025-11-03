@@ -4,6 +4,7 @@ import { supabase } from "./supabase";
 export function useUserBookings() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [cancelling, setCancelling] = useState(null);
 
   const fetchBookings = useCallback(async () => {
     try {
@@ -65,11 +66,10 @@ export function useUserBookings() {
         const totalPrice = roomsPrice + servicesPrice;
 
         return {
-          reservedOn: r.fecha_reservacion,
+          reservationDate: r.fecha_reservacion,
           checkIn: r.fecha_entrada,
           checkOut: r.fecha_salida,
           room: habitacionesStr,
-          reservationDate: r.fecha_reservacion,
           status: r.estado_reserva,
           price: totalPrice ? `$${Number(totalPrice).toLocaleString()}` : "—",
           id: r.id,
@@ -85,9 +85,55 @@ export function useUserBookings() {
     }
   }, []);
 
+  const cancelBooking = useCallback(
+    async (booking, showPopup) => {
+      if (!showPopup) return;
+
+      const now = new Date();
+      const [year, month, day] = booking.checkIn.split("-").map(Number);
+      const checkInDate = new Date(year, month - 1, day);
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const isTodayCheckIn = checkInDate.getTime() === today.getTime();
+      const canCancel =
+        checkInDate.getTime() > today.getTime() ||
+        (isTodayCheckIn && now.getHours() < 14);
+
+      if (!canCancel) {
+        showPopup(
+          "❌ No se puede cancelar después de las 2 PM del día de check-in.",
+          "error"
+        );
+        return;
+      }
+
+      try {
+        setCancelling(booking.id);
+
+        const { error } = await supabase
+          .from("reservas")
+          .update({ estado_reserva: "Cancelada" })
+          .eq("id", Number(booking.id));
+
+        if (error) throw error;
+
+        showPopup("✅ Reserva cancelada con éxito.", "success");
+        fetchBookings();
+      } catch (err) {
+        console.error(err);
+        showPopup("❌ Error al cancelar la reserva.", "error");
+      } finally {
+        setCancelling(null);
+      }
+    },
+    [fetchBookings]
+  );
+
   useEffect(() => {
     fetchBookings();
   }, [fetchBookings]);
 
-  return { bookings, loading, refetchBookings: fetchBookings };
+  return { bookings, loading, cancelling, fetchBookings, cancelBooking };
 }
