@@ -15,7 +15,7 @@ export function PopupProvider({ children }) {
 
   const closePopup = () => {
     setShow(false);
-    setPopup("");
+    setTimeout(() => setPopup(""), 200);
   };
 
   return (
