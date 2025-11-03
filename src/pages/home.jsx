@@ -11,7 +11,7 @@ export default function Home() {
   const handleLogout = async () => await signOut();
 
   const handleLogin = () => {
-    if (!session)  navigate("/login");
+    if (!session) navigate("/login");
     if (role === "") navigate("/login");
     else navigate(role === "admin" ? "/dashboard" : "/bookings");
   };
@@ -28,13 +28,21 @@ export default function Home() {
               iconName="signOut"
               className={"w-full"}
             />
-          ) : (
+          ) : role === "client" ? (
             <Button
-              text="Reservar Ahora"
+              text="Reservar ahora"
               style="secondary"
               className="w-full"
               onClick={handleLogin}
               iconName="book"
+            />
+          ) : (
+            <Button
+              text="Iniciar sesion"
+              style="secondary"
+              className="w-full"
+              onClick={() => navigate("/login", { state: {nav:0} })}
+              iconName="login"
             />
           )}
 
@@ -47,13 +55,24 @@ export default function Home() {
               iconName="signOut"
             />
           ) : (
-            <Button
-              text={"Administrador"}
-              style="primary"
-              className="w-full"
-              onClick={handleLogin}
-              iconName="lock"
-            />
+            role === "admin" ? (
+              <Button
+                text={"Administrador"}
+                style="primary"
+                className="w-full"
+                onClick={handleLogin}
+                iconName="lock"
+              />
+            ):(
+              <Button
+                text={"Registrarse"}
+                style="primary"
+                className="w-full"
+                onClick={() => navigate("/login", { state: {nav:1} })}
+                iconName="user"
+              />
+
+            )
           )}
         </div>
       </Header>

@@ -382,6 +382,13 @@ export function RegistUser({ setNav }) {
         )}
 
         <div className="flex flex-row space-x-4 justify-center">
+
+          <Button
+            text="Atras"
+            style="exit"
+            iconName="back"
+            onClick={() => setNav(0)}
+          />
           <Button
             text="Continuar"
             style="primary"

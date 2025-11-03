@@ -127,11 +127,15 @@ function Clients() {
       openPopup("Documento no valido", "error");
       return;
     }
+    if( status === 0){
+      openPopup("Seleccione un tipo de documento", "warning");
+      return;
+    }
 
     try {
       setLoadingSearch(true);
       setSearchedClient(null);
-      const client = await getClient(status + 1, documento);
+      const client = await getClient(status , documento);
       setSearchedClient(client);
     } catch (error) {
       openPopup("Documento no existente", "error");
@@ -162,7 +166,8 @@ function Clients() {
 
       <div className="flex flex-col space-y-6 p-6 md:p-8 w-full">
         <div className="w-full max-w-6xl mx-auto p-6 flex flex-col items-center justify-center gap-6 rounded-xl border-2 border-gray-200 shadow-md">
-          <p className="text-2xl font-semibold text-green-700 tracking-wide bg-green-50 px-4 py-2 rounded-lg shadow-sm border border-green-200">
+
+          <p className="text-2xl font-bold text-green-900 ">
             Ingrese el documento del cliente
           </p>
 

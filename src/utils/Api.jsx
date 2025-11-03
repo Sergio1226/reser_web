@@ -1,5 +1,5 @@
 import { supabase } from "./supabase.js";
-import { formatBookings } from "./Format.js";
+import { formatBookings, formatBookingsByDates } from "./Format.js";
 /**
  * Obtiene las habitaciones disponibles en un rango de fechas y para una cantidad de personas
  * @param {string} start - Fecha de entrada (YYYY-MM-DD)
@@ -309,103 +309,156 @@ export async function getBookingById(reservaId) {
   }
 }
 /**
- * 
+ *
  * @returns {Promise<Array>} Array de reservas
  */
 
-export async function getReservations(){
-  try{
-    const {data, error} = await supabase.from("reservas").select("*");
-    if(error) throw new Error("Error al obtener las reservas");
+export async function getReservations() {
+  try {
+    const { data, error } = await supabase.from("reservas").select("*");
+    if (error) throw new Error("Error al obtener las reservas");
     return data;
-  }catch(error){
+  } catch (error) {
     console.error("Error en getReservations:", error);
     throw error;
   }
 }
 
-export async function getClients(){
-  try{
-    const {data, error} = await supabase.rpc("get_clients");
-    if(error) throw new Error("Error al obtener los clientes"+error.message);
+export async function getClients() {
+  try {
+    const { data, error } = await supabase.rpc("get_clients");
+    if (error) throw new Error("Error al obtener los clientes" + error.message);
     return data.map((obj) => [
-    obj.nombre,
-    obj.tipo_documento,
-    obj.documento,
-    obj.pais_de_nacimiento,
-    obj.correo,
-  ])
-  }catch(error){
+      obj.nombre,
+      obj.tipo_documento,
+      obj.documento,
+      obj.pais_de_nacimiento,
+      obj.correo,
+    ]);
+  } catch (error) {
     console.error("Error en getClients:", error);
     throw error;
   }
 }
 /**
  * Obtiene a un cliente por su documento
- * @param {number} tipo_documento id del tipo de documento 
+ * @param {number} tipo_documento id del tipo de documento
  * @param {number} documento documento del cliente
  * @returns {Promise<Object>} Datos del cliente
  */
-export async function getClient(tipo_documento,documento){
-  try{
-    const {data, error} = await supabase.rpc("get_client",{p_tipo:tipo_documento,p_doc:documento});
-    if(error||!data||data.length===0) throw new Error("Error al obtener el cliente");
+export async function getClient(tipo_documento, documento) {
+  try {
+    const { data, error } = await supabase.rpc("get_client", {
+      p_tipo: tipo_documento,
+      p_doc: documento,
+    });
+    if (error || !data || data.length === 0)
+      throw new Error("Error al obtener el cliente");
     return data[0];
-  }catch(error){
+  } catch (error) {
     console.error("Error en getClients:", error);
     throw error;
   }
 }
 /**
  * Añadir cliente sin cuenta
- * @param {number} tipo_documento id del tipo de documento 
+ * @param {number} tipo_documento id del tipo de documento
  * @param {number} documento documento del cliente
  * @returns {Promise<Object>} Datos del cliente
  */
-export async function addClient(client){
-  try{
+export async function addClient(client) {
+  try {
     const id = crypto.randomUUID();
-    client.es_anonimo=true;
-    const { error} = await signUpNewUser({user:client,email:client.email,password:id});
-    return {error};
-  }catch(error){
+    client.es_anonimo = true;
+    const { error } = await signUpNewUser({
+      user: client,
+      email: client.email,
+      password: id,
+    });
+    return { error };
+  } catch (error) {
     console.error("Error en addClient:", error);
     throw error;
   }
 }
 
-const signUpNewUser = async ({ user, email, password }) => {
-    user.email=email;
-    const { data: documentExists } = await supabase.rpc("document_exist", {
-      p_documento: user.documento,
-      p_tipo: user.tipo_documento,
-    });
-    if (documentExists) {
-      throw new Error("El documento ya está en uso");
-    }
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-    });
+/**
+ * Obtiene las reservas por fecha
+ * @param {date} date fecha a buscar
+ * @param {number} type tipo de fecha a buscar (reserva, check-in, check-out)
+ * @returns {Promise<Array>} Array de reservas
+ */
 
-    if (error) {
-      console.log(error.message);
-      if (error.message === "User already registered")
-        throw new Error("Correo ya registrado");
-      throw new Error("Error al crear el usuario");
-    }
-    user.user_id = data.user.id;
-    await addUser({ user });
+export async function getReservationsByDate(date, type) {
+  try {
+    const pgDate = date.toISOString().split("T")[0];
+    const { data, error } = await supabase.rpc("get_bookings", {
+      p_date: pgDate,
+      p_type: type,
+    });
+    console.log(data);
+    if (data.length === 0) throw new Error("No se encontraron reservas para la fecha y tipo seleccionados");
+    if (error) console.log(error.message);
+    return { data: formatBookingsByDates(data), ids: data.map((obj) => obj.id),error };
+  } catch (error) {
+    console.error("Error en getReservationsByDate:", error);
+    throw error;
+  }
+}
+/**
+ * Obtiene las habitaciones
+ * @returns {Promise<Array>} Array de ids de las habitaciones
+ */
+export async function getAllRoomsIds(){
+  try {
+    const { data, error } = await supabase.from('habitaciones').select('id');
+    if (error|| data.length === 0) throw new Error("Error al obtener las habitaciones");
+    return data.map((obj) => obj.id);
+  } catch (error) {
+    console.error("Error en getRooms:", error);
+    throw error;
+  }
+}
+export async function getAllBookings(){
+  try {
+    const { data, error } = await supabase.rpc('get_all_bookings');
+    if (error|| data.length === 0) throw new Error("Error al obtener las reservas");
     return data;
-  };
-  const addUser = async ({ user }) => {
-    const { data, error } = await supabase
-      .from("clientes")
-      .insert(user)
-      .select();
-    if (error) throw new Error("Error al agregar el usuario");
-    await supabase
-      .from("roles_users")
-      .insert({ id_rol: 1, user_id: user.user_id });
-    return data;
-  };
+  } catch (error) {
+    console.error("Error en getRooms:", error);
+    throw error;
+  }
+}
+
+const signUpNewUser = async ({ user, email, password }) => {
+  user.email = email;
+  const { data: documentExists } = await supabase.rpc("document_exist", {
+    p_documento: user.documento,
+    p_tipo: user.tipo_documento,
+  });
+  if (documentExists) {
+    throw new Error("El documento ya está en uso");
+  }
+  const { data, error } = await supabase.auth.signUp({
+    email: email,
+    password: password,
+  });
+
+  if (error) {
+    console.log(error.message);
+    if (error.message === "User already registered")
+      throw new Error("Correo ya registrado");
+    throw new Error("Error al crear el usuario");
+  }
+  user.user_id = data.user.id;
+  await addUser({ user });
+  return data;
+};
+const addUser = async ({ user }) => {
+  const { data, error } = await supabase.from("clientes").insert(user).select();
+  if (error) throw new Error("Error al agregar el usuario");
+  await supabase
+    .from("roles_users")
+    .insert({ id_rol: 1, user_id: user.user_id });
+  return data;
+};

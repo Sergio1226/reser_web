@@ -14,7 +14,7 @@ export function Picker({ options, text, onChange }) {
         {text}
       </option>
       {options.map((opt, index) => (
-        <option key={index} value={index}>
+        <option key={index} value={index + 1}>
           {opt}
         </option>
       ))}
