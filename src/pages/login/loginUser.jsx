@@ -4,7 +4,7 @@ import { Button } from "../../components/Button.jsx";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { TextField } from "../../components/TextField.jsx";
 import { UserAuth } from "../../utils/AuthContext.jsx";
-import { usePopup } from "../../utils/PopupContext.jsX";
+import { usePopup } from "../../utils/PopupContext.jsx/index.js";
 import { CardForm } from "../../components/CardForm.jsx";
 
 export function LoginUser({ setNav }) {
