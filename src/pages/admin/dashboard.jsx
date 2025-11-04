@@ -1,7 +1,6 @@
 import { SmallFooter } from "../../components/Footer.jsx";
 import { Header } from "../../components/Header.jsx";
 import ProfileButton from "../../components/ProfileButton.jsx";
-import { NavigationTab } from "../../components/NavigationTab.jsx";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/Button.jsx";
 import { Card } from "../../components/Card.jsx";
@@ -9,7 +8,7 @@ import { Card } from "../../components/Card.jsx";
 const options = [
   {
     title: "Administrar reservas",
-    icon: "List",
+    icon: "list",
     color: "green",
     description: "Visualiza y administra tus reservas.",
   },
@@ -33,7 +32,7 @@ export default function DashBoard() {
             onClick={() => {
               navigate("/");
             }}
-            iconName="Back"
+            iconName="back"
           />
           <ProfileButton toPag={"/login"} />
         </div>

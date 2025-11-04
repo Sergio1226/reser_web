@@ -9,11 +9,11 @@ import BookingList from "./bookingsList.jsx";
 const options = [
   {
     title: "Realizar Reserva",
-    icon: "src/assets/icons/Booking.svg",
+    icon: "booking",
   },
   {
     title: "Visualizar Reservas",
-    icon: "src/assets/icons/List.svg",
+    icon: "list",
   },
 ];
 

@@ -93,7 +93,7 @@ export function LoginUser({ setNav }) {
             text="Ingresar"
             style="secondary"
             type="submit"
-            iconName="Next"
+            iconName="next"
           />
         </div>
 
@@ -105,7 +105,7 @@ export function LoginUser({ setNav }) {
             text="Registrarse"
             style="primary"
             onClick={() => setNav(1)}
-            iconName="Contact form"
+            iconName="contactForm"
           />
         </div>
       </CardForm>

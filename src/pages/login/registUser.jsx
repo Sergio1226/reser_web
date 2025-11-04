@@ -392,7 +392,7 @@ export function RegistUser({ setNav }) {
           <Button
             text="Continuar"
             style="primary"
-            iconName="Next"
+            iconName="next"
             type="submit"
           />
         </div>

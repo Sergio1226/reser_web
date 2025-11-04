@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import Logo from "/src/assets/logo.png";
 
 export function Header({ children }) {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ export function Header({ children }) {
         >
           <div className="bg-white rounded-full p-2 shadow-lg transition-all duration-300 group-hover:shadow-xl group-hover:scale-105 group-hover:rotate-3">
             <img
-              src="/src/assets/logo.png"
+              src={Logo}
               alt="Logo"
               className="w-[100px] h-[80px] object-center object-contain drop-shadow-sm"
             />

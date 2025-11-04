@@ -32,7 +32,7 @@ export default function ProfileButton() {
         text="Perfil"
         style="info"
         onClick={() => setOpen(!open)}
-        iconName="User"
+        iconName="user"
       />
 
       {open && (

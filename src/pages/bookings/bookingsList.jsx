@@ -37,7 +37,7 @@ function CancelBookingModal({ isOpen, onClose, onConfirm, bookingInfo }) {
 
         <div className="flex items-center gap-3 mb-4">
           <div className="flex-shrink-0 w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-            <Icon name="Warning" style="size-[30px] mr-0" />
+            <Icon name="warning" style="size-[30px] mr-0" />
           </div>
           <h2 className="text-xl font-semibold text-gray-900">
             Cancelar Reserva

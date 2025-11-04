@@ -4,6 +4,8 @@ import { Footer } from "../components/Footer.jsx";
 import { Header } from "../components/Header.jsx";
 import { UserAuth } from "../utils/AuthContext.jsx";
 
+  const url = import.meta.env.VITE_URL_IMAGES;
+
 export default function Home() {
   const navigate = useNavigate();
   const { session, role, signOut } = UserAuth();
@@ -92,7 +94,7 @@ export default function Home() {
             huésped es parte de nuestra familia.
           </p>
           <img
-            src="/src/assets/entrada_hospedaje.jpg"
+            src={`${url}/home/entrada_hospedaje.jpg`}
             alt="Hotel Los Recuerdos de Florito y Leo"
             className="rounded-2xl w-[340px] h-[180px] object-cover border border-black/20 shadow-md hover:scale-105 transition-transform duration-300"
           />

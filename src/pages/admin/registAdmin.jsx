@@ -376,7 +376,7 @@ export function RegistUser() {
           <Button
             text={loading ? "Registrando..." : "Registrar Cliente"}
             style="primary"
-            iconName={loading ? undefined : "Next"}
+            iconName={loading ? undefined : "next"}
             type="submit"
             disabled={loading}
           />

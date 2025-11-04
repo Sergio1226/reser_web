@@ -18,17 +18,17 @@ export default function BookingAdmin() {
     {
       id: "agregar",
       title: "Agregar reserva",
-      icon: "/src/assets/icons/Booking.svg",
+      icon: "booking",
     },
     {
       id: "reservas",
       title: "Visualizar Reservas",
-      icon: "/src/assets/icons/List.svg",
+      icon: "list",
     },
     {
       id: "calendario",
       title: "Calendario",
-      icon: "/src/assets/icons/calendar.svg",
+      icon: "calendar",
     },
   ];
 
@@ -55,7 +55,7 @@ export default function BookingAdmin() {
             onClick={() => {
               navigate("/dashboard");
             }}
-            iconName="Back"
+            iconName="back"
           />
           <ProfileButton toPag={"/login"} />
         </div>

@@ -162,7 +162,7 @@ export default function BookingSearch({
             <Button
               text="Volver"
               style="exit"
-              iconName="Back"
+              iconName="back"
               onClick={() => setShowReservationSummary(false)}
             />
           </div>
@@ -192,7 +192,7 @@ export default function BookingSearch({
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Icon name="Guest" style="size-5 text-blue-600" />
+              <Icon name="guest" style="size-5 text-blue-600" />
               <div>
                 <p className="text-xs text-slate-500">Huespedes Maximos</p>
                 <p className="font-semibold text-slate-700">
@@ -201,7 +201,7 @@ export default function BookingSearch({
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Icon name="Moon" style="size-5 text-blue-600" />
+              <Icon name="moon" style="size-5 text-blue-600" />
               <div>
                 <p className="text-xs text-slate-500">Noches</p>
                 <p className="font-semibold text-slate-700">{nights}</p>
@@ -243,7 +243,7 @@ export default function BookingSearch({
                           </h4>
                           <div className="flex items-center gap-4 mt-1 text-sm text-slate-600">
                             <span className="flex items-center gap-1">
-                              <Icon name="Guest" style="size-4" />
+                              <Icon name="guest" style="size-4" />
                               {capacity} personas
                             </span>
                             <span>
@@ -308,7 +308,7 @@ export default function BookingSearch({
               <Button
                 text="Atras"
                 style="exit"
-                iconName="Back"
+                iconName="back"
                 onClick={() => {
                   setShowReservationSummary(false);
                 }}
@@ -316,7 +316,7 @@ export default function BookingSearch({
               <Button
                 text="Cancelar Todo"
                 style="secondary"
-                iconName="Exit"
+                iconName="exit"
                 onClick={() => {
                   setSelectedRooms([]);
                   setShowReservationSummary(false);
@@ -325,7 +325,7 @@ export default function BookingSearch({
               <Button
                 text="Confirmar Reserva"
                 style="primary"
-                iconName="Check"
+                iconName="check"
                 onClick={handleConfirmReservation}
               />
             </div>
@@ -368,7 +368,7 @@ export default function BookingSearch({
           <div className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow w-fit">
             <div className="flex items-start gap-3">
               <Icon
-                name="Guest"
+                name="guest"
                 alt="Huéspedes"
                 style="size-8 text-blue-600 flex-shrink-0"
               />
@@ -403,7 +403,7 @@ export default function BookingSearch({
           <Button
             text={searchLoading ? "Buscando..." : "Buscar Habitaciones"}
             style="primary"
-            iconName="Search"
+            iconName="search"
             onClick={handleSearch}
             disabled={searchLoading}
           />
@@ -540,7 +540,7 @@ export default function BookingSearch({
             <Button
               text="Reservar Ahora"
               style="primary"
-              iconName="Contact form"
+              iconName="contactForm"
               onClick={handleShowReservationSummary}
             />
           </div>

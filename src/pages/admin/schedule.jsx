@@ -95,7 +95,7 @@ export function Schedule() {
 
             <div className="flex mb-6 items-center justify-center space-x-4">
               <Button
-                iconName={"Back"}
+                iconName={"back"}
                 onClick={() => {
                   const newDate = new Date(date);
                   newDate.setDate(date.getDate() - 7);
@@ -112,7 +112,7 @@ export function Schedule() {
                 />
               </h2>
               <Button
-                iconName={"Next"}
+                iconName={"next"}
                 onClick={() => {
                   const newDate = new Date(date);
                   newDate.setDate(date.getDate() + 7);

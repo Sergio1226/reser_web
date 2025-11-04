@@ -27,7 +27,7 @@ export default function Login() {
               setNav(0);
             }
           }}
-          iconName="Back"
+          iconName="back"
         />
       </Header>
 

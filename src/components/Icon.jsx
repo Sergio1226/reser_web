@@ -1,5 +1,39 @@
-export function Icon({ name, style,onClick, alt }) {
-    return (
-        <img src={`/src/assets/icons/${name}.svg`} className={`${style}  size-icon`} alt={alt?alt:name} onClick={onClick} />
-    );
+import account from '/src/assets/icons/account.svg'
+import back from '/src/assets/icons/back.svg'
+import bedDouble from '/src/assets/icons/bed-double.svg'
+import bed from '/src/assets/icons/bed.svg'
+import book from '/src/assets/icons/book.svg'
+import booking from '/src/assets/icons/booking.svg'
+import calendar from '/src/assets/icons/calendar.svg'
+import check from '/src/assets/icons/check.svg'
+import contactForm from '/src/assets/icons/contact-form.svg'
+import enter from '/src/assets/icons/enter.svg'
+import exit from '/src/assets/icons/exit.svg'
+import guest from '/src/assets/icons/guest.svg'
+import image from '/src/assets/icons/image.svg'
+import list from '/src/assets/icons/list.svg'
+import lock from '/src/assets/icons/lock.svg'
+import login from '/src/assets/icons/login.svg'
+import logout from '/src/assets/icons/logout.svg'
+import mail from '/src/assets/icons/mail.svg'
+import map from '/src/assets/icons/map.svg'
+import maps from '/src/assets/icons/maps.svg'
+import moon from '/src/assets/icons/moon.svg'
+import net from '/src/assets/icons/net.svg'
+import next from '/src/assets/icons/next.svg'
+import phone from '/src/assets/icons/phone.svg'
+import plusUser from '/src/assets/icons/plus-user.svg'
+import refreshCw from '/src/assets/icons/refresh-cw.svg'
+import saveAll from '/src/assets/icons/save-all.svg'
+import search from '/src/assets/icons/search.svg'
+import settings from '/src/assets/icons/settings.svg'
+import signOut from '/src/assets/icons/signOut.svg'
+import user from '/src/assets/icons/user.svg'
+import users from '/src/assets/icons/users.svg'
+import warning from '/src/assets/icons/warning.svg'
+
+const icons = { account, back, bedDouble, bed, book, booking, calendar, check, contactForm, enter, exit, guest, image, list, lock, login, logout, mail, map, maps, moon, net, next, phone, plusUser, refreshCw, saveAll, search, settings, signOut, user, users, warning }
+
+export function Icon({ name, style, onClick, alt }) {
+  return <img src={icons[name]} className={` size-icon ${style}`} alt={alt || name} onClick={onClick} />
 }

@@ -9,7 +9,7 @@ export function Calendar({ range, setRange }) {
   return (
     <div onBlur={() => setShowCalendar(false)}>
       <Icon
-        name={"Calendar"}
+        name={"calendar"}
         alt="Calendario"
         style=" size-item cursor-pointer hover:scale-110 transition active:scale-90"
         onClick={() => setShowCalendar(!showCalendar)}
@@ -56,7 +56,7 @@ export function CalendarSingle({ date, setDate, label ,hasIcon=true}) {
         className="flex items-center gap-2 cursor-pointer "
         onClick={() => setShowCalendar(!showCalendar)}
       >
-        {hasIcon && <Icon name={"Calendar"}  />}
+        {hasIcon && <Icon name={"calendar"}  />}
         <span className={`text-gray-600 text-sm font-bold select-none ${label}`}>
           {format(date, "dd/MM/yy")}
         </span>

@@ -22,12 +22,12 @@ export default function AdminPage() {
     {
       id: "visualizar",
       title: "Visualizar clientes",
-      icon: "/src/assets/icons/users.svg",
+      icon: "users",
     },
     {
       id: "Agregar",
       title: "Agregar Cliente",
-      icon: "/src/assets/icons/plus-user.svg",
+      icon: "plusUser",
     },
   ];
 
@@ -53,7 +53,7 @@ export default function AdminPage() {
             onClick={() => {
               navigate("/dashboard");
             }}
-            iconName="Back"
+            iconName="back"
           />
           <ProfileButton toPag={"/login"} />
         </div>
@@ -190,7 +190,7 @@ function Clients() {
             <Button
               text="Buscar"
               style="secondary"
-              iconName="Search"
+              iconName="search"
               className="w-fit"
               onClick={handleSearchClient}
             />

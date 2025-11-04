@@ -26,7 +26,7 @@ export default function ModifyUser() {
           text="Atrás"
           style="exit"
           onClick={() => navigate(-1)}
-          iconName="Back"
+          iconName="back"
         />
       </Header>
 
