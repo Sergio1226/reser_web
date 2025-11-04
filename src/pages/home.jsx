@@ -78,7 +78,7 @@ export default function Home() {
             <p className="text-black/70 mb-6 max-w-md">
               Bienvenidos a <span className="font-semibold text-primary">Los Recuerdos de Florito y Leo</span>, un hotel familiar en el corazón de Monguí, Boyacá. Disfruta una experiencia llena de calidez, tradición y hospitalidad, donde cada huésped es parte de nuestra familia.
             </p>
-            <Carousel images={homeImages} height="h-96" className="mx-auto max-w-5xl" />
+            <Carousel images={homeImages} height="h-96" autoPlayInterval={5000} />
           </div>
 
           <div className="flex-1 bg-secondary rounded-2xl border border-black/10 shadow-lg flex items-center justify-center p-6">
