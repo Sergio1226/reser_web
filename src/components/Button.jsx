@@ -11,7 +11,7 @@ const colors = {
   info:
     "bg-gradient-to-br from-button_bookings to-button_bookings_dark text-green-800 shadow-button-bookings hover:shadow-button-bookings-hover",
 };
-export function Button({ text, onClick, style, iconName, children, className, type = "button", disabled = false }) {
+export function Button({ text, onClick, style, iconName, children, className ,type="button", disabled}) {
   return (
     <button
       type={type}

@@ -35,10 +35,10 @@ export function TextField({
   };
 
   return (
-    <div className="relative w-full">
+    <div className={`relative w-full ${className}`}>
       <input
         placeholder={placeholder}
-        className={`rounded-lg p-[5px] w-full border border-black/20 ${className} ${readOnly ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
+        className="bg-white rounded-lg p-[5px] w-full border border-black/20 "
         type={type}
         required={required}
         value={value}

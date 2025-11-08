@@ -108,8 +108,6 @@ export async function searchAvailableRooms({
 
     if (validCombos.length === 0) {
       openPopup("⚠️ No hay habitaciones disponibles con esos criterios.", "info");
-    } else {
-      openPopup("✅ Se encontraron opciones de habitaciones disponibles.", "success");
     }
 
     return validCombos;

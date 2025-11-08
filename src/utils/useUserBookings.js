@@ -2,9 +2,11 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "./supabase";
 
 export function useUserBookings() {
+
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState(null);
+
 
   const fetchBookings = useCallback(async () => {
     try {
@@ -43,7 +45,7 @@ export function useUserBookings() {
           )
         `)
         .eq("id_cliente", user.id)
-        .order("fecha_reservacion", { ascending: false });
+        .order("fecha_entrada", { ascending: false });
 
       if (error) throw error;
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Bath, Tv, Mountain, ShowerHead, ChevronLeft, ChevronRight } from "lucide-react";
 import Carousel from "./Carousel";
 
@@ -18,9 +18,7 @@ export default function RoomCard({
   description,
   capacity,
   bedType = [],
-  selected = false,
   disabled = false,
-  onSelect
 }) {
   const SUPABASE_URL = "https://njhzehbjmqyoghfiyxtr.supabase.co/storage/v1/object/public/Images/rooms/";
 
@@ -33,7 +31,7 @@ export default function RoomCard({
 
   return (
     <div className={`border rounded-xl shadow-md overflow-hidden mb-6 m-2 bg-white ${disabled ? "opacity-50 pointer-events-none" : ""}`}>
-      <Carousel images={images} height="h-48" />
+      <Carousel images={images} className="h-48 rounded-none" disableInterval={true} />
 
       <div className="p-4">
         <h2 className="text-xl font-semibold">Habitación {id}</h2>

@@ -4,8 +4,8 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { TextField } from "../../components/TextField.jsx";
 import { supabase } from "../../utils/supabase.js";
 import { UserAuth } from "../../utils/AuthContext.jsx";
-import { usePopup } from "../../utils/PopupContext.jsX";
-import { Card } from "../../components/Card.jsx";
+import { usePopup } from "../../utils/PopupContext.jsx";
+import { CardForm } from "../../components/CardForm.jsx";
 
 export function RegistUser({ setNav }) {
   const { openPopup } = usePopup();
@@ -130,7 +130,7 @@ export function RegistUser({ setNav }) {
 
   return (
     <div className="flex justify-center items-center min-h-screen">
-      <Card onSubmit={handleSubmit}>
+      <CardForm onSubmit={handleSubmit}>
         <h2>Registrarse</h2>
 
         <label className="block text-gray-700 font-medium mb-2">
@@ -382,14 +382,21 @@ export function RegistUser({ setNav }) {
         )}
 
         <div className="flex flex-row space-x-4 justify-center">
+
+          <Button
+            text="Atras"
+            style="exit"
+            iconName="back"
+            onClick={() => setNav(0)}
+          />
           <Button
             text="Continuar"
             style="primary"
-            iconName="Next"
+            iconName="next"
             type="submit"
           />
         </div>
-      </Card>
+      </CardForm>
     </div>
   );
 }

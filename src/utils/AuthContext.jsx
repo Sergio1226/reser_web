@@ -43,6 +43,7 @@ export const AuthContextProvider = ({ children }) => {
   }, [session]);
 
   const signUpNewUser = async ({ user, email, password }) => {
+    user.email=email;
     const { data: documentExists } = await supabase.rpc("document_exist", {
       p_documento: user.documento,
       p_tipo: user.tipo_documento,
@@ -112,9 +113,26 @@ export const AuthContextProvider = ({ children }) => {
     if (error) throw error;
   };
 
+  const getUser = async (user) => {
+    const { data, error } = await supabase
+      .from("clientes")
+      .select("*")
+      .eq("user_id", user);
+    if (error) throw error;
+    return data;
+  };
+
   return (
     <AuthContext.Provider
-      value={{ session, role,loading, signUpNewUser, signIn, signOut }}
+      value={{
+        session,
+        role,
+        loading,
+        signUpNewUser,
+        signIn,
+        signOut,
+        getUser,
+      }}
     >
       {children}
     </AuthContext.Provider>

@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-export default function Carousel({ images, height = "h-96", autoPlayInterval = 5000 }) {
+export default function Carousel({ images, autoPlayInterval = 5000, className = "" ,disableInterval=false}) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
+    if (disableInterval) return;
+
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % images.length);
     }, autoPlayInterval);
 
     return () => clearInterval(interval);
-  }, [currentIndex, images.length, autoPlayInterval]);
+  }, [currentIndex, images.length, autoPlayInterval,disableInterval]);
 
   const nextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % images.length);
@@ -26,7 +28,7 @@ export default function Carousel({ images, height = "h-96", autoPlayInterval = 5
 
   return (
     <div className="relative w-full group">
-      <div className={`relative ${height} rounded-xl overflow-hidden shadow-2xl`}>
+      <div className={`relative ${className} rounded-xl overflow-hidden shadow-md`}>
         <img
           src={images[currentIndex]}
           alt={`Slide ${currentIndex + 1}`}

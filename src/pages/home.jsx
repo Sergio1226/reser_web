@@ -5,6 +5,8 @@ import { Header } from "../components/Header.jsx";
 import { UserAuth } from "../utils/AuthContext.jsx";
 import Carousel from "../components/Carousel.jsx";
 
+  const url = import.meta.env.VITE_URL_IMAGES;
+
 export default function Home() {
   const navigate = useNavigate();
   const { session, role, signOut } = UserAuth();
@@ -12,18 +14,19 @@ export default function Home() {
   const handleLogout = async () => await signOut();
 
   const handleLogin = () => {
-    if (!session || role === "") navigate("/login");
-    else navigate(role === "admin" ? "/admin" : "/bookings");
+    if (!session) navigate("/login");
+    if (role === "") navigate("/login");
+    else navigate(role === "admin" ? "/dashboard" : "/bookings");
   };
 
   const homeImages = [
-    "https://njhzehbjmqyoghfiyxtr.supabase.co/storage/v1/object/public/Images/home/Exterior.jpeg",
-    "https://njhzehbjmqyoghfiyxtr.supabase.co/storage/v1/object/public/Images/home/Entrada_Principal.jpeg",
-    "https://njhzehbjmqyoghfiyxtr.supabase.co/storage/v1/object/public/Images/home/Recepcion.jpeg",
-    "https://njhzehbjmqyoghfiyxtr.supabase.co/storage/v1/object/public/Images/home/Comedor.jpeg",
-    "https://njhzehbjmqyoghfiyxtr.supabase.co/storage/v1/object/public/Images/home/Pasillo_1.jpeg",
-    "https://njhzehbjmqyoghfiyxtr.supabase.co/storage/v1/object/public/Images/home/Pasillo_2.jpeg",
-    "https://njhzehbjmqyoghfiyxtr.supabase.co/storage/v1/object/public/Images/home/Patio.jpeg",
+    `${url}/home/Exterior.jpeg`,
+    `${url}/home/Entrada_Principal.jpeg`,
+    `${url}/home/Recepcion.jpeg`,
+    `${url}/home/Comedor.jpeg`,
+    `${url}/home/Pasillo_1.jpeg`,
+    `${url}/home/Pasillo_2.jpeg`,
+    `${url}/home/Patio.jpeg`,
   ];
 
   return (
@@ -38,13 +41,21 @@ export default function Home() {
               iconName="signOut"
               className="w-full"
             />
-          ) : (
+          ) : role === "client" ? (
             <Button
-              text="Reservar Ahora"
+              text="Reservar ahora"
               style="secondary"
               className="w-full"
               onClick={handleLogin}
               iconName="book"
+            />
+          ) : (
+            <Button
+              text="Iniciar sesion"
+              style="secondary"
+              className="w-full"
+              onClick={() => navigate("/login", { state: {nav:0} })}
+              iconName="login"
             />
           )}
 
@@ -57,29 +68,44 @@ export default function Home() {
               iconName="signOut"
             />
           ) : (
-            <Button
-              text="Administrador"
-              style="primary"
-              className="w-full"
-              onClick={handleLogin}
-              iconName="lock"
-            />
+            role === "admin" ? (
+              <Button
+                text={"Administrador"}
+                style="primary"
+                className="w-full"
+                onClick={handleLogin}
+                iconName="lock"
+              />
+            ):(
+              <Button
+                text={"Registrarse"}
+                style="primary"
+                className="w-full"
+                onClick={() => navigate("/login", { state: {nav:1} })}
+                iconName="user"
+              />
+
+            )
           )}
         </div>
       </Header>
 
-      <main className="flex-1 flex flex-col items-stretch justify-center gap-10 px-6 py-10">
-
-        <div className="flex flex-col lg:flex-row items-stretch justify-center gap-6">
-          <div className="flex-1 bg-secondary rounded-2xl border border-black/10 shadow-lg p-8 flex flex-col items-center text-center">
-            <h2 className="text-2xl font-semibold text-primary_dark mb-2">
-              Tu hogar en Monguí
-            </h2>
-            <p className="text-black/70 mb-6 max-w-md">
-              Bienvenidos a <span className="font-semibold text-primary">Los Recuerdos de Florito y Leo</span>, un hotel familiar en el corazón de Monguí, Boyacá. Disfruta una experiencia llena de calidez, tradición y hospitalidad, donde cada huésped es parte de nuestra familia.
-            </p>
-            <Carousel images={homeImages} height="h-96" autoPlayInterval={5000} />
-          </div>
+      <main className="flex-1 flex flex-col lg:flex-row items-stretch justify-center gap-6 px-6 py-10">
+        <div className="flex-1 bg-secondary rounded-2xl border border-black/10 shadow-lg p-8 flex flex-col items-center text-center">
+          <h2 className="text-2xl font-semibold text-primary_dark mb-2">
+            Tu hogar en Monguí
+          </h2>
+          <p className="text-black/70 mb-6 max-w-md">
+            Bienvenidos a{" "}
+            <span className="font-semibold text-primary">
+              Los Recuerdos de Florito y Leo
+            </span>
+            , un hotel familiar en el corazón de Monguí, Boyacá. Disfruta una
+            experiencia llena de calidez, tradición y hospitalidad, donde cada
+            huésped es parte de nuestra familia.
+          </p>
+          <Carousel images={homeImages} className="h-[300px]" autoPlayInterval={5000} />
+        </div>
 
           <div className="flex-1 bg-secondary rounded-2xl border border-black/10 shadow-lg flex items-center justify-center p-6">
             <iframe
@@ -89,7 +115,6 @@ export default function Home() {
               loading="lazy"
             ></iframe>
           </div>
-        </div>
       </main>
 
       <Footer />

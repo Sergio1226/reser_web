@@ -4,8 +4,8 @@ import { Button } from "../../components/Button.jsx";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { TextField } from "../../components/TextField.jsx";
 import { UserAuth } from "../../utils/AuthContext.jsx";
-import { usePopup } from "../../utils/PopupContext.jsX";
-import { Card } from "../../components/Card.jsx";
+import { usePopup } from "../../utils/PopupContext.jsx";
+import { CardForm } from "../../components/CardForm.jsx";
 
 export function LoginUser({ setNav }) {
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ export function LoginUser({ setNav }) {
       const rol = await signIn({ email, password });
 
       if (rol === "admin") {
-        navigate("/admin");
+        navigate("/dashboard");
       } else {
         navigate("/bookings");
       }
@@ -42,18 +42,17 @@ export function LoginUser({ setNav }) {
     }
   };
 
-   if (loading)
+  if (loading)
     return (
-      <div className="flex justify-center items-center h-screen text-xl font-semibold text-gray-700 bg-white/90 p-10 rounded-2xl w-[380px] border border-primary_dark/20 shadow-xl">
+      <div className="flex justify-center items-center  text-xl font-semibold text-gray-700 bg-white/90 h-fit p-10 rounded-2xl w-[380px] border border-primary_dark/20 shadow-xl">
         Cargando datos...
       </div>
     );
 
-
   return (
     <div className="flex flex-col items-center justify-center">
       {loading && <div className="loader">Cargando...</div>}
-      <Card onSubmit={handleSubmit}>
+      <CardForm onSubmit={handleSubmit}>
         <h2 className="mb-6">Iniciar Sesión</h2>
         <p className=" mb-6">Accede a tu cuenta para continuar</p>
         <div className="flex flex-col space-y-2">
@@ -94,7 +93,7 @@ export function LoginUser({ setNav }) {
             text="Ingresar"
             style="secondary"
             type="submit"
-            iconName="Next"
+            iconName="next"
           />
         </div>
 
@@ -106,10 +105,10 @@ export function LoginUser({ setNav }) {
             text="Registrarse"
             style="primary"
             onClick={() => setNav(1)}
-            iconName="Contact form"
+            iconName="contactForm"
           />
         </div>
-      </Card>
+      </CardForm>
     </div>
   );
 }
