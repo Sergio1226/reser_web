@@ -25,6 +25,11 @@ export function LoginUser({ setNav }) {
       return;
     }
 
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      openPopup("Formato de correo inválido", "error");
+      return;
+    }
+
     try {
       setLoading(true);
       const rol = await signIn({ email, password });

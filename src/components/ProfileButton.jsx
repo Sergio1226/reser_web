@@ -39,16 +39,6 @@ export default function ProfileButton() {
         <div
           className={`absolute top-12 right-0 w-56 bg-gradient-to-br from-emerald-900  to-emerald-700 text-white rounded-2xl shadow-2xl border border-emerald-600 p-4 transform transition-all duration-300 ${open ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"}`}
         >
-          <div className="flex justify-center items-center mb-2">
-            <Icon name="account"/>
-            <span className="ml-2 font-semibold text-lg tracking-wide">
-              Mi cuenta
-            </span>
-            <button
-              onClick={() => setOpen(false)}
-              className="hover:text-red-400 transition"
-            ></button>
-          </div>
 
           <ul className="flex flex-col space-y-2 mt-3">
             <li

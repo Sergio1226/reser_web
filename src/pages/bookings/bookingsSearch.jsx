@@ -132,14 +132,15 @@ export function BookingSearch({ setNav }) {
           Buscar Habitaciones
         </h2>
 
-        <div className="flex flex-col lg:flex-row gap-4 justify-center ">
-          <div className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow flex items-center gap-4 h-full">
+        <div className="flex flex-col lg:flex-row gap-4 justify-center lg:items-stretch">
+
+          <div className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow flex items-center justify-center gap-4 flex-1">
             <Calendar range={range} setRange={setRange} />
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold text-slate-700">
+            <div className="flex flex-col items-center">
+              <span className="text-sm font-semibold text-slate-700 text-center">
                 Check In - Check Out
               </span>
-              <span className="text-slate-500 text-sm">
+              <span className="text-slate-500 text-sm text-center">
                 {`${format(range[0].startDate, "dd/MM/yy")} - ${format(
                   range[0].endDate,
                   "dd/MM/yy"
@@ -148,15 +149,15 @@ export function BookingSearch({ setNav }) {
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow h-full ">
-            <div className="flex items-start gap-3">
+          <div className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow flex-1 flex flex-col justify-center">
+            <div className="flex items-center gap-3">
               <Icon
                 name="guest"
                 alt="Huespedes"
                 style="size-8 text-blue-600 flex-shrink-0"
               />
-              <div className="flex flex-col space-y-2">
-                <div className="text-sm font-semibold text-slate-700">
+              <div className="flex flex-col space-y-2 w-full">
+                <div className="text-sm font-semibold text-slate-700 text-center">
                   Huéspedes
                 </div>
                 <div className="flex items-center justify-between gap-3">
@@ -179,15 +180,15 @@ export function BookingSearch({ setNav }) {
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow h-full ">
-            <div className="flex items-start gap-3">
+          <div className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow flex-1 flex items-center justify-center">
+            <div className="flex items-center gap-3">
               <Icon
                 name="bed"
                 alt="Habitaciones"
                 style="size-8 text-blue-600 flex-shrink-0"
               />
-              <div className="flex flex-col space-y-2">
-                <div className="text-sm font-semibold text-slate-700">
+              <div className="flex flex-col space-y-2 items-center">
+                <div className="text-sm font-semibold text-slate-700 text-center">
                   Habitaciones
                 </div>
                 <Counter count={countRooms} setCount={setCountRooms} min={1} />
@@ -195,19 +196,20 @@ export function BookingSearch({ setNav }) {
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="mt-6 flex justify-center">
-          <Button
-            text={searchLoading ? "Buscando..." : "Buscar Habitaciones"}
-            style="primary"
-            iconName="search"
-            onClick={handleSearch}
-            disabled={searchLoading}
-          />
-        </div>
+      <div className="mt-6 flex justify-center">
+        <Button
+          text={searchLoading ? "Buscando..." : "Buscar Habitaciones"}
+          style="primary"
+          iconName="search"
+          onClick={handleSearch}
+          disabled={searchLoading}
+        />
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
+
         <div className="flex flex-col flex-1 space-y-6">
           {searchLoading ? (
             <div className="text-center py-12 bg-white rounded-xl shadow-md border border-slate-200 ">
@@ -320,7 +322,7 @@ export function BookingSearch({ setNav }) {
                   </div>
                 </div>
               )}
-
+              
               {otherCombos.length > 0 && (
                 <div className="bg-gradient-to-br from-blue-50 to-sky-50 rounded-xl p-6 border border-blue-200 shadow-md">
                   <h3 className="text-lg font-bold text-blue-800 mb-4 flex items-center gap-2">
@@ -513,4 +515,5 @@ export function BookingSearch({ setNav }) {
       </div>
     </div>
   );
+
 }

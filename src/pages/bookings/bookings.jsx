@@ -19,7 +19,7 @@ const options = [
     icon: "booking",
   },
   {
-    title: "Visualizar Reservas",
+    title: "Gestionar Reservas",
     icon: "list",
   },
 ];
@@ -32,14 +32,6 @@ export default function Bookings() {
     <div className="min-h-screen flex flex-col font-primary bg-gradient-to-br from-slate-50 to-slate-100 m-0">
       <Header>
         <div className="flex flex-col justify-center items-center space-y-2 mt-4 mr-8">
-          <Button
-            text="Atrás"
-            style="exit"
-            onClick={() => {
-              navigate("/");
-            }}
-            iconName="back"
-          />
           <ProfileButton toPag={"/login"} />
         </div>
       </Header>
@@ -49,10 +41,10 @@ export default function Bookings() {
           <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
             <div className="bg-gradient-to-r from-green-600 to-green-700 p-8">
               <h1 className="text-3xl font-bold text-white mb-2 text-center">
-                Sistema de Reservas
+                Modulo de Reservas
               </h1>
               <p className="text-green-100 text-center">
-                Gestiona tus reservas de manera fácil y rápida
+                Realiza y Gestiona tus reservas de manera fácil y rápida
               </p>
             </div>
 
