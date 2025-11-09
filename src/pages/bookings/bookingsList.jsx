@@ -92,13 +92,18 @@ export function BookingTable() {
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4 items-end">
-        <div>
-          <label className="block text-sm font-medium mb-1">Estado de reserva</label>
+      <div className="flex flex-col md:flex-row gap-4 items-end md:items-center">
+        <div className="flex flex-col w-full md:w-1/3">
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Estado de reserva
+          </label>
           <select
-            className="border rounded-lg p-2"
+            className="border border-slate-300 rounded-lg p-2.5 h-11 text-slate-700 focus:ring-2 focus:ring-blue-400 focus:outline-none"
             value={filterStatus}
-            onChange={(e) => { setFilterStatus(e.target.value); setPage(1); }}
+            onChange={(e) => {
+              setFilterStatus(e.target.value);
+              setPage(1);
+            }}
           >
             <option value="all">Todas</option>
             <option value="Confirmada">Confirmadas</option>
@@ -106,25 +111,38 @@ export function BookingTable() {
           </select>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium mb-1">Fecha de reserva</label>
+        <div className="flex flex-col w-full md:w-1/3">
+          <label className="block text-sm font-medium text-slate-700 mb-1">
+            Fecha de reserva
+          </label>
           <input
             type="date"
-            className="border rounded-lg p-2"
+            className="border border-slate-300 rounded-lg p-2.5 h-11 text-slate-700 focus:ring-2 focus:ring-blue-400 focus:outline-none"
             value={filterDate}
-            onChange={(e) => { setFilterDate(e.target.value); setPage(1); }}
+            onChange={(e) => {
+              setFilterDate(e.target.value);
+              setPage(1);
+            }}
           />
         </div>
 
-        <Button
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-          onClick={() => { setFilterDate(""); setFilterStatus("all"); setPage(1); }}
-        >
-          Limpiar filtros
-        </Button>
+        <div className="flex flex-col w-full md:w-1/3">
+          <label className="block text-sm font-medium text-transparent mb-1 select-none">
+            .
+          </label>
+          <Button
+            className="h-11 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 transition-colors w-full"
+            onClick={() => {
+              setFilterDate("");
+              setFilterStatus("all");
+              setPage(1);
+            }}
+          >
+            Limpiar filtros
+          </Button>
+        </div>
       </div>
 
-      {/* --- TABLA --- */}
       {filteredBookings.length === 0 ? (
         <div className="text-center py-12 bg-white rounded-xl shadow-md border border-slate-200">
           <p className="text-slate-600 font-medium">
@@ -135,19 +153,42 @@ export function BookingTable() {
         <Table
           headers={headers}
           info={paginatedBookings}
-          renderActions={(item) => (
-            item.status === "Confirmada" ? (
+          renderActions={(item) => {
+            if (item.status !== "Confirmada") {
+              return <span className="text-slate-400 font-semibold">—</span>;
+            }
+
+            const now = new Date();
+            const [year, month, day] = item.checkIn.split("-").map(Number);
+            const checkInDate = new Date(year, month - 1, day);
+
+            const isToday = checkInDate.toDateString() === now.toDateString();
+            const canCancel =
+              checkInDate > now ||
+              (isToday && now.getHours() < 14);
+
+            return (
               <Button
-                className="bg-red-300 text-red-700 px-3 py-2 rounded-lg hover:bg-red-500 transition-colors font-medium"
-                onClick={() => { setSelectedBooking({ ...item, habitaciones: item.room }); setIsModalOpen(true); }}
-                disabled={cancelling === item.id}
+                className={`px-3 py-2 rounded-lg font-medium transition-colors ${
+                  canCancel
+                    ? "bg-red-300 text-red-700 hover:bg-red-500"
+                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                }`}
+                onClick={() => {
+                  if (!canCancel) return;
+                  setSelectedBooking({ ...item, habitaciones: item.room });
+                  setIsModalOpen(true);
+                }}
+                disabled={!canCancel || cancelling === item.id}
               >
-                {cancelling === item.id ? "Cancelando..." : "CANCELAR"}
+                {cancelling === item.id
+                  ? "Cancelando..."
+                  : canCancel
+                  ? "CANCELAR"
+                  : "No disponible"}
               </Button>
-            ) : (
-              <span className="text-slate-400 font-semibold">—</span>
-            )
-          )}
+            );
+          }}
         />
       )}
 

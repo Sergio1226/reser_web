@@ -30,7 +30,7 @@ export default function ModifyUser() {
   return (
     <div className="min-h-screen flex flex-col font-primary bg-white">
       <Header>
-        <Button text="Atrás" style="exit" onClick={() => navigate(-1)} iconName="Back" />
+        <Button text="Atrás" style="exit" onClick={() => navigate(-1)} iconName="back" />
       </Header>
 
       <main className="bg-gradient-to-b from-secondary to-gradient_1 flex flex-col items-center justify-start p-8 space-y-8 w-full">
@@ -40,7 +40,8 @@ export default function ModifyUser() {
           <div className="flex flex-col md:flex-row">
             <div className="flex-1 p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {[ 
+
+                {[
                   { label: "Primer nombre", value: primerNombre, setValue: setPrimerNombre },
                   { label: "Segundo nombre", value: segundoNombre, setValue: setSegundoNombre },
                   { label: "Primer apellido", value: primerApellido, setValue: setPrimerApellido },
@@ -59,17 +60,16 @@ export default function ModifyUser() {
                   </div>
                 ))}
 
-                {[ 
+                {[
                   { label: "Tipo de documento", value: tipoDocumento },
                   { label: "Número de documento", value: numeroDocumento },
                 ].map((field) => (
                   <div key={field.label}>
-                    <label className="block text-xs font-medium text-gray-400 mb-2">{field.label}</label>
+                    <label className="block text-xs font-medium text-gray-500 mb-2">{field.label}</label>
                     <TextField
                       type="text"
                       value={field.value}
                       readOnly
-                      className="bg-gray-100 cursor-not-allowed"
                     />
                   </div>
                 ))}
@@ -86,7 +86,7 @@ export default function ModifyUser() {
                   text="Guardar Cambios"
                   style="secondary"
                   onClick={handleSave}
-                  iconName="save-all"
+                  iconName="saveAll"
                   disabled={!isChanged}
                 />
               </div>

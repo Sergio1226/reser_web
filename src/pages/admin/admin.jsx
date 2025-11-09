@@ -55,7 +55,14 @@ export default function AdminPage() {
             }}
             iconName="back"
           />
-          <ProfileButton toPag={"/login"} />
+          <Button
+            text="Cerrar Sesion" //Mejor un cerrar sesion o simplemente dejar atras xd, porque perfil no necesitamos
+            style="exit"
+            onClick={() => {
+              navigate("/dashboard");
+            }}
+            iconName="signOut"
+          />
         </div>
       </Header>
       <main className="flex flex-col flex-1 items-center p-8">

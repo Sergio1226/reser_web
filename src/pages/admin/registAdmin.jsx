@@ -144,7 +144,7 @@ export function RegistUser() {
     }
   };
 
-  return (
+  return ( // No esta funcionando Table en ningun lado xddd, deberia mostrar todos los clientes
     <div className=" py-8 px-4">
       <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-6 shadow-lg mb-8">
         <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">

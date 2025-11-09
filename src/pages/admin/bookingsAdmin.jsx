@@ -57,7 +57,14 @@ export default function BookingAdmin() {
             }}
             iconName="back"
           />
-          <ProfileButton toPag={"/login"} />
+          <Button
+            text="Cerrar Sesion" //Falta agregar funcionalidad de cerrar sesion xd
+            style="exit"
+            onClick={() => {
+              navigate("/dashboard");
+            }}
+            iconName="signOut"
+          />
         </div>
       </Header>
       <main className="flex flex-col flex-1 items-center p-8">

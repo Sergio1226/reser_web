@@ -9,7 +9,7 @@ import { getReservationsByDate } from "../../utils/Api.jsx";
 import { usePopup } from "../../utils/PopupContext.jsx";
 import { Loading } from "../../components/Animate.jsx";
 
-export function Reservations() {
+export function Reservations() { //No esta funcionando al visualizar las reservas en tabla, falta un filtro que sea mostrar todas las reservas y limpiar filtros como en el de usuarios, por fa no cambie Table
   const { openPopup } = usePopup();
   const [status, setStatus] = useState(0);
   const [date, setDate] = useState(new Date());

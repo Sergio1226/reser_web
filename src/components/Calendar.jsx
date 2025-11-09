@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { Icon } from "./Icon.jsx";
 import { DateRange, Calendar as CalendarComponent } from "react-date-range";
-import { format } from "date-fns";
+import { format, addDays } from "date-fns";
 import { es } from "date-fns/locale";
+
 
 export function Calendar({ range, setRange ,minDate=new Date()}) {
   const [showCalendar, setShowCalendar] = useState(false);
@@ -30,19 +31,26 @@ export function Calendar({ range, setRange ,minDate=new Date()}) {
       />
       {showCalendar && (
         <div className="absolute shadow-lg rounded-lg bg-white z-10">
-          <DateRange
-            editableDateInputs={true}
-            onChange={(item) => {
-              setRange([item.selection]);
-              if (item.selection.startDate !== item.selection.endDate) {
-                setShowCalendar(false);
-              }
-            }}
-            moveRangeOnFirstSelection={false}
-            ranges={range}
-            minDate={minDate}
-            locale={es}
-          />
+         <DateRange
+  editableDateInputs={true}
+  onChange={(item) => {
+    const { startDate, endDate } = item.selection;
+
+    // ✅ Ajuste automático si selecciona el mismo día
+    if (startDate.getTime() === endDate.getTime()) {
+      const adjustedEnd = addDays(endDate, 1);
+      setRange([{ startDate, endDate: adjustedEnd, key: "selection" }]);
+    } else {
+      setRange([item.selection]);
+    }
+
+    if (startDate !== endDate) setShowCalendar(false);
+  }}
+  moveRangeOnFirstSelection={false}
+  ranges={range}
+  minDate={minDate}
+  locale={es}
+/>
         </div>
       )}
     </div>

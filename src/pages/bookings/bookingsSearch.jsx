@@ -7,7 +7,7 @@ import { Calendar } from "../../components/Calendar.jsx";
 import { usePopup } from "../../utils/PopupContext.jsx";
 import { Loading } from "../../components/Animate.jsx";
 import { searchAvailableRooms } from "../../utils/useSearchRooms.js";
-import { format } from "date-fns";
+import { format, addDays } from "date-fns";
 
 export function BookingSearch({ setNav }) {
   const { openPopup } = usePopup();
@@ -17,6 +17,7 @@ export function BookingSearch({ setNav }) {
   const [countAdults, setCountAdults] = useState(1);
   const [countChildrens, setCountChildrens] = useState(0);
   const [countRooms, setCountRooms] = useState(1);
+
   const [range, setRange] = useState([
     {
       startDate: new Date(),
@@ -51,6 +52,10 @@ export function BookingSearch({ setNav }) {
   const handleSelectCombo = (combo) => {
     const isSame = selectedCombo === combo;
     setSelectedCombo(isSame ? null : combo);
+    const adjustedEndDate =
+      range[0].startDate.getTime() === range[0].endDate.getTime()
+        ? addDays(range[0].endDate, 1)
+        : range[0].endDate;
 
     if (isSame) {
       localStorage.removeItem("rangeSeleccionado");
@@ -60,7 +65,7 @@ export function BookingSearch({ setNav }) {
         "rangeSeleccionado",
         JSON.stringify({
           startDate: range[0].startDate.toISOString(),
-          endDate: range[0].endDate.toISOString(),
+          endDate: adjustedEndDate.toISOString(),
         })
       );
       localStorage.setItem(
@@ -75,24 +80,24 @@ export function BookingSearch({ setNav }) {
   };
 
   const handleSearch = async () => {
-    setSearchLoading(true);
-    setSearched(true);
-    setSelectedCombo(null);
-    localStorage.removeItem("rangeSeleccionado");
-    localStorage.removeItem("habitacionesSeleccionadas");
+  setSearchLoading(true);
+  setSearched(true);
+  setSelectedCombo(null);
+  localStorage.removeItem("rangeSeleccionado");
+  localStorage.removeItem("habitacionesSeleccionadas");
 
-    const validCombos = await searchAvailableRooms({
-      startDate: range[0].startDate,
-      endDate: range[0].endDate,
-      countAdults,
-      countChildrens,
-      countRooms,
-      openPopup,
-    });
+  const validCombos = await searchAvailableRooms({
+    startDate: range[0].startDate,
+    endDate: range[0].endDate,
+    countAdults,
+    countChildrens,
+    countRooms,
+    openPopup,
+  });
 
-    setAvailableRooms(validCombos);
-    setSearchLoading(false);
-  };
+  setAvailableRooms(validCombos);
+  setSearchLoading(false);
+};
 
   const totalPrice =
     selectedCombo?.reduce((sum, r) => sum + (r.precio || 0), 0) || 0;
@@ -142,7 +147,9 @@ export function BookingSearch({ setNav }) {
               </span>
               <span className="text-slate-500 text-sm text-center">
                 {`${format(range[0].startDate, "dd/MM/yy")} - ${format(
-                  range[0].endDate,
+                  range[0].startDate.getTime() === range[0].endDate.getTime()
+                    ? addDays(range[0].endDate, 1)
+                    : range[0].endDate,
                   "dd/MM/yy"
                 )}`}
               </span>
@@ -329,7 +336,7 @@ export function BookingSearch({ setNav }) {
                     <span className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm">
                       +
                     </span>
-                    Opciones Disponibles
+                    Otras Opciones
                   </h3>
 
                   <div className="space-y-4">

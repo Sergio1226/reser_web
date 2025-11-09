@@ -38,7 +38,11 @@ export function TextField({
     <div className={`relative w-full ${className}`}>
       <input
         placeholder={placeholder}
-        className="bg-white rounded-lg p-[5px] w-full border border-black/20 "
+        className={`rounded-lg p-[5px] w-full border 
+          ${readOnly
+            ? "bg-gray-100 text-gray-600 border-gray-300 cursor-not-allowed"
+            : "bg-white text-gray-800 border-black/20"}`
+        }
         type={type}
         required={required}
         value={value}
