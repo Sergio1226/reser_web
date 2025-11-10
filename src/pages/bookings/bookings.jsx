@@ -87,116 +87,122 @@ function ExtraServices({ setNav }) {
   const storedSubtotal = Number(localStorage.getItem("reservaSubtotal") || 0);
   const subtotal = storedSubtotal ?? 0;
 
-  const {
-    services,
-    selected,
-    loading,
-    setServiceCount,
-    totalServicios,
-    totalGeneral,
-  } = useExtraServices(subtotal);
+  const huespedes = JSON.parse(
+    localStorage.getItem("reservaHuespedes") || '{"adultos":1,"ninos":0}'
+  );
+  const totalHuespedes = (huespedes.adultos || 1) + (huespedes.ninos || 0);
+
+  const { services, selected, loading, setServiceCount, totalServicios, totalGeneral } =
+    useExtraServices(subtotal);
 
   if (loading) {
     return (
       <div className="text-center py-12 bg-white rounded-xl shadow-md border border-slate-200">
-        <p className="text-slate-600 font-medium">
-          Cargando servicios adicionales...
-        </p>
+        <p className="text-slate-600 font-medium">Cargando servicios adicionales...</p>
       </div>
     );
   }
+
+  const desayuno = services.find((s) => s.nombre === "Desayuno");
+  const parqueadero = services.find((s) => s.nombre === "Parqueadero");
+  const senderismo = services.find((s) => s.nombre === "Senderismo");
+
+  const getLabel = (s) => {
+    if (s.id === desayuno?.id) return "por huésped";
+    if (s.id === parqueadero?.id) return "por vehículo";
+    if (s.id === senderismo?.id) return "por persona";
+    return "";
+  };
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-6 shadow-lg text-white">
         <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
-          <span className="text-3xl">🛎️</span>
-          Servicios Adicionales
+          <span className="text-3xl">🛎️</span>Servicios Adicionales
         </h2>
-        <p className="text-blue-100">
-          Mejora tu experiencia con nuestros servicios extras
-        </p>
+        <p className="text-blue-100">Mejora tu experiencia con nuestros servicios extras</p>
       </div>
 
-      {services.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-md border border-slate-200 p-8 text-center">
-          <p className="text-slate-600">
-            No hay servicios adicionales disponibles
-          </p>
+      <div className="space-y-4">
+        {desayuno && (
+        <div className="bg-white p-4 rounded shadow flex justify-between items-center">
+          <div>
+            <h3 className="font-bold text-lg">{desayuno.nombre}</h3>
+            <p className="text-sm text-gray-500">{desayuno.descripcion}</p>
+            <p className="text-lg font-semibold text-blue-700 mt-1">
+              ${desayuno.precio.toLocaleString()} COP <span className="text-sm text-gray-500">/ por persona</span>
+            </p>
+          </div>
+          <button
+            className={`px-4 py-2 rounded ${
+              selected[desayuno.id] ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"
+            } text-white`}
+            onClick={() =>
+              setServiceCount(desayuno.id, selected[desayuno.id] ? 0 : totalHuespedes)
+            }
+          >
+            {selected[desayuno.id] ? "Quitar desayuno" : `Agregar desayuno para ${totalHuespedes} huéspedes`}
+          </button>
         </div>
-      ) : (
-        <div className="space-y-4">
-          {services.map((s) => (
+      )}
+
+      {services
+        .filter((s) => s.id !== desayuno?.id)
+        .map((s) => {
+          let maxCount = 1000;
+
+          if (s.id === senderismo?.id) maxCount = totalHuespedes;
+          if (s.id === parqueadero?.id) maxCount = totalHuespedes;
+
+          return (
             <div
               key={s.id}
               className="bg-white rounded-xl shadow-md border border-slate-200 p-6 hover:shadow-lg transition-all"
             >
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div className="flex-1">
-                  <h3 className="font-bold text-lg text-slate-800">
-                    {s.nombre}
-                  </h3>
+                  <h3 className="font-bold text-lg text-slate-800">{s.nombre}</h3>
                   <p className="text-sm text-slate-600 mt-1">{s.descripcion}</p>
                   <p className="text-lg font-semibold text-blue-700 mt-2">
-                    ${s.precio.toLocaleString()} COP
+                    ${s.precio.toLocaleString()} COP{" "}
+                    {getLabel(s) && <span className="text-sm text-gray-500">/ {getLabel(s)}</span>}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-sm text-slate-600 font-medium">
-                    Cantidad:
-                  </span>
+                  <span className="text-sm text-slate-600 font-medium">Cantidad:</span>
                   <Counter
                     count={selected[s.id] || 0}
                     setCount={(val) => setServiceCount(s.id, val)}
                     min={0}
-                    max={1000}
+                    max={maxCount}
                   />
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+          );
+        })}
+      </div>
 
       <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl shadow-lg border border-green-200 p-6">
-        <h3 className="text-lg font-bold text-green-800 mb-4">
-          Resumen de Costos
-        </h3>
+        <h3 className="text-lg font-bold text-green-800 mb-4">Resumen de Costos</h3>
 
         <div className="space-y-3 mb-4">
           <div className="flex justify-between items-center py-2 border-b border-green-200">
-            <span className="text-slate-700 font-medium">
-              Subtotal habitaciones:
-            </span>
-            <span className="text-slate-800 font-semibold">
-              ${subtotal.toLocaleString()} COP
-            </span>
+            <span className="text-slate-700 font-medium">Subtotal habitaciones:</span>
+            <span className="text-slate-800 font-semibold">${subtotal.toLocaleString()} COP</span>
           </div>
           <div className="flex justify-between items-center py-2 border-b border-green-200">
-            <span className="text-slate-700 font-medium">
-              Servicios adicionales:
-            </span>
-            <span className="text-slate-800 font-semibold">
-              ${totalServicios.toLocaleString()} COP
-            </span>
+            <span className="text-slate-700 font-medium">Servicios adicionales:</span>
+            <span className="text-slate-800 font-semibold">${totalServicios.toLocaleString()} COP</span>
           </div>
           <div className="flex justify-between items-center py-3 mt-2">
-            <span className="text-xl font-bold text-green-800">
-              TOTAL A PAGAR:
-            </span>
-            <span className="text-2xl font-bold text-green-700">
-              ${totalGeneral.toLocaleString()} COP
-            </span>
+            <span className="text-xl font-bold text-green-800">TOTAL A PAGAR:</span>
+            <span className="text-2xl font-bold text-green-700">${totalGeneral.toLocaleString()} COP</span>
           </div>
         </div>
 
         <div className="flex gap-3 justify-center pt-4">
-          <Button
-            style="exit"
-            iconName="back"
-            text="Atrás"
-            onClick={() => setNav(0)}
-          />
+          <Button style="exit" iconName="back" text="Atrás" onClick={() => setNav(0)} />
           <Button
             style="primary"
             text="Continuar con la reserva"
@@ -219,10 +225,22 @@ function ExtraServices({ setNav }) {
 }
 
 function ConfirmReservation({ setNav }) {
-  const { resumen, serviciosInfo, handleConfirm } =
-    useConfirmReservation(setNav);
-  const { subtotalHabitaciones, serviciosSeleccionados, totalGeneral } =
-    resumen;
+  const { resumen, serviciosInfo, handleConfirm } = useConfirmReservation(setNav);
+
+  // Info de habitaciones y fechas
+  const habitaciones = JSON.parse(localStorage.getItem("habitacionesSeleccionadas") || "[]");
+  const range = JSON.parse(
+    localStorage.getItem("rangeSeleccionado") ||
+      JSON.stringify({
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      })
+  );
+  const huespedes = JSON.parse(
+    localStorage.getItem("reservaHuespedes") || '{"adultos":1,"ninos":0}'
+  );
+
+  const { subtotalHabitaciones, serviciosSeleccionados, totalGeneral } = resumen;
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -236,16 +254,43 @@ function ConfirmReservation({ setNav }) {
         </p>
       </div>
 
+      {/* Resumen completo */}
       <div className="bg-white rounded-xl shadow-md border border-slate-200 p-6 space-y-4">
         <h3 className="text-lg font-bold text-slate-800 mb-4">Resumen Final</h3>
 
-        <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-          <p className="text-sm text-slate-600 mb-2">Subtotal habitaciones</p>
-          <p className="text-2xl font-bold text-slate-800">
-            ${subtotalHabitaciones.toLocaleString()} COP
+        {/* Fechas y huéspedes */}
+        <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 space-y-2">
+          <p className="text-sm text-slate-600">Check-In:</p>
+          <p className="text-slate-800 font-medium">
+            {new Date(range.startDate).toLocaleDateString("es-CO")}
+          </p>
+          <p className="text-sm text-slate-600 mt-2">Check-Out:</p>
+          <p className="text-slate-800 font-medium">
+            {new Date(range.endDate).toLocaleDateString("es-CO")}
+          </p>
+          <p className="text-sm text-slate-600 mt-2">Huéspedes:</p>
+          <p className="text-slate-800 font-medium">
+            {huespedes.adultos} adultos, {huespedes.ninos} niños
           </p>
         </div>
 
+        {/* Habitaciones seleccionadas */}
+        <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+          <p className="text-sm text-slate-600 mb-2">Habitaciones seleccionadas:</p>
+          {habitaciones.length > 0 ? (
+            <ul className="list-disc list-inside text-slate-800 font-medium">
+              {habitaciones.map((id) => (
+                <li key={id}>Habitación #{id}</li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-slate-500 italic">No se seleccionaron habitaciones</p>
+          )}
+          <p className="text-sm text-slate-600 mt-2">Subtotal habitaciones:</p>
+          <p className="text-slate-800 font-semibold">${subtotalHabitaciones.toLocaleString()} COP</p>
+        </div>
+
+        {/* Servicios adicionales */}
         <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
           <p className="text-sm font-bold text-slate-700 mb-3">
             Servicios adicionales:
@@ -287,6 +332,7 @@ function ConfirmReservation({ setNav }) {
           )}
         </div>
 
+        {/* Total general */}
         <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-6 border-2 border-green-300 mt-4">
           <div className="flex justify-between items-center">
             <span className="text-xl font-bold text-green-800">

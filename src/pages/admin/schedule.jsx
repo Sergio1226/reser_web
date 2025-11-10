@@ -103,7 +103,7 @@ export function Schedule() {
                 }}
                 className={"shadow-none hover:shadow-none"}
               />
-              <h2 className="text-center px-5 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-shadow flex items-center gap-2 hover:-translate-y-0.5 transition-transform">
+              <h2 className="text-center px-5 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-shadow flex items-center gap-2 hover:-translate-y-0.5">
                 <CalendarSingle
                   date={date}
                   setDate={setDate}

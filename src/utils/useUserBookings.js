@@ -33,6 +33,7 @@ export function useUserBookings() {
             )
           ),
           reservas_servicios (
+            cantidad, 
             servicios_adicionales (
               nombre,
               precio
@@ -57,7 +58,7 @@ export function useUserBookings() {
         );
 
         const servicesPrice = r.reservas_servicios?.reduce(
-          (sum, rs) => sum + (rs.servicios_adicionales?.precio || 0),
+          (sum, rs) => sum + ((rs.servicios_adicionales?.precio || 0) * (rs.cantidad || 1)),
           0
         );
 

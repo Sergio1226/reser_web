@@ -56,7 +56,7 @@ export function useConfirmReservation(setNav) {
       }
 
       const range = JSON.parse(localStorage.getItem("rangeSeleccionado") || "{}");
-      const combo = JSON.parse(localStorage.getItem("habitacionesSeleccionadas") || "{}");
+      const huespedes = JSON.parse(localStorage.getItem("reservaHuespedes") || '{"adultos":1,"ninos":0}');
       const userId = session.user?.id;
 
       const today = new Date();
@@ -69,8 +69,8 @@ export function useConfirmReservation(setNav) {
             fecha_reservacion: fechaReservacion,
             fecha_entrada: range.startDate,
             fecha_salida: range.endDate,
-            cantidad_adultos: combo?.adultos || 1,
-            cantidad_ninos: combo?.ninos || 0,
+            cantidad_adultos: huespedes.adultos || 1,
+            cantidad_ninos: huespedes.ninos || 0,
             estado_reserva: "Confirmada",
             id_cliente: userId,
           },
@@ -80,7 +80,7 @@ export function useConfirmReservation(setNav) {
 
       if (reservaError) throw reservaError;
 
-      const habitacionesSeleccionadas = combo?.habitaciones || [];
+      const habitacionesSeleccionadas = JSON.parse(localStorage.getItem("habitacionesSeleccionadas") || "[]");
       if (habitacionesSeleccionadas.length > 0) {
         const habData = habitacionesSeleccionadas.map((id) => ({
           id_reserva: reserva.id,
@@ -90,11 +90,12 @@ export function useConfirmReservation(setNav) {
       }
 
       const serviciosData = Object.entries(resumen.serviciosSeleccionados)
-        .filter(([_, count]) => count > 0)
-        .map(([id_servicio]) => ({
-          id_reserva: reserva.id,
-          id_servicio: Number(id_servicio),
-        }));
+      .filter(([_, count]) => count > 0)
+      .map(([id_servicio, count]) => ({
+        id_reserva: reserva.id,
+        id_servicio: Number(id_servicio),
+        cantidad: count,
+      }));
 
       if (serviciosData.length > 0) {
         await supabase.from("reservas_servicios").insert(serviciosData);

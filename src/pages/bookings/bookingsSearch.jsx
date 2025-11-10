@@ -7,7 +7,7 @@ import { Calendar } from "../../components/Calendar.jsx";
 import { usePopup } from "../../utils/PopupContext.jsx";
 import { Loading } from "../../components/Animate.jsx";
 import { searchAvailableRooms } from "../../utils/useSearchRooms.js";
-import { format, addDays } from "date-fns";
+import { format } from "date-fns";
 import { useSize } from "../../utils/SizeContext.jsx";
 
 export function BookingSearch({ setNav }) {
@@ -16,10 +16,12 @@ export function BookingSearch({ setNav }) {
   
   const sendRef =  useRef(null);
 
+  const MAX_GUESTS = 50;
+  const MAX_ROOMS = 14;
+
   const [countAdults, setCountAdults] = useState(1);
   const [countChildrens, setCountChildrens] = useState(0);
   const [countRooms, setCountRooms] = useState(1);
-
   const [range, setRange] = useState([
     {
       startDate: new Date(),
@@ -52,54 +54,60 @@ export function BookingSearch({ setNav }) {
     }, [availableRooms]);
 
   const handleSelectCombo = (combo) => {
-    const isSame = selectedCombo === combo;
+    const isSame =
+      selectedCombo &&
+      selectedCombo.length === combo.length &&
+      selectedCombo.every((r, i) => r.id === combo[i].id);
+
     setSelectedCombo(isSame ? null : combo);
-    const adjustedEndDate =
-      range[0].startDate.getTime() === range[0].endDate.getTime()
-        ? addDays(range[0].endDate, 1)
-        : range[0].endDate;
 
     if (isSame) {
       localStorage.removeItem("rangeSeleccionado");
       localStorage.removeItem("habitacionesSeleccionadas");
+      localStorage.removeItem("reservaSubtotal");
+      localStorage.removeItem("reservaHuespedes");
     } else {
       localStorage.setItem(
         "rangeSeleccionado",
         JSON.stringify({
           startDate: range[0].startDate.toISOString(),
-          endDate: adjustedEndDate.toISOString(),
+          endDate: range[0].endDate.toISOString(),
         })
       );
+
       localStorage.setItem(
         "habitacionesSeleccionadas",
-        JSON.stringify({
-          habitaciones: combo.map((r) => Number(r.id)),
-          adultos: Number(countAdults),
-          ninos: Number(countChildrens),
-        })
+        JSON.stringify(combo.map((r) => Number(r.id)))
       );
+      localStorage.setItem(
+        "reservaHuespedes",
+        JSON.stringify({ adultos: countAdults, ninos: countChildrens })
+      );
+
+      const subtotal = combo.reduce((sum, r) => sum + (r.precio || 0), 0);
+      localStorage.setItem("reservaSubtotal", String(subtotal));
     }
   };
 
   const handleSearch = async () => {
-  setSearchLoading(true);
-  setSearched(true);
-  setSelectedCombo(null);
-  localStorage.removeItem("rangeSeleccionado");
-  localStorage.removeItem("habitacionesSeleccionadas");
+    setSearchLoading(true);
+    setSearched(true);
+    setSelectedCombo(null);
+    localStorage.removeItem("rangeSeleccionado");
+    localStorage.removeItem("habitacionesSeleccionadas");
 
-  const validCombos = await searchAvailableRooms({
-    startDate: range[0].startDate,
-    endDate: range[0].endDate,
-    countAdults,
-    countChildrens,
-    countRooms,
-    openPopup,
-  });
+    const validCombos = await searchAvailableRooms({
+      startDate: range[0].startDate,
+      endDate: range[0].endDate,
+      countAdults,
+      countChildrens,
+      countRooms,
+      openPopup,
+    });
 
-  setAvailableRooms(validCombos);
-  setSearchLoading(false);
-};
+    setAvailableRooms(validCombos || []);
+    setSearchLoading(false);
+  };
 
   const totalPrice =
     selectedCombo?.reduce((sum, r) => sum + (r.precio || 0), 0) || 0;
@@ -131,6 +139,35 @@ export function BookingSearch({ setNav }) {
     })
     .slice(0, 10);
 
+  const handleSetAdults = (val) => {
+    if (val + countChildrens > MAX_GUESTS) {
+      const allowed = MAX_GUESTS - countChildrens;
+      setCountAdults(allowed);
+      openPopup && openPopup(`No puedes superar ${MAX_GUESTS} huéspedes en total`);
+    } else {
+      setCountAdults(val);
+    }
+  };
+
+  const handleSetChildrens = (val) => {
+    if (countAdults + val > MAX_GUESTS) {
+      const allowed = MAX_GUESTS - countAdults;
+      setCountChildrens(allowed);
+      openPopup && openPopup(`No puedes superar ${MAX_GUESTS} huéspedes en total`);
+    } else {
+      setCountChildrens(val);
+    }
+  };
+
+  const handleSetRooms = (val) => {
+    if (val > MAX_ROOMS) {
+      setCountRooms(MAX_ROOMS);
+      openPopup && openPopup(`No puedes seleccionar más de ${MAX_ROOMS} habitaciones`);
+    } else {
+      setCountRooms(val);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-xl shadow-lg p-6">
@@ -149,9 +186,7 @@ export function BookingSearch({ setNav }) {
               </span>
               <span className="text-slate-500 text-sm text-center">
                 {`${format(range[0].startDate, "dd/MM/yy")} - ${format(
-                  range[0].startDate.getTime() === range[0].endDate.getTime()
-                    ? addDays(range[0].endDate, 1)
-                    : range[0].endDate,
+                  range[0].endDate,
                   "dd/MM/yy"
                 )}`}
               </span>
@@ -173,7 +208,7 @@ export function BookingSearch({ setNav }) {
                   <span className="text-xs text-slate-600">Adultos</span>
                   <Counter
                     count={countAdults}
-                    setCount={setCountAdults}
+                    setCount={handleSetAdults}
                     min={1}
                   />
                 </div>
@@ -181,7 +216,7 @@ export function BookingSearch({ setNav }) {
                   <span className="text-xs text-slate-600">Niños</span>
                   <Counter
                     count={countChildrens}
-                    setCount={setCountChildrens}
+                    setCount={handleSetChildrens}
                     min={0}
                   />
                 </div>
@@ -200,7 +235,7 @@ export function BookingSearch({ setNav }) {
                 <div className="text-sm font-semibold text-slate-700 text-center">
                   Habitaciones
                 </div>
-                <Counter count={countRooms} setCount={setCountRooms} min={1} />
+                <Counter count={countRooms} setCount={handleSetRooms} min={1} />
               </div>
             </div>
           </div>
@@ -240,20 +275,19 @@ export function BookingSearch({ setNav }) {
 
                   <div className="space-y-4">
                     {recommendedCombos.map((combo, idx) => {
-                      const totalCap = combo.reduce(
-                        (s, r) => s + r.capacidad_total,
-                        0
-                      );
-                      const comboPrice = combo.reduce(
-                        (sum, r) => sum + (r.precio || 0),
-                        0
-                      );
+                      const isSelected = selectedCombo
+                        ? selectedCombo.length === combo.length &&
+                          selectedCombo.every((r, i) => r.id === combo[i].id)
+                        : false;
+
+                      const totalCap = combo.reduce((s, r) => s + r.capacidad_total, 0);
+                      const comboPrice = combo.reduce((sum, r) => sum + (r.precio || 0), 0);
 
                       return (
                         <div
                           key={combo.map((r) => r.id).join("-")}
                           className={`border rounded-lg p-4 shadow-sm transition-all ${
-                            selectedCombo === combo
+                            isSelected
                               ? "border-green-500 bg-green-100"
                               : "border-green-300 bg-white hover:shadow-md"
                           }`}
@@ -269,33 +303,29 @@ export function BookingSearch({ setNav }) {
 
                           <button
                             className={`w-full px-4 py-2 rounded-lg font-semibold transition mb-3 ${
-                              selectedCombo === combo
+                              isSelected
                                 ? "bg-red-500 text-white hover:bg-red-600"
                                 : "bg-green-500 text-white hover:bg-green-600"
                             }`}
                             onClick={() => handleSelectCombo(combo)}
                           >
-                            {selectedCombo === combo
-                              ? "✕ Quitar selección"
-                              : "✓ Seleccionar esta opción"}
+                            {isSelected ? "✕ Quitar selección" : "✓ Seleccionar esta opción"}
                           </button>
 
-                          <div className=" grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {combo.map((r) => {
                               const capacity = r.capacidad_total;
-                              const bedType = (r.habitaciones_camas || []).map(
+                              const bedType = (r.habitaciones_camas || []).map((hc) => ({
+                                tipo: hc?.camas?.nombre || "Cama sin nombre",
+                                cantidad: hc?.cantidad || 0,
+                              }));
+
+                              const services = (r.habitaciones_caracteristicas || []).map(
                                 (hc) => ({
-                                  tipo: hc?.camas?.nombre || "Cama sin nombre",
-                                  cantidad: hc?.cantidad || 0,
+                                  icon: hc.caracteristicas?.icono || "wifi",
+                                  label: hc.caracteristicas?.nombre || "Servicio",
                                 })
                               );
-
-                              const services = (
-                                r.habitaciones_caracteristicas || []
-                              ).map((hc) => ({
-                                icon: hc.caracteristicas?.icono || "wifi",
-                                label: hc.caracteristicas?.nombre || "Servicio",
-                              }));
 
                               return (
                                 <div
@@ -305,21 +335,13 @@ export function BookingSearch({ setNav }) {
                                   <RoomCard
                                     id={r.id}
                                     price={r.precio ?? 0}
-                                    imageNames={[
-                                      `${r.id}.jpeg`,
-                                      `${r.id}_Bano.jpeg`,
-                                    ]}
+                                    imageNames={[`${r.id}.jpeg`, `${r.id}_Bano.jpeg`]}
                                     services={services}
-                                    description={
-                                      r.descripcion ??
-                                      "Sin descripción disponible"
-                                    }
+                                    description={r.descripcion ?? "Sin descripción disponible"}
                                     capacity={capacity}
                                     bedType={bedType}
-                                    selected={selectedCombo === combo}
-                                    disabled={
-                                      !!selectedCombo && selectedCombo !== combo
-                                    }
+                                    selected={isSelected}
+                                    disabled={!!selectedCombo && !isSelected}
                                   />
                                 </div>
                               );
@@ -332,108 +354,95 @@ export function BookingSearch({ setNav }) {
                 </div>
               )}
               
-              {otherCombos.length > 0 && (
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 rounded-xl p-6 border border-blue-200 shadow-md">
-                  <h3 className="text-lg font-bold text-blue-800 mb-4 flex items-center gap-2">
-                    <span className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm">
-                      +
-                    </span>
-                    Otras Opciones
-                  </h3>
+            {otherCombos.length > 0 && (
+            <div className="bg-gradient-to-br from-blue-50 to-sky-50 rounded-xl p-6 border border-blue-200 shadow-md">
+              <h3 className="text-lg font-bold text-blue-800 mb-4 flex items-center gap-2">
+                <span className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm">
+                  +
+                </span>
+                Opciones Disponibles
+              </h3>
 
-                  <div className="space-y-4">
-                    {otherCombos.map((combo, idx) => {
-                      const totalCap = combo.reduce(
-                        (s, r) => s + r.capacidad_total,
-                        0
-                      );
-                      const comboPrice = combo.reduce(
-                        (sum, r) => sum + (r.precio || 0),
-                        0
-                      );
+              <div className="space-y-4">
+                {otherCombos.map((combo, idx) => {
+                  const isSelected = selectedCombo
+                    ? selectedCombo.length === combo.length &&
+                      selectedCombo.every((r, i) => r.id === combo[i].id)
+                    : false;
 
-                      return (
-                        <div
-                          key={combo.map((r) => r.id).join("-")}
-                          className={`border rounded-lg p-4 shadow-sm transition-all ${
-                            selectedCombo === combo
-                              ? "border-blue-500 bg-blue-100"
-                              : "border-blue-300 bg-white hover:shadow-md"
-                          }`}
-                        >
-                          <div className="flex justify-between items-center mb-3">
-                            <div className="text-sm font-semibold text-slate-700">
-                              Opción {idx + 1} – Capacidad: {totalCap} personas
-                            </div>
-                            <div className="text-lg font-bold text-blue-700">
-                              ${comboPrice.toLocaleString("es-CO")}
-                            </div>
-                          </div>
+                  const totalCap = combo.reduce((s, r) => s + r.capacidad_total, 0);
+                  const comboPrice = combo.reduce((sum, r) => sum + (r.precio || 0), 0);
 
-                          <button
-                            className={`w-full px-4 py-2 rounded-lg font-semibold transition mb-3 ${
-                              selectedCombo === combo
-                                ? "bg-red-500 text-white hover:bg-red-600"
-                                : "bg-blue-500 text-white hover:bg-blue-600"
-                            }`}
-                            onClick={() => handleSelectCombo(combo)}
-                          >
-                            {selectedCombo === combo
-                              ? "✕ Quitar selección"
-                              : "✓ Seleccionar esta opción"}
-                          </button>
-
-                          <div className=" grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {combo.map((r) => {
-                              const capacity = r.capacidad_total;
-                              const bedType = (r.habitaciones_camas || []).map(
-                                (hc) => ({
-                                  tipo: hc?.camas?.nombre || "Cama sin nombre",
-                                  cantidad: hc?.cantidad || 0,
-                                })
-                              );
-
-                              const services = (
-                                r.habitaciones_caracteristicas || []
-                              ).map((hc) => ({
-                                icon: hc.caracteristicas?.icono || "wifi",
-                                label: hc.caracteristicas?.nombre || "Servicio",
-                              }));
-
-                              return (
-                                <div
-                                  key={r.id}
-                                  className="bg-white rounded-lg p-2 border border-slate-200 "
-                                >
-                                  <RoomCard
-                                    id={r.id}
-                                    price={r.precio ?? 0}
-                                    imageNames={[
-                                      `${r.id}.jpeg`,
-                                      `${r.id}_Bano.jpeg`,
-                                    ]}
-                                    services={services}
-                                    description={
-                                      r.descripcion ??
-                                      "Sin descripción disponible"
-                                    }
-                                    capacity={capacity}
-                                    bedType={bedType}
-                                    selected={selectedCombo === combo}
-                                    disabled={
-                                      !!selectedCombo && selectedCombo !== combo
-                                    }
-                                  />
-                                </div>
-                              );
-                            })}
-                          </div>
+                  return (
+                    <div
+                      key={combo.map((r) => r.id).join("-")}
+                      className={`border rounded-lg p-4 shadow-sm transition-all ${
+                        isSelected
+                          ? "border-blue-500 bg-blue-100"
+                          : "border-blue-300 bg-white hover:shadow-md"
+                      }`}
+                    >
+                      <div className="flex justify-between items-center mb-3">
+                        <div className="text-sm font-semibold text-slate-700">
+                          Opción {idx + 1} – Capacidad: {totalCap} personas
                         </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
+                        <div className="text-lg font-bold text-blue-700">
+                          ${comboPrice.toLocaleString("es-CO")}
+                        </div>
+                      </div>
+
+                      <button
+                        className={`w-full px-4 py-2 rounded-lg font-semibold transition mb-3 ${
+                          isSelected
+                            ? "bg-red-500 text-white hover:bg-red-600"
+                            : "bg-blue-500 text-white hover:bg-blue-600"
+                        }`}
+                        onClick={() => handleSelectCombo(combo)}
+                      >
+                        {isSelected ? "✕ Quitar selección" : "✓ Seleccionar esta opción"}
+                      </button>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {combo.map((r) => {
+                          const capacity = r.capacidad_total;
+                          const bedType = (r.habitaciones_camas || []).map((hc) => ({
+                            tipo: hc?.camas?.nombre || "Cama sin nombre",
+                            cantidad: hc?.cantidad || 0,
+                          }));
+
+                          const services = (r.habitaciones_caracteristicas || []).map(
+                            (hc) => ({
+                              icon: hc.caracteristicas?.icono || "wifi",
+                              label: hc.caracteristicas?.nombre || "Servicio",
+                            })
+                          );
+
+                          return (
+                            <div
+                              key={r.id}
+                              className="bg-white rounded-lg p-2 border border-slate-200"
+                            >
+                              <RoomCard
+                                id={r.id}
+                                price={r.precio ?? 0}
+                                imageNames={[`${r.id}.jpeg`, `${r.id}_Bano.jpeg`]}
+                                services={services}
+                                description={r.descripcion ?? "Sin descripción disponible"}
+                                capacity={capacity}
+                                bedType={bedType}
+                                selected={isSelected}
+                                disabled={!!selectedCombo && !isSelected}
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
             </>
           ) : searched ? (
             <div className="text-center py-12 bg-white rounded-xl shadow-md border border-slate-200">
@@ -456,7 +465,7 @@ export function BookingSearch({ setNav }) {
         </div>
 
         <div className="lg:w-80" ref={sendRef}>
-          <div className="sticky top-6">
+          <div>
             <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-300 rounded-xl shadow-lg p-6">
               <h3 className="text-lg font-bold text-green-800 mb-4 text-center">
                 Resumen de Reserva
@@ -474,9 +483,7 @@ export function BookingSearch({ setNav }) {
                   </div>
 
                   <div className="bg-white rounded-lg p-4 mb-4 shadow-sm">
-                    <p className="text-sm text-slate-600 mb-2">
-                      Total a pagar:
-                    </p>
+                    <p className="text-sm text-slate-600 mb-2">Total a pagar:</p>
                     <p className="text-3xl font-bold text-green-700">
                       ${totalPrice.toLocaleString("es-CO")}
                     </p>
@@ -497,24 +504,18 @@ export function BookingSearch({ setNav }) {
                 style="primary"
                 iconName="next"
                 onClick={() => {
-                  localStorage.setItem(
-                    "reservaSubtotal",
-                    String(totalPrice || 0)
-                  );
+                  localStorage.setItem("reservaSubtotal", String(totalPrice || 0));
                   setNav(2);
                 }}
                 disabled={!selectedCombo}
-                className={`w-full ${
-                  !selectedCombo ? "opacity-60 cursor-not-allowed" : ""
-                }`}
+                className={`w-full ${!selectedCombo ? "opacity-60 cursor-not-allowed" : ""}`}
               />
             </div>
+
             <Button
               onClick={scrollToTop}
               className={`fixed bottom-6 right-6 p-3 rounded-full bg-emerald-600 text-white shadow-lg transition-all duration-300 hover:bg-emerald-700 ${
-                showUp
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-10 pointer-events-none"
+                showUp ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"
               }`}
               style={"primary"}
               iconName={isMobile ? "arrowDown" : "arrowUp"}

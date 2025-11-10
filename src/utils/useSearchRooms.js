@@ -26,7 +26,6 @@ export async function searchAvailableRooms({
   try {
     const startISO = new Date(startDate).toISOString().split("T")[0];
     const endISO = new Date(endDate).toISOString().split("T")[0];
-   
 
     const { data: res, error } = await supabase
       .from("reservas")
@@ -36,10 +35,10 @@ export async function searchAvailableRooms({
       .gt("fecha_salida", startISO);
 
     if (error) throw error;
-   
+
+
     const reservedIds =
-      res?.flatMap((r) => r.reservas_habitaciones.map((h) => h.id_habitacion)) ||
-      [];
+      res?.flatMap((r) => r.reservas_habitaciones.map((h) => h.id_habitacion)) || [];
 
     let { data: roomsData, error: errRooms } = await supabase
       .from("habitaciones")
@@ -50,9 +49,11 @@ export async function searchAvailableRooms({
         estado_habitacion,
         habitaciones_camas (
           cantidad,
-          camas ( id, nombre , capacidad )
+          camas ( id, nombre, capacidad )
         ),
-        habitaciones_caracteristicas ( id_caracteristica )
+        habitaciones_caracteristicas (
+          caracteristicas ( id, nombre )
+        )
       `)
       .eq("estado_habitacion", "Disponible");
 
@@ -62,10 +63,7 @@ export async function searchAvailableRooms({
     const roomsFree = roomsData.filter((r) => !reservedIds.includes(r.id));
 
     if (roomsFree.length === 0) {
-      openPopup(
-        "⚠️ No hay habitaciones disponibles para las fechas seleccionadas.",
-        "info"
-      );
+      openPopup("⚠️ No hay habitaciones disponibles para las fechas seleccionadas.", "info");
       return [];
     }
 
@@ -74,7 +72,11 @@ export async function searchAvailableRooms({
         (sum, hc) => sum + hc.camas.capacidad * hc.cantidad,
         0
       );
-      return { ...r, capacidad_total };
+
+      const caracteristicas =
+        r.habitaciones_caracteristicas?.map((hc) => hc.caracteristicas?.nombre) || [];
+
+      return { ...r, capacidad_total, caracteristicas };
     });
 
     const combos = getCombinations(roomsWithCapacity, countRooms);
