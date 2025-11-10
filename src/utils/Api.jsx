@@ -429,6 +429,21 @@ export async function getAllBookings(){
     throw error;
   }
 }
+/**
+ * 
+ * @param {*} email 
+ * @returns 
+ */
+export async function getClientByEmail(email) {
+  try {
+    const { data, error } = (await supabase.from("clientes").select("*").eq("email", email).single());
+    if (error) throw new Error("Error al obtener el usuario");
+    return data;
+  } catch (error) {
+    console.error("Error en existClient:", error);
+    throw error;
+  }
+}
 
 const signUpNewUser = async ({ user, email, password }) => {
   user.email = email;

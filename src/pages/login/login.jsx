@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "../../components/Button.jsx";
-import { Header } from "../../components/Header.jsx";
+import  Header  from "../../components/Header.jsx";
 import { RegistUser } from "./registUser.jsx";
 import { LoginUser } from "./loginUser.jsx";
 import { SmallFooter } from "../../components/Footer.jsx";

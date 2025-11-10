@@ -1,7 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export default function Carousel({ images, autoPlayInterval = 5000, className = "" ,disableInterval=false}) {
+export default function Carousel({
+  images,
+  autoPlayInterval = 5000,
+  className = "",
+  disableInterval = false,
+}) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -12,33 +17,30 @@ export default function Carousel({ images, autoPlayInterval = 5000, className = 
     }, autoPlayInterval);
 
     return () => clearInterval(interval);
-  }, [currentIndex, images.length, autoPlayInterval,disableInterval]);
+  }, [images.length, autoPlayInterval, disableInterval]);
 
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % images.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
-
-  const goToSlide = (index) => {
-    setCurrentIndex(index);
-  };
+  const nextSlide = () => setCurrentIndex((prev) => (prev + 1) % images.length);
+  const prevSlide = () => setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+  const goToSlide = (index) => setCurrentIndex(index);
 
   return (
     <div className="relative w-full group">
       <div className={`relative ${className} rounded-xl overflow-hidden shadow-md`}>
-        <img
-          src={images[currentIndex]}
-          alt={`Slide ${currentIndex + 1}`}
-          className="w-full h-full object-cover transition-opacity duration-700"
-          key={currentIndex}
-        />
-        
+        {images.map((src, index) => (
+          <img
+            key={index}
+            src={src}
+            alt={`Slide ${index + 1}`}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
+              index === currentIndex ? "opacity-100" : "opacity-0"
+            }`}
+            draggable="false"
+          />
+        ))}
+
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
 
-       <button
+        <button
           onClick={prevSlide}
           className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white text-gray-800 p-3 rounded-full shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
           aria-label="Anterior"
@@ -65,8 +67,8 @@ export default function Carousel({ images, autoPlayInterval = 5000, className = 
               onClick={() => goToSlide(index)}
               className={`transition-all duration-300 rounded-full ${
                 index === currentIndex
-                  ? 'w-8 h-3 bg-white shadow-lg'
-                  : 'w-3 h-3 bg-white/50 hover:bg-white/80'
+                  ? "w-8 h-3 bg-white shadow-lg"
+                  : "w-3 h-3 bg-white/50 hover:bg-white/80"
               }`}
               aria-label={`Ir a imagen ${index + 1}`}
             />

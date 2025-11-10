@@ -4,13 +4,16 @@ import "./index.css";
 import App from "./App.jsx";
 import { AuthContextProvider } from "./utils/AuthContext.jsx";
 import { PopupProvider } from "./utils/PopupProvider.jsx";
+import { SizeProvider } from "./utils/SizeProvider.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthContextProvider>
-      <PopupProvider>
-        <App />
-      </PopupProvider>
+      <SizeProvider>
+        <PopupProvider>
+          <App />
+        </PopupProvider>
+      </SizeProvider>
     </AuthContextProvider>
   </StrictMode>
 );

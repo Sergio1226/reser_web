@@ -144,7 +144,7 @@ export function RegistUser({ setNav }) {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center h-screen text-xl font-semibold text-gray-700">
+      <div className="flex justify-center items-center  text-xl font-semibold text-gray-700 bg-white/90 h-fit p-10 rounded-2xl w-[380px] border border-primary_dark/20 shadow-xl">
         Cargando datos...
       </div>
     );

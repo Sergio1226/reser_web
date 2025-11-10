@@ -33,7 +33,7 @@ export default function RoomCard({
 
   return (
     <div className={`border rounded-xl shadow-md overflow-hidden mb-6 m-2 bg-white ${disabled ? "opacity-50 pointer-events-none" : ""}`}>
-      <Carousel images={images} height="h-48" />
+      <Carousel images={images} className="h-48" />
 
       <div className="p-4">
         <h2 className="text-xl font-semibold">Habitación {id}</h2>

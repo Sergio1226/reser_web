@@ -8,9 +8,11 @@ import { usePopup } from "../../utils/PopupContext.jsx";
 import { Loading } from "../../components/Animate.jsx";
 import { searchAvailableRooms } from "../../utils/useSearchRooms.js";
 import { format, addDays } from "date-fns";
+import { useSize } from "../../utils/SizeContext.jsx";
 
 export function BookingSearch({ setNav }) {
   const { openPopup } = usePopup();
+  const {isMobile} = useSize();
   
   const sendRef =  useRef(null);
 
@@ -30,24 +32,24 @@ export function BookingSearch({ setNav }) {
   const scrollToTop = () => {
     sendRef?.current?.scrollIntoView({ behavior: "smooth" });
   };
-
-  useEffect(() => {
-    const toggleVisibility = () => {
-      if (window.scrollY > 300) {
-        setShowUp(true);
-      } else {
-        setShowUp(false);
-      }
-    };
-
-    window.addEventListener("scroll", toggleVisibility);
-    return () => window.removeEventListener("scroll", toggleVisibility);
-  }, []);
-
+  
   const [availableRooms, setAvailableRooms] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [selectedCombo, setSelectedCombo] = useState(null);
+  
+    useEffect(() => {
+      const toggleVisibility = () => {
+        if (window.scrollY > 1000&&(availableRooms)) {
+          setShowUp(true);
+        } else {
+          setShowUp(false);
+        }
+      };
+  
+      window.addEventListener("scroll", toggleVisibility);
+      return () => window.removeEventListener("scroll", toggleVisibility);
+    }, [availableRooms]);
 
   const handleSelectCombo = (combo) => {
     const isSame = selectedCombo === combo;
@@ -515,7 +517,7 @@ export function BookingSearch({ setNav }) {
                   : "opacity-0 translate-y-10 pointer-events-none"
               }`}
               style={"primary"}
-              iconName="arrowUp"
+              iconName={isMobile ? "arrowDown" : "arrowUp"}
             />
           </div>
         </div>

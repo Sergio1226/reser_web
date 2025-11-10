@@ -8,17 +8,29 @@ const colors = {
 
   exit: "bg-gradient-to-br from-button_exit to-button_exit_dark text-red-900 shadow-button-exit hover:shadow-button-exit-hover",
 
-  info:
-    "bg-gradient-to-br from-button_bookings to-button_bookings_dark text-green-800 shadow-button-bookings hover:shadow-button-bookings-hover",
+  info: "bg-gradient-to-br from-button_bookings to-button_bookings_dark text-green-800 shadow-button-bookings hover:shadow-button-bookings-hover",
 };
-export function Button({ text, onClick, style, iconName, children, className ,type="button", disabled}) {
+export function Button({
+  text,
+  onClick,
+  style,
+  iconName,
+  children,
+  className,
+  type = "button",
+  disabled,
+}) {
   return (
     <button
       type={type}
       disabled={disabled}
-      className={`px-4 py-2.5 rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 flex items-center gap-2 active:scale-95 
+      className={`px-4 py-2.5 rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 flex items-center gap-2 active:scale-95 whitespace-nowrap
         ${colors[style]} 
-        ${disabled ? "opacity-50 cursor-not-allowed hover:shadow-none hover:-translate-y-0" : ""} 
+        ${
+          disabled
+            ? "opacity-50 cursor-not-allowed hover:shadow-none hover:-translate-y-0"
+            : ""
+        } 
         ${className}`}
       onClick={onClick}
     >

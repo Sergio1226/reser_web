@@ -2,21 +2,23 @@ import { useState, useEffect } from "react";
 import "react-date-range/dist/styles.css";
 import { useNavigate } from "react-router-dom";
 import "react-date-range/dist/theme/default.css";
-import { Header } from "../../components/Header.jsx";
-import ProfileButton from "../../components/ProfileButton.jsx";
+import  Header  from "../../components/Header.jsx";
 import { NavigationTab } from "../../components/NavigationTab.jsx";
 import { Button } from "../../components/Button.jsx";
 import { SmallFooter } from "../../components/Footer.jsx";
 import { Picker } from "../../components/Picker.jsx";
-import { Table } from "../../components/Table.jsx";
+import { TableArray } from "../../components/Table.jsx";
 import { TextField } from "../../components/TextField.jsx";
 import { getClients, getClient } from "../../utils/Api.jsx";
 import { Loading } from "../../components/Animate.jsx";
 import { usePopup } from "../../utils/PopupContext.jsx";
 import { RegistUser } from "./registAdmin.jsx";
+import { UserAuth } from "../../utils/AuthContext.jsx";
 export default function AdminPage() {
   const [nav, setNav] = useState(0);
   const navigate = useNavigate();
+
+  const {signOut} = UserAuth();
 
   const options = [
     {
@@ -48,18 +50,20 @@ export default function AdminPage() {
       <Header>
         <div className="flex flex-col justify-center items-center space-y-2 mt-4 mr-8">
           <Button
-            text="Atrás"
-            style="exit"
+            text="Administracion"
+            style="primary"
+            className="w-full"
             onClick={() => {
               navigate("/dashboard");
             }}
-            iconName="back"
-          />
+            iconName="lock"
+            />
           <Button
-            text="Cerrar Sesion" //Mejor un cerrar sesion o simplemente dejar atras xd, porque perfil no necesitamos
+            text="Cerrar Sesion" 
             style="exit"
+            className="w-full"
             onClick={() => {
-              navigate("/dashboard");
+              signOut().then(() => navigate("/"));
             }}
             iconName="signOut"
           />
@@ -316,7 +320,7 @@ function Clients() {
           </div>
         ) : (
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-            <Table headers={headers} info={clients}></Table>
+            <TableArray headers={headers} info={clients}/>
           </div>
         )}
       </div>

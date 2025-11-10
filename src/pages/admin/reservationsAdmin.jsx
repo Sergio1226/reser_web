@@ -2,14 +2,14 @@ import { useState } from "react";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { Picker } from "../../components/Picker.jsx";
-import { Table } from "../../components/Table.jsx";
+import { TableArray } from "../../components/Table.jsx";
 import { Button } from "../../components/Button.jsx";
 import { CalendarSingle } from "../../components/Calendar.jsx";
 import { getReservationsByDate } from "../../utils/Api.jsx";
 import { usePopup } from "../../utils/PopupContext.jsx";
 import { Loading } from "../../components/Animate.jsx";
 
-export function Reservations() { //No esta funcionando al visualizar las reservas en tabla, falta un filtro que sea mostrar todas las reservas y limpiar filtros como en el de usuarios, por fa no cambie Table
+export function Reservations() { 
   const { openPopup } = usePopup();
   const [status, setStatus] = useState(0);
   const [date, setDate] = useState(new Date());
@@ -29,13 +29,14 @@ export function Reservations() { //No esta funcionando al visualizar las reserva
 
   const handleSearch = async () => {
     if (status === 0) {
-      openPopup("Por favor selecciona una fecha válida", "warning");
+      openPopup("Por favor seleccione una fecha válida", "warning");
       return;
     }
 
     try {
       setLoading(true);
       const { data } = await getReservationsByDate(date, status - 1);
+      
       setBookings(data);
     } catch (error) {
       openPopup(error.message, "warning");
@@ -109,14 +110,14 @@ export function Reservations() { //No esta funcionando al visualizar las reserva
                 {bookings.length === 1 ? "reserva" : "reservas"}
               </p>
             </div>
-            <Table headers={headers} info={bookings}>
+            <TableArray headers={headers} info={bookings}>
               <div className="flex flex-col items-center justify-center space-y-2 flex-1 p-2">
                 <Button
-                  text="No se presentó"
-                  style="bg-red-500 hover:bg-red-600 text-white w-full transition-colors duration-200 shadow-md"
+                  text="Cancelar"
+                  style="exit"
                 />
               </div>
-            </Table>
+            </TableArray>
           </div>
         )}
       </div>

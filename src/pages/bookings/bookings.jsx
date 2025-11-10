@@ -1,5 +1,5 @@
 import { Footer } from "../../components/Footer.jsx";
-import { Header } from "../../components/Header.jsx";
+import Header from "../../components/Header.jsx";
 import ProfileButton from "../../components/ProfileButton.jsx";
 import { Button } from "../../components/Button.jsx";
 import { NavigationTab } from "../../components/NavigationTab.jsx";
@@ -12,6 +12,7 @@ import { useConfirmReservation } from "../../utils/useConfirmReservation";
 import { useNavigate } from "react-router-dom";
 import { BookingSearch } from "./bookingsSearch.jsx";
 import { BookingTable } from "./bookingsList.jsx";
+import { useSize } from "../../utils/SizeContext.jsx";
 
 const options = [
   {
@@ -27,19 +28,28 @@ const options = [
 export default function Bookings() {
   const navigate = useNavigate();
   const [nav, setNav] = useState(0);
+  const {isMobile}=useSize();
 
   return (
-    <div className="min-h-screen flex flex-col font-primary bg-gradient-to-br from-slate-50 to-slate-100 m-0">
+    <div className="min-h-screen max-w-full flex flex-col font-primary bg-gradient-to-br from-slate-50 to-slate-100 m-0 overflow-x-hidden">
       <Header>
-        <div className="flex flex-col justify-center items-center space-y-2 mt-4 mr-8">
+        <div className={`flex flex-row md:flex-col justify-center items-center ${isMobile ? " space-x-2":"space-y-2"} mt-4 mr-8 w-full`}>
+          <Button
+            text="Atrás"
+            style="exit"
+            onClick={() => {
+              navigate("/");
+            }}
+            iconName="back"
+          />
           <ProfileButton toPag={"/login"} />
         </div>
       </Header>
 
-      <main className="flex flex-col flex-1 items-center p-8">
-        <div className="w-full max-w-7xl">
-          <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
-            <div className="bg-gradient-to-r from-green-600 to-green-700 p-8">
+      <main className="flex flex-col flex-1 items-center p-4 sm:p-8 overflow-x-hidden w-full">
+        <div className="w-full max-w-7xl max-w-full">
+          <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-x-hidden">
+            <div className="bg-gradient-to-r from-green-600 to-green-700 p-4 sm:p-8">
               <h1 className="text-3xl font-bold text-white mb-2 text-center">
                 Modulo de Reservas
               </h1>

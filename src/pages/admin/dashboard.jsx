@@ -1,9 +1,10 @@
 import { SmallFooter } from "../../components/Footer.jsx";
-import { Header } from "../../components/Header.jsx";
-import ProfileButton from "../../components/ProfileButton.jsx";
+import Header from "../../components/Header.jsx";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/Button.jsx";
 import { Card } from "../../components/Card.jsx";
+import { UserAuth } from "../../utils/AuthContext.jsx";
+import { useSize } from "../../utils/SizeContext.jsx";
 
 const options = [
   {
@@ -21,6 +22,8 @@ const options = [
 ];
 export default function DashBoard() {
   const navigate = useNavigate();
+  const { signOut } = UserAuth();
+  const {isMobile}= useSize();
 
   return (
     <div className="min-h-screen flex flex-col font-primary bg-gradient-to-br from-gradient_1 to-secondary">
@@ -30,9 +33,9 @@ export default function DashBoard() {
             text="Cerrar Sesion"
             style="exit"
             onClick={() => {
-              navigate("/");
+              signOut();
             }}
-            iconName="signOut" //Falta agregar funcion para que cierre sesion
+            iconName="signOut"
           />
         </div>
       </Header>

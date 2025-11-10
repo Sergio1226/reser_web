@@ -2,17 +2,20 @@ import { useState } from "react";
 import "react-date-range/dist/styles.css";
 import { useNavigate } from "react-router-dom";
 import "react-date-range/dist/theme/default.css";
-import { Header } from "../../components/Header.jsx";
-import ProfileButton from "../../components/ProfileButton.jsx";
+import  Header  from "../../components/Header.jsx";
 import { NavigationTab } from "../../components/NavigationTab.jsx";
 import { Button } from "../../components/Button.jsx";
 import { SmallFooter } from "../../components/Footer.jsx";
 import { Reservations } from "./reservationsAdmin.jsx";
 import { Schedule } from "./schedule.jsx";
+import { UserAuth } from "../../utils/AuthContext.jsx";
+import { BookingsAdmin } from "./bookingsSearch.jsx";
 
 export default function BookingAdmin() {
   const [nav, setNav] = useState(0);
   const navigate = useNavigate();
+
+  const { signOut } = UserAuth();
 
   const options = [
     {
@@ -35,7 +38,7 @@ export default function BookingAdmin() {
   const renderContent = () => {
     switch (nav) {
       case 0:
-        return <Reservations />;
+        return <BookingsAdmin />;
       case 1:
         return <Reservations />;
       case 2:
@@ -50,18 +53,20 @@ export default function BookingAdmin() {
       <Header>
         <div className="flex flex-col justify-center items-center space-y-2 mt-4 mr-8">
           <Button
-            text="Atrás"
-            style="exit"
+            text="Administracion"
+            style="primary"
+            className="w-full"
             onClick={() => {
               navigate("/dashboard");
             }}
-            iconName="back"
-          />
+            iconName="lock"
+            />
           <Button
-            text="Cerrar Sesion" //Falta agregar funcionalidad de cerrar sesion xd
+            text="Cerrar Sesion" 
             style="exit"
+            className="w-full"
             onClick={() => {
-              navigate("/dashboard");
+              signOut();
             }}
             iconName="signOut"
           />
@@ -70,12 +75,12 @@ export default function BookingAdmin() {
       <main className="flex flex-col flex-1 items-center p-8">
         <div className="w-full max-w-7xl">
           <div className="bg-white rounded-2xl shadow-xl border border-black-200 ">
-            <div className="bg-gradient-to-r from-green-600 to-green-700 p-8 ">
+            <div className="bg-gradient-to-r from-green-600 to-green-700 p-8 rounded-t-2xl ">
               <h1 className="text-3xl font-bold text-white mb-2 text-center">
                 Administracion de Reservas
               </h1>
               <p className="text-green-100 text-center">
-                Gestiona tus reservas de manera fácil y rápida.
+                Gestiona las reservas de manera fácil y rápida.
               </p>
             </div>
             <div className="py-4 mt-6 flex justify-center items-center">
