@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../utils/supabase.js";
-import { usePopup } from "../utils/PopupContext.jsX";
+import { usePopup } from "../utils/PopupContext.jsx";
 
 export function useModifyUser() {
   const { openPopup } = usePopup();
