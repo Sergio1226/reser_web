@@ -36,7 +36,6 @@ export function Calendar({ range, setRange ,minDate=new Date()}) {
   onChange={(item) => {
     const { startDate, endDate } = item.selection;
 
-    // ✅ Ajuste automático si selecciona el mismo día
     if (startDate.getTime() === endDate.getTime()) {
       const adjustedEnd = addDays(endDate, 1);
       setRange([{ startDate, endDate: adjustedEnd, key: "selection" }]);
