@@ -10,11 +10,13 @@ import { Reservations } from "./reservationsAdmin.jsx";
 import { Schedule } from "./schedule.jsx";
 import { UserAuth } from "../../utils/AuthContext.jsx";
 import { BookingsAdmin } from "./bookingsSearch.jsx";
+import { useSize } from "../../utils/SizeContext.jsx";
 
 export default function BookingAdmin() {
   const [nav, setNav] = useState(0);
   const navigate = useNavigate();
 
+  const {isMobile}= useSize();
   const { signOut } = UserAuth();
 
   const options = [
@@ -51,7 +53,7 @@ export default function BookingAdmin() {
   return (
     <div className="bg-gradient-to-br from-gradient_1 to-secondary min-h-screen flex flex-col font-primary">
       <Header>
-        <div className="flex flex-col justify-center items-center space-y-2 mt-4 mr-8">
+        <div className={`flex flex-row md:flex-col h-full items-center justify-center ${isMobile ? " space-x-2":"space-y-2"} mt-4 mr-8`}>
           <Button
             text="Administracion"
             style="primary"

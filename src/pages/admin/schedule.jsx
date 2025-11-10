@@ -127,136 +127,141 @@ export function Schedule() {
                 No hay reservas para mostrar
               </p>
             ) : (
-              <div className="rounded-lg border-2 border-gray-200 shadow-md overflow-hidden">
-                <table className="table-fixed w-full border-collapse text-center text-xs">
-                  <thead>
-                    <tr>
-                      <th className="w-20 bg-gradient-to-br from-gray-700 to-gray-800 text-white border border-gray-400 p-2 text-sm font-bold">
-                        Hab.
-                      </th>
-                      {days.map((day, index) => {
-                        const cellDate = getCellDate(date, index);
-                        const isToday =
-                          cellDate.toDateString() === new Date().toDateString();
-                        return (
-                          <th
-                            key={day}
-                            className={`border border-gray-300 p-2 text-xs leading-tight break-words font-semibold transition-colors ${
-                              isToday
-                                ? "bg-gradient-to-br from-green-400 to-emerald-500 text-white shadow-md"
-                                : "bg-gradient-to-br from-gray-100 to-gray-200 text-gray-700"
-                            }`}
-                          >
-                            {day}
-                            <br />
-                            <span className="text-[10px]">
-                              {cellDate.toLocaleDateString()}
-                            </span>
-                          </th>
-                        );
-                      })}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rooms.map((room) => (
-                      <tr
-                        key={room}
-                        className="hover:bg-gray-50 transition-colors"
-                      >
-                        <td className="w-20 bg-gradient-to-br from-gray-100 to-gray-200 border border-gray-300 p-2 font-bold text-gray-700">
-                          {room}
-                        </td>
-                        {days.map((_, index) => {
+              <div className="w-full overflow-x-auto shadow-md rounded-lg">
+                <div className="inline-block min-w-full">
+                  <table className="w-full border-collapse text-center text-xs border-2 border-gray-200">
+                    <thead>
+                      <tr>
+                        <th className="min-w-[80px] w-20 bg-gradient-to-br from-gray-700 to-gray-800 text-white border border-gray-400 p-2 text-sm font-bold sticky left-0 z-20">
+                          Hab.
+                        </th>
+                        {days.map((day, index) => {
                           const cellDate = getCellDate(date, index);
-                          const checkoutRes = getCheckoutReservation(
-                            room,
-                            cellDate
-                          );
-                          const checkinRes = getCheckinReservation(
-                            room,
-                            cellDate
-                          );
-                          const res = getReservation(room, cellDate);
-
-                          let cellContent;
-                          let cellClass =
-                            "border border-gray-300 p-0 text-[11px] font-medium transition-all relative";
-                          if (
-                            checkoutRes &&
-                            checkinRes &&
-                            (checkoutRes.start_date !== checkinRes.start_date ||
-                              checkoutRes.end_date !== checkinRes.end_date)
-                          ) {
-                            cellContent = (
-                              <div className="flex h-full">
-                                <div className="w-1/2 bg-gradient-to-br from-green-300 to-emerald-400 flex items-center justify-center text-gray-800 font-bold py-2 rounded-r-lg text-[10px]">
-                                  {checkoutRes.guest}
-                                </div>
-                                <div className="w-1/2 bg-gradient-to-br from-green-300 to-emerald-400 flex items-center justify-center text-gray-800 font-bold py-2 rounded-l-lg text-[10px]">
-                                  {checkinRes.guest}
-                                </div>
-                              </div>
-                            );
-                          } else if (res) {
-                            const start = normalizeDate(res.start_date);
-                            const end = normalizeDate(res.end_date);
-
-                            const isStart =
-                              cellDate.getTime() === start.getTime();
-                            const isEnd = cellDate.getTime() === end.getTime();
-
-                            if (isStart && isEnd) {
-                              cellContent = (
-                                <div className="flex h-full">
-                                  <div className="w-1/2 bg-white"></div>
-                                  <div className="w-1/2 bg-gradient-to-br from-green-300 to-emerald-400 flex items-center justify-center text-gray-800 font-bold py-2 rounded-l-lg">
-                                    {res.guest}
-                                  </div>
-                                </div>
-                              );
-                            } else if (isStart) {
-                              cellContent = (
-                                <div className="flex h-full">
-                                  <div className="w-1/2 bg-white"></div>
-                                  <div className="w-1/2 bg-gradient-to-br from-green-300 to-emerald-400 flex items-center justify-center text-gray-800 font-bold py-2 rounded-l-lg">
-                                    {res.guest}
-                                  </div>
-                                </div>
-                              );
-                            } else if (isEnd) {
-                              cellContent = (
-                                <div className="flex h-full">
-                                  <div className="w-1/2 bg-gradient-to-br from-green-300 to-emerald-400 flex items-center justify-center text-gray-800 font-bold py-2 rounded-r-lg">
-                                    {res.guest}
-                                  </div>
-                                  <div className="w-1/2 bg-white"></div>
-                                </div>
-                              );
-                            } else {
-                              cellContent = (
-                                <div className="bg-gradient-to-br from-green-300 to-emerald-400 text-gray-800 font-bold flex items-center justify-center py-2 h-full">
-                                  {res.guest}
-                                </div>
-                              );
-                            }
-                          } else {
-                            cellContent = (
-                              <div className="bg-white text-gray-600 hover:bg-blue-50 flex items-center justify-center py-2 h-full">
-                                Libre
-                              </div>
-                            );
-                          }
-
+                          const isToday =
+                            cellDate.toDateString() ===
+                            new Date().toDateString();
                           return (
-                            <td key={room + index} className={cellClass}>
-                              {cellContent}
-                            </td>
+                            <th
+                              key={day}
+                              className={`min-w-[120px] border border-gray-300 p-2 text-xs leading-tight break-words font-semibold transition-colors ${
+                                isToday
+                                  ? "bg-gradient-to-br from-green-400 to-emerald-500 text-white shadow-md"
+                                  : "bg-gradient-to-br from-gray-100 to-gray-200 text-gray-700"
+                              }`}
+                            >
+                              {day}
+                              <br />
+                              <span className="text-[10px]">
+                                {cellDate.toLocaleDateString()}
+                              </span>
+                            </th>
                           );
                         })}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {rooms.map((room) => (
+                        <tr
+                          key={room}
+                          className="hover:bg-gray-50 transition-colors"
+                        >
+                          <td className="min-w-[80px] w-20 bg-gradient-to-br from-gray-100 to-gray-200 border border-gray-300 p-2 font-bold text-gray-700 sticky left-0 z-10">
+                            {room}
+                          </td>
+                          {days.map((_, index) => {
+                            const cellDate = getCellDate(date, index);
+                            const checkoutRes = getCheckoutReservation(
+                              room,
+                              cellDate
+                            );
+                            const checkinRes = getCheckinReservation(
+                              room,
+                              cellDate
+                            );
+                            const res = getReservation(room, cellDate);
+
+                            let cellContent;
+                            let cellClass =
+                              "min-w-[120px] border border-gray-300 p-0 text-[11px] font-medium transition-all relative";
+
+                            if (
+                              checkoutRes &&
+                              checkinRes &&
+                              (checkoutRes.start_date !==
+                                checkinRes.start_date ||
+                                checkoutRes.end_date !== checkinRes.end_date)
+                            ) {
+                              cellContent = (
+                                <div className="flex h-full min-h-[40px]">
+                                  <div className="w-1/2 bg-gradient-to-br from-green-300 to-emerald-400 flex items-center justify-center text-gray-800 font-bold py-2 rounded-r-lg text-[10px]">
+                                    {checkoutRes.guest}
+                                  </div>
+                                  <div className="w-1/2 bg-gradient-to-br from-green-300 to-emerald-400 flex items-center justify-center text-gray-800 font-bold py-2 rounded-l-lg text-[10px]">
+                                    {checkinRes.guest}
+                                  </div>
+                                </div>
+                              );
+                            } else if (res) {
+                              const start = normalizeDate(res.start_date);
+                              const end = normalizeDate(res.end_date);
+                              const isStart =
+                                cellDate.getTime() === start.getTime();
+                              const isEnd =
+                                cellDate.getTime() === end.getTime();
+
+                              if (isStart && isEnd) {
+                                cellContent = (
+                                  <div className="flex h-full min-h-[40px]">
+                                    <div className="w-1/2 bg-white"></div>
+                                    <div className="w-1/2 bg-gradient-to-br from-green-300 to-emerald-400 flex items-center justify-center text-gray-800 font-bold py-2 rounded-l-lg">
+                                      {res.guest}
+                                    </div>
+                                  </div>
+                                );
+                              } else if (isStart) {
+                                cellContent = (
+                                  <div className="flex h-full min-h-[40px]">
+                                    <div className="w-1/2 bg-white"></div>
+                                    <div className="w-1/2 bg-gradient-to-br from-green-300 to-emerald-400 flex items-center justify-center text-gray-800 font-bold py-2 rounded-l-lg">
+                                      {res.guest}
+                                    </div>
+                                  </div>
+                                );
+                              } else if (isEnd) {
+                                cellContent = (
+                                  <div className="flex h-full min-h-[40px]">
+                                    <div className="w-1/2 bg-gradient-to-br from-green-300 to-emerald-400 flex items-center justify-center text-gray-800 font-bold py-2 rounded-r-lg">
+                                      {res.guest}
+                                    </div>
+                                    <div className="w-1/2 bg-white"></div>
+                                  </div>
+                                );
+                              } else {
+                                cellContent = (
+                                  <div className="bg-gradient-to-br from-green-300 to-emerald-400 text-gray-800 font-bold flex items-center justify-center py-2 h-full min-h-[40px]">
+                                    {res.guest}
+                                  </div>
+                                );
+                              }
+                            } else {
+                              cellContent = (
+                                <div className="bg-white text-gray-600 hover:bg-blue-50 flex items-center justify-center py-2 h-full min-h-[40px]">
+                                  Libre
+                                </div>
+                              );
+                            }
+
+                            return (
+                              <td key={room + index} className={cellClass}>
+                                {cellContent}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
           </div>

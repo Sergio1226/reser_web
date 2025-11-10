@@ -31,7 +31,7 @@ export default function Bookings() {
   const {isMobile}=useSize();
 
   return (
-    <div className="min-h-screen max-w-full flex flex-col font-primary bg-gradient-to-br from-slate-50 to-slate-100 m-0 overflow-x-hidden">
+    <div className="min-h-screen max-w-full flex flex-col font-primary bg-gradient-to-br from-gradient_1 to-secondary m-0 overflow-x-hidden">
       <Header>
         <div className={`flex flex-row md:flex-col justify-center items-center ${isMobile ? " space-x-2":"space-y-2"} mt-4 mr-8 w-full`}>
           <Button
@@ -116,7 +116,7 @@ function ExtraServices({ setNav }) {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-6 shadow-lg text-white">
+      <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-6 shadow-lg text-white">
         <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
           <span className="text-3xl">🛎️</span>Servicios Adicionales
         </h2>
@@ -201,7 +201,7 @@ function ExtraServices({ setNav }) {
           </div>
         </div>
 
-        <div className="flex gap-3 justify-center pt-4">
+        <div className="flex flex-col md:flex-row gap-3 justify-center pt-4">
           <Button style="exit" iconName="back" text="Atrás" onClick={() => setNav(0)} />
           <Button
             style="primary"
@@ -227,7 +227,6 @@ function ExtraServices({ setNav }) {
 function ConfirmReservation({ setNav }) {
   const { resumen, serviciosInfo, handleConfirm } = useConfirmReservation(setNav);
 
-  // Info de habitaciones y fechas
   const habitaciones = JSON.parse(localStorage.getItem("habitacionesSeleccionadas") || "[]");
   const range = JSON.parse(
     localStorage.getItem("rangeSeleccionado") ||
@@ -254,11 +253,9 @@ function ConfirmReservation({ setNav }) {
         </p>
       </div>
 
-      {/* Resumen completo */}
       <div className="bg-white rounded-xl shadow-md border border-slate-200 p-6 space-y-4">
         <h3 className="text-lg font-bold text-slate-800 mb-4">Resumen Final</h3>
 
-        {/* Fechas y huéspedes */}
         <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 space-y-2">
           <p className="text-sm text-slate-600">Check-In:</p>
           <p className="text-slate-800 font-medium">
@@ -274,7 +271,6 @@ function ConfirmReservation({ setNav }) {
           </p>
         </div>
 
-        {/* Habitaciones seleccionadas */}
         <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
           <p className="text-sm text-slate-600 mb-2">Habitaciones seleccionadas:</p>
           {habitaciones.length > 0 ? (
@@ -290,7 +286,6 @@ function ConfirmReservation({ setNav }) {
           <p className="text-slate-800 font-semibold">${subtotalHabitaciones.toLocaleString()} COP</p>
         </div>
 
-        {/* Servicios adicionales */}
         <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
           <p className="text-sm font-bold text-slate-700 mb-3">
             Servicios adicionales:
@@ -332,7 +327,6 @@ function ConfirmReservation({ setNav }) {
           )}
         </div>
 
-        {/* Total general */}
         <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-6 border-2 border-green-300 mt-4">
           <div className="flex justify-between items-center">
             <span className="text-xl font-bold text-green-800">

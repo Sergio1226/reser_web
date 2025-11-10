@@ -51,7 +51,7 @@ export default function DashBoard() {
                 Administra tu hospedaje de manera práctica y eficiente.
               </p>
             </div>
-            <div className="py-4 px-8 mt-6  mb-6 flex justify-center items-center flex-row space-x-8">
+            <div className={`py-4 px-8 mt-6  mb-6 flex justify-center items-center flex-col md:flex-row ${isMobile?"space-y-8":"space-x-8"}`}>
               <Card
                 option={options[0]}
                 onClick={() => navigate("/bookingAdmin")}

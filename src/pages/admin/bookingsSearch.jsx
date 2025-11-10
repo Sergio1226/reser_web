@@ -10,6 +10,7 @@ import { searchAvailableRooms } from "../../utils/useSearchRooms.js";
 import { format, addDays } from "date-fns";
 import { useExtraServices } from "../../utils/useExtraServices.js";
 import { getClientByEmail } from "../../utils/Api.jsx";
+import { useConfirmReservation } from "../../utils/useConfirmReservation.js";
 
 export function BookingsAdmin(){
   const [nav,setNav] = useState(0);
@@ -18,9 +19,11 @@ export function BookingsAdmin(){
       case 0:
         return <SearchBookingsAdmin setNav={setNav} />;
       case 1:
-        return <AdminExtraServices setNav={setNav} />;
+        return <ExtraServices setNav={setNav} />;
       case 2:
         return <AdminSelectClient setNav={setNav} />;
+      case 3:
+        return <AdminConfirmReservation setNav={setNav} />;
       default:
         return <SearchBookingsAdmin setNav={setNav} />;
     }
@@ -35,7 +38,6 @@ function SearchBookingsAdmin({ setNav }) {
 
   const [countAdults, setCountAdults] = useState(1);
   const [countChildrens, setCountChildrens] = useState(0);
-  const [countRooms, setCountRooms] = useState(1);
 
   const [range, setRange] = useState([
     {
@@ -72,30 +74,6 @@ function SearchBookingsAdmin({ setNav }) {
     loadAdditionalServices();
   }, [openPopup]);
 
-  const getServiceIcon = (nombre) => {
-    const nombreLower = nombre.toLowerCase();
-    if (nombreLower.includes("desayuno")) return "🍳";
-    if (nombreLower.includes("almuerzo")) return "🍽️";
-    if (nombreLower.includes("cena")) return "🌙";
-    if (
-      nombreLower.includes("transporte") ||
-      nombreLower.includes("aeropuerto")
-    )
-      return "🚕";
-    if (nombreLower.includes("tour")) return "🗺️";
-    if (nombreLower.includes("masaje")) return "💆";
-    if (nombreLower.includes("spa")) return "💆‍♀️";
-    if (nombreLower.includes("lavanderia") || nombreLower.includes("lavado"))
-      return "👔";
-    if (
-      nombreLower.includes("parking") ||
-      nombreLower.includes("estacionamiento")
-    )
-      return "🅿️";
-    return "⭐";
-  };
-
-
   const handleSearchRooms = async () => {
     setSearchLoading(true);
     setSearched(true);
@@ -106,7 +84,7 @@ function SearchBookingsAdmin({ setNav }) {
       endDate: range[0].endDate,
       countAdults,
       countChildrens,
-      countRooms,
+      countRooms:1,
       openPopup,
     });
 
@@ -135,27 +113,6 @@ function SearchBookingsAdmin({ setNav }) {
         return [...prev, room];
       }
     });
-  };
-
-  const handleToggleService = (service) => {
-    setSelectedServices((prev) => {
-      const exists = prev.find((s) => s.id === service.id);
-      if (exists) {
-        return prev.filter((s) => s.id !== service.id);
-      } else {
-        return [...prev, { ...service, cantidad: 1 }];
-      }
-    });
-  };
-
-  const handleServiceQuantityChange = (serviceId, change) => {
-    setSelectedServices((prev) =>
-      prev.map((s) =>
-        s.id === serviceId
-          ? { ...s, cantidad: Math.max(1, s.cantidad + change) }
-          : s
-      )
-    );
   };
 
   const calculateNights = () => {
@@ -202,11 +159,9 @@ function SearchBookingsAdmin({ setNav }) {
 
     localStorage.setItem(
       "habitacionesSeleccionadas",
-      JSON.stringify({
-        habitaciones: selectedRooms.map((r) => Number(r.id)),
-        adultos: Number(countAdults),
-        ninos: Number(countChildrens),
-      })
+      JSON.stringify(
+        selectedRooms.map((r) => Number(r.id))
+      )
     );
 
     const serviciosFormato = {};
@@ -221,7 +176,7 @@ function SearchBookingsAdmin({ setNav }) {
 
     localStorage.setItem("reservaSubtotal", String(totalRoomsPrice || 0));
 
-    setNav(2);
+    setNav(1);
   };
 
   const endDate =
@@ -230,7 +185,7 @@ function SearchBookingsAdmin({ setNav }) {
       : range[0].endDate;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 ">
       <div className="bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-xl shadow-lg p-6">
         <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
           <span className="text-2xl">🔍</span>
@@ -238,7 +193,7 @@ function SearchBookingsAdmin({ setNav }) {
         </h2>
 
         <div className="flex flex-col lg:flex-row gap-4 justify-center lg:items-stretch">
-          <div className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow flex items-center justify-center gap-4 flex-1">
+          <div className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow flex items-center justify-center gap-4 ">
             <Calendar range={range} setRange={setRange} />
             <div className="flex flex-col items-center">
               <span className="text-sm font-semibold text-slate-700 text-center">
@@ -256,7 +211,7 @@ function SearchBookingsAdmin({ setNav }) {
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow flex-1 flex flex-col justify-center">
+          <div className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow flex flex-col justify-center">
             <div className="flex items-center gap-3">
               <Icon
                 name="guest"
@@ -287,21 +242,6 @@ function SearchBookingsAdmin({ setNav }) {
             </div>
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow flex-1 flex items-center justify-center">
-            <div className="flex items-center gap-3">
-              <Icon
-                name="bed"
-                alt="Habitaciones"
-                style="size-8 text-blue-600 flex-shrink-0"
-              />
-              <div className="flex flex-col space-y-2 items-center">
-                <div className="text-sm font-semibold text-slate-700 text-center">
-                  Habitaciones
-                </div>
-                <Counter count={countRooms} setCount={setCountRooms} min={1} />
-              </div>
-            </div>
-          </div>
         </div>
 
         <div className="mt-6 flex justify-center">
@@ -327,9 +267,7 @@ function SearchBookingsAdmin({ setNav }) {
           ) : availableRooms.length > 0 ? (
             <div className="bg-gradient-to-br from-blue-50 to-sky-50 rounded-xl p-6 border border-blue-200 shadow-md">
               <h3 className="text-lg font-bold text-blue-800 mb-4 flex items-center gap-2">
-                <span className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm">
-                  🏨
-                </span>
+                
                 Habitaciones Disponibles ({availableRooms.length})
               </h3>
 
@@ -359,10 +297,9 @@ function SearchBookingsAdmin({ setNav }) {
                           ? "border-blue-500 bg-blue-100 shadow-md"
                           : "border-slate-300 bg-white hover:shadow-md hover:border-blue-300"
                       }`}
-                      onClick={() => handleToggleRoom(room)}
                     >
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="flex-1">
+                      <div className="flex justify-between items-start ">
+                        <div className="w-full">
                           <RoomCard
                             id={room.id}
                             price={room.precio ?? 0}
@@ -376,20 +313,11 @@ function SearchBookingsAdmin({ setNav }) {
                             }
                             capacity={capacity}
                             bedType={bedType}
+                            plus
+                            onClick={() => handleToggleRoom(room)}
                             selected={isSelected}
                             disabled={false}
                           />
-                        </div>
-                        <div
-                          className={`w-6 h-6 rounded border-2 flex items-center justify-center ml-2 flex-shrink-0 ${
-                            isSelected
-                              ? "bg-blue-500 border-blue-500"
-                              : "border-slate-300"
-                          }`}
-                        >
-                          {isSelected && (
-                            <span className="text-white text-sm">✓</span>
-                          )}
                         </div>
                       </div>
                     </div>
@@ -413,109 +341,6 @@ function SearchBookingsAdmin({ setNav }) {
               <p className="text-slate-400 font-medium">
                 Realiza una búsqueda para ver habitaciones disponibles
               </p>
-            </div>
-          )}
-
-          {availableRooms.length > 0 && (
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200 shadow-md">
-              <h3 className="text-lg font-bold text-green-800 mb-4 flex items-center gap-2">
-                <span className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm">
-                  +
-                </span>
-                Servicios Adicionales
-              </h3>
-
-              {servicesLoading ? (
-                <div className="text-center py-6">
-                  <Loading />
-                  <p className="text-slate-600 text-sm mt-2">
-                    Cargando servicios...
-                  </p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {additionalServices &&
-                    additionalServices.map((service) => {
-                      const selected = selectedServices.find(
-                        (s) => s.id === service.id
-                      );
-
-                      return (
-                        <div
-                          key={service.id}
-                          className={`border rounded-lg p-4 transition-all ${
-                            selected
-                              ? "border-green-500 bg-green-100"
-                              : "border-slate-300 bg-white hover:shadow-md hover:border-green-300"
-                          }`}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                              <span className="text-2xl">
-                                {service.icono ||
-                                  getServiceIcon(service.nombre)}
-                              </span>
-                              <div>
-                                <h4 className="font-semibold text-slate-800">
-                                  {service.nombre}
-                                </h4>
-                                <p className="text-xs text-slate-500">
-                                  {service.descripcion}
-                                </p>
-                                <p className="text-sm text-slate-600 font-semibold">
-                                  ${service.precio.toLocaleString("es-CO")}
-                                </p>
-                              </div>
-                            </div>
-                            <button
-                              onClick={() => handleToggleService(service)}
-                              className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
-                                selected
-                                  ? "bg-green-500 border-green-500"
-                                  : "border-slate-300 hover:border-green-400"
-                              }`}
-                            >
-                              {selected && (
-                                <span className="text-white text-sm">✓</span>
-                              )}
-                            </button>
-                          </div>
-
-                          {selected && (
-                            <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-200">
-                              <span className="text-sm text-slate-600">
-                                Cantidad:
-                              </span>
-                              <div className="flex items-center gap-2">
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleServiceQuantityChange(service.id, -1);
-                                  }}
-                                  className="w-7 h-7 rounded bg-green-500 text-white hover:bg-green-600 flex items-center justify-center"
-                                >
-                                  -
-                                </button>
-                                <span className="font-semibold text-slate-800 w-8 text-center">
-                                  {selected.cantidad}
-                                </span>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleServiceQuantityChange(service.id, 1);
-                                  }}
-                                  className="w-7 h-7 rounded bg-green-500 text-white hover:bg-green-600 flex items-center justify-center"
-                                >
-                                  +
-                                </button>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                </div>
-              )}
             </div>
           )}
         </div>
@@ -665,7 +490,7 @@ export function AdminExtraServices({ setNav }) {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl p-6 shadow-lg text-white">
+      <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-6 shadow-lg text-white">
         <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
           <span className="text-3xl">🛎️</span>
           Servicios Adicionales (Admin)
@@ -747,14 +572,17 @@ export function AdminExtraServices({ setNav }) {
           </div>
         </div>
 
-        <div className="flex gap-3 justify-center pt-4">
+      </div>
+        <div className="flex gap-3 justify-center items-center py-4 flex-col md:flex-row ">
           <Button
             style="exit"
             iconName="back"
-            text="Atrás"
+            className="w-fit"
+            text="Cancelar"
             onClick={() => setNav(0)}
-          />
+            />
           <Button
+            className="w-fit"
             style="primary"
             text="Seleccionar Cliente"
             iconName="next"
@@ -766,14 +594,155 @@ export function AdminExtraServices({ setNav }) {
                 serviciosSeleccionados: selected,
               };
               localStorage.setItem("reservaDatos", JSON.stringify(resumen));
-              setNav(3);
+              setNav(2);
             }}
           />
         </div>
-      </div>
     </div>
   );
 }
+
+function ExtraServices({ setNav }) {
+  const storedSubtotal = Number(localStorage.getItem("reservaSubtotal") || 0);
+  const subtotal = storedSubtotal ?? 0;
+
+  const huespedes = JSON.parse(
+    localStorage.getItem("reservaHuespedes") || '{"adultos":1,"ninos":0}'
+  );
+  const totalHuespedes = (huespedes.adultos || 1) + (huespedes.ninos || 0);
+
+  const { services, selected, loading, setServiceCount, totalServicios, totalGeneral } =
+    useExtraServices(subtotal);
+
+  if (loading) {
+    return (
+      <div className="text-center py-12 bg-white rounded-xl shadow-md border border-slate-200">
+        <p className="text-slate-600 font-medium">Cargando servicios adicionales...</p>
+      </div>
+    );
+  }
+
+  const desayuno = services.find((s) => s.nombre === "Desayuno");
+  const parqueadero = services.find((s) => s.nombre === "Parqueadero");
+  const senderismo = services.find((s) => s.nombre === "Senderismo");
+
+  const getLabel = (s) => {
+    if (s.id === desayuno?.id) return "por huésped";
+    if (s.id === parqueadero?.id) return "por vehículo";
+    if (s.id === senderismo?.id) return "por persona";
+    return "";
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto space-y-6">
+      <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-6 shadow-lg text-white">
+        <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
+          <span className="text-3xl">🛎️</span>Servicios Adicionales
+        </h2>
+        <p className="text-blue-100">Mejora tu experiencia con nuestros servicios extras</p>
+      </div>
+
+      <div className="space-y-4">
+        {desayuno && (
+        <div className="bg-white p-4 rounded shadow flex justify-between items-center">
+          <div>
+            <h3 className="font-bold text-lg">{desayuno.nombre}</h3>
+            <p className="text-sm text-gray-500">{desayuno.descripcion}</p>
+            <p className="text-lg font-semibold text-blue-700 mt-1">
+              ${desayuno.precio.toLocaleString()} COP <span className="text-sm text-gray-500">/ por persona</span>
+            </p>
+          </div>
+          <button
+            className={`px-4 py-2 rounded ${
+              selected[desayuno.id] ? "bg-red-500 hover:bg-red-600" : "bg-green-500 hover:bg-green-600"
+            } text-white`}
+            onClick={() =>
+              setServiceCount(desayuno.id, selected[desayuno.id] ? 0 : totalHuespedes)
+            }
+          >
+            {selected[desayuno.id] ? "Quitar desayuno" : `Agregar desayuno para ${totalHuespedes} huéspedes`}
+          </button>
+        </div>
+      )}
+
+      {services
+        .filter((s) => s.id !== desayuno?.id)
+        .map((s) => {
+          let maxCount = 1000;
+
+          if (s.id === senderismo?.id) maxCount = totalHuespedes;
+          if (s.id === parqueadero?.id) maxCount = totalHuespedes;
+
+          return (
+            <div
+              key={s.id}
+              className="bg-white rounded-xl shadow-md border border-slate-200 p-6 hover:shadow-lg transition-all"
+            >
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div className="flex-1">
+                  <h3 className="font-bold text-lg text-slate-800">{s.nombre}</h3>
+                  <p className="text-sm text-slate-600 mt-1">{s.descripcion}</p>
+                  <p className="text-lg font-semibold text-blue-700 mt-2">
+                    ${s.precio.toLocaleString()} COP{" "}
+                    {getLabel(s) && <span className="text-sm text-gray-500">/ {getLabel(s)}</span>}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-slate-600 font-medium">Cantidad:</span>
+                  <Counter
+                    count={selected[s.id] || 0}
+                    setCount={(val) => setServiceCount(s.id, val)}
+                    min={0}
+                    max={maxCount}
+                  />
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl shadow-lg border border-green-200 p-6">
+        <h3 className="text-lg font-bold text-green-800 mb-4">Resumen de Costos</h3>
+
+        <div className="space-y-3 mb-4">
+          <div className="flex justify-between items-center py-2 border-b border-green-200">
+            <span className="text-slate-700 font-medium">Subtotal habitaciones:</span>
+            <span className="text-slate-800 font-semibold">${subtotal.toLocaleString()} COP</span>
+          </div>
+          <div className="flex justify-between items-center py-2 border-b border-green-200">
+            <span className="text-slate-700 font-medium">Servicios adicionales:</span>
+            <span className="text-slate-800 font-semibold">${totalServicios.toLocaleString()} COP</span>
+          </div>
+          <div className="flex justify-between items-center py-3 mt-2">
+            <span className="text-xl font-bold text-green-800">TOTAL A PAGAR:</span>
+            <span className="text-2xl font-bold text-green-700">${totalGeneral.toLocaleString()} COP</span>
+          </div>
+        </div>
+      </div>
+
+        <div className="flex flex-col md:flex-row gap-3 justify-center py-4 ">
+          <Button style="exit" iconName="back" text="Atrás" onClick={() => setNav(0)} />
+          <Button
+            style="primary"
+            text="Continuar con la reserva"
+            iconName="next"
+            onClick={() => {
+              const resumen = {
+                subtotalHabitaciones: subtotal,
+                subtotalServicios: totalServicios,
+                totalGeneral,
+                serviciosSeleccionados: selected,
+              };
+              localStorage.setItem("reservaDatos", JSON.stringify(resumen));
+              setNav(2);
+            }}
+          />
+        </div>
+    </div>
+  );
+}
+
 
 export function AdminSelectClient({ setNav }) {
   const { openPopup } = usePopup();
@@ -785,6 +754,9 @@ export function AdminSelectClient({ setNav }) {
   const handleSearchClient = async () => {
     if (!email || !email.includes("@")) {
       openPopup("Por favor ingresa un correo válido", "warning");
+      setEmail("");
+      setClientFound(null);
+      setSearched(true);
       return;
     }
 
@@ -798,7 +770,6 @@ export function AdminSelectClient({ setNav }) {
       setClientFound(data);
     } catch (error) {
       console.error("Error al buscar cliente:", error);
-      openPopup("Error al buscar el cliente", "error");
     } finally {
       setSearchLoading(false);
     }
@@ -811,17 +782,17 @@ export function AdminSelectClient({ setNav }) {
     }
 
     localStorage.setItem("clienteSeleccionado", JSON.stringify(clientFound));
-    setNav(4);
+    setNav(3);
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-xl p-6 shadow-lg text-white">
+    <div className="max-w-2xl mx-auto space-y-6 mb-4">
+      <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-6 shadow-lg text-white">
         <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
           <span className="text-3xl">👤</span>
           Seleccionar Cliente
         </h2>
-        <p className="text-purple-100">
+        <p className="text-green-100">
           Busca al cliente por su correo electrónico para asignarle la reserva
         </p>
       </div>
@@ -838,7 +809,7 @@ export function AdminSelectClient({ setNav }) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && handleSearchClient()}
-            className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
           />
           <Button
             text={searchLoading ? "Buscando..." : "Buscar"}
@@ -948,9 +919,9 @@ export function AdminSelectClient({ setNav }) {
       <div className="flex gap-4 justify-center">
         <Button
           style="exit"
-          text="Atrás"
+          text="Cancelar"
           iconName="back"
-          onClick={() => setNav(2)}
+          onClick={() => setNav(0)}
         />
         <Button
           style="primary"
@@ -960,6 +931,221 @@ export function AdminSelectClient({ setNav }) {
           disabled={!clientFound}
           className={!clientFound ? "opacity-60 cursor-not-allowed" : ""}
         />
+      </div>
+    </div>
+  );
+}
+
+function AdminConfirmReservation({ setNav }) {
+  const [loading, setLoading] = useState(false);
+  const {handleConfirmWithEmail} = useConfirmReservation(setNav);
+
+  const rangeData = JSON.parse(localStorage.getItem("rangeSeleccionado") || "{}");
+  const habitacionesData = JSON.parse(localStorage.getItem("habitacionesSeleccionadas") || "[]");
+  const huespedesData = JSON.parse(localStorage.getItem("reservaHuespedes") || "{}");
+  const serviciosData = JSON.parse(localStorage.getItem("serviciosAdicionalesAdmin") || "{}");
+  const reservaDatos = JSON.parse(localStorage.getItem("reservaDatos") || "{}");
+  const clienteData = JSON.parse(localStorage.getItem("clienteSeleccionado") || "{}");
+
+  const startDate = rangeData.startDate ? new Date(rangeData.startDate) : null;
+  const endDate = rangeData.endDate ? new Date(rangeData.endDate) : null;
+
+  const calculateNights = () => {
+    if (!startDate || !endDate) return 0;
+    const diffTime = Math.abs(endDate - startDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return Math.max(1, diffDays);
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-6 mb-6">
+      <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-6 shadow-lg text-white">
+        <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
+          <span className="text-3xl">✅</span>
+          Confirmar Reserva
+        </h2>
+        <p className="text-blue-100">
+          Revisa todos los detalles antes de confirmar la reserva
+        </p>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-md border border-slate-200 p-6">
+        <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+          <span className="text-2xl">👤</span>
+          Información del Cliente
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <p className="text-sm text-slate-600">Nombre completo</p>
+            <p className="font-semibold text-slate-800">
+              {clienteData.primer_nombre} {clienteData.segundo_nombre || ""} {clienteData.primer_apellido} {clienteData.segundo_apellido || ""}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-slate-600">Correo electrónico</p>
+            <p className="font-semibold text-slate-800">{clienteData.email}</p>
+          </div>
+          <div>
+            <p className="text-sm text-slate-600">Documento</p>
+            <p className="font-semibold text-slate-800">
+              {clienteData.documento || "No registrado"}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-md border border-slate-200 p-6">
+        <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+          <span className="text-2xl">📅</span>
+          Fechas y Huéspedes
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <p className="text-sm text-slate-600">Check-in</p>
+            <p className="font-semibold text-slate-800">
+              {startDate ? format(startDate, "dd/MM/yyyy") : "No definido"}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-slate-600">Check-out</p>
+            <p className="font-semibold text-slate-800">
+              {endDate ? format(endDate, "dd/MM/yyyy") : "No definido"}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-slate-600">Noches</p>
+            <p className="font-semibold text-slate-800">
+              {calculateNights()} noche{calculateNights() > 1 ? "s" : ""}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-slate-600">Adultos</p>
+            <p className="font-semibold text-slate-800">
+              {huespedesData.adultos || 0}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-slate-600">Niños</p>
+            <p className="font-semibold text-slate-800">
+              {huespedesData.ninos || 0}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-md border border-slate-200 p-6">
+        <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+          <span className="text-2xl">🛏️</span>
+          Habitaciones Seleccionadas
+        </h3>
+        <div className="space-y-2">
+          { habitacionesData.length > 0 ? (
+            habitacionesData.map((room, index) => (
+              <div
+                key={index}
+                className="flex justify-between items-center py-3 px-4 bg-blue-50 rounded-lg border border-blue-200"
+              >
+                <span className="font-medium text-slate-800">
+                  Habitación #{room}
+                </span>
+                <span className="text-sm text-slate-600">
+                  {calculateNights()} noche{calculateNights() > 1 ? "s" : ""}
+                </span>
+              </div>
+            ))
+          ) : (
+            <p className="text-slate-500">No hay habitaciones seleccionadas</p>
+          )}
+        </div>
+      </div>
+
+      {Object.keys(serviciosData).length > 0 && (
+        <div className="bg-white rounded-xl shadow-md border border-slate-200 p-6">
+          <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <span className="text-2xl">🛎️</span>
+            Servicios Adicionales
+          </h3>
+          <div className="space-y-2">
+            {Object.entries(serviciosData).map(([serviceId, cantidad]) => (
+              cantidad > 0 && (
+                <div
+                  key={serviceId}
+                  className="flex justify-between items-center py-3 px-4 bg-green-50 rounded-lg border border-green-200"
+                >
+                  <span className="font-medium text-slate-800">
+                    Servicio ID: {serviceId}
+                  </span>
+                  <span className="text-sm text-slate-600">
+                    Cantidad: {cantidad}
+                  </span>
+                </div>
+              )
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl shadow-lg border border-green-300 p-6">
+        <h3 className="text-lg font-bold text-green-800 mb-4 flex items-center gap-2">
+          <span className="text-2xl">💰</span>
+          Resumen de Costos
+        </h3>
+        <div className="space-y-3">
+          <div className="flex justify-between items-center py-2 border-b border-green-200">
+            <span className="text-slate-700 font-medium">
+              Subtotal Habitaciones:
+            </span>
+            <span className="font-semibold text-slate-800">
+              ${(reservaDatos.subtotalHabitaciones || 0).toLocaleString("es-CO")} COP
+            </span>
+          </div>
+          <div className="flex justify-between items-center py-2 border-b border-green-200">
+            <span className="text-slate-700 font-medium">
+              Servicios Adicionales:
+            </span>
+            <span className="font-semibold text-slate-800">
+              ${(reservaDatos.subtotalServicios || 0).toLocaleString("es-CO")} COP
+            </span>
+          </div>
+          <div className="flex justify-between items-center py-4 bg-white rounded-lg px-4 mt-2">
+            <span className="text-xl font-bold text-green-800">
+              TOTAL A PAGAR:
+            </span>
+            <span className="text-3xl font-bold text-green-700">
+              ${(reservaDatos.totalGeneral || 0).toLocaleString("es-CO")} COP
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className=" p-6">
+        {loading ? (
+          <div className="text-center py-8">
+            <Loading />
+            <p className="text-slate-600 mt-4 font-medium">
+              Creando reserva...
+            </p>
+            <p className="text-sm text-slate-500 mt-2">
+              Por favor espera un momento
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              style="exit"
+              text="Cancelar"
+              iconName="back"
+              onClick={() => setNav(0)}
+            />
+            <Button
+              style="primary"
+              text="Confirmar Reserva"
+              iconName="check"
+              onClick={()=>handleConfirmWithEmail().then(() => setNav(0))}
+              className="sm:px-8"
+            />
+          </div>
+        )}
       </div>
     </div>
   );

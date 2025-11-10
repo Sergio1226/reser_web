@@ -1,8 +1,9 @@
 import Logo from "/src/assets/logo.png";
 import { useSize } from "../utils/SizeContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Header({ children }) {
-
+  const navigate = useNavigate();
   const {isMobile} = useSize();
   
   return (
@@ -23,6 +24,7 @@ export default function Header({ children }) {
             className={`bg-white rounded-full p-2 shadow-lg ${
               isMobile ? "w-[60px] h-[60px]" : ""
             }`}
+            onClick={() => navigate("/")}
           >
             <img
               src={Logo}
@@ -40,6 +42,7 @@ export default function Header({ children }) {
               ? "text-center mt-2"
               : "absolute left-1/2 transform -translate-x-1/2 text-center"
           }`}
+          onClick={() => navigate("/")}
         >
           <p className="text-white/90 text-xs sm:text-sm font-semibold tracking-widest uppercase mb-1">
             Hotel

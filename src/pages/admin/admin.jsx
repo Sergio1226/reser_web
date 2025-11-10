@@ -14,10 +14,13 @@ import { Loading } from "../../components/Animate.jsx";
 import { usePopup } from "../../utils/PopupContext.jsx";
 import { RegistUser } from "./registAdmin.jsx";
 import { UserAuth } from "../../utils/AuthContext.jsx";
+import { useSize } from "../../utils/SizeContext.jsx";
+
 export default function AdminPage() {
   const [nav, setNav] = useState(0);
   const navigate = useNavigate();
 
+  const {isMobile}= useSize();
   const {signOut} = UserAuth();
 
   const options = [
@@ -48,7 +51,7 @@ export default function AdminPage() {
   return (
     <div className="bg-gradient-to-br from-gradient_1 to-secondary min-h-screen flex flex-col font-primary">
       <Header>
-        <div className="flex flex-col justify-center items-center space-y-2 mt-4 mr-8">
+        <div className={`flex flex-row md:flex-col h-full items-center justify-center ${isMobile ? " space-x-2":"space-y-2"} mt-4 mr-8`}>
           <Button
             text="Administracion"
             style="primary"
@@ -182,8 +185,8 @@ function Clients() {
             Ingrese el documento del cliente
           </p>
 
-          <div className="flex flex-row items-center gap-4">
-            <div className="flex flex-col md:flex-row space-x-8">
+          <div className="flex flex-col md:flex-row items-center gap-4">
+            <div className="flex flex-col md:flex-row gap-4">
               <Picker
                 text="Tipo de documento"
                 options={statuses}

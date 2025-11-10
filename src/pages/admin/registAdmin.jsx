@@ -354,7 +354,7 @@ export function RegistUser() {
           <h3 className="text-xl font-bold text-gray-800 mb-4">
             Credenciales de Acceso
           </h3>
-          <div className="grid grid-cols-1 gap-6 w-1/3">
+          <div className="grid grid-cols-1 gap-6 w-full md:w-1/3">
             <div className="flex flex-col space-y-2 ">
               <label className="text-gray-700 font-medium">
                 <span className="text-red-500">*</span> Correo Electrónico
