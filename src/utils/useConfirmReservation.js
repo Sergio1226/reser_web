@@ -14,6 +14,18 @@ export function useConfirmReservation(setNav) {
     totalGeneral: 0,
   });
 
+  const habitacionesSeleccionadas = JSON.parse(localStorage.getItem("habitacionesSeleccionadas") || "[]");
+  const range = JSON.parse(
+    localStorage.getItem("rangeSeleccionado") ||
+      JSON.stringify({
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      })
+  );
+  const reservaHuespedes = JSON.parse(
+    localStorage.getItem("reservaHuespedes") || '{"adultos":1,"ninos":0}'
+  );
+
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem("reservaDatos") || "{}");
     setResumen({
@@ -30,174 +42,97 @@ export function useConfirmReservation(setNav) {
 
       const { data, error } = await supabase
         .from("servicios_adicionales")
-        .select("id, nombre, precio")
+        .select("id, nombre, precio, tipo_cobro")
         .in("id", ids);
 
-      if (error) {
-        console.error("Error al obtener servicios:", error);
-        return;
+      if (!error && data) {
+        const info = {};
+        data.forEach((s) => {
+          info[s.id] = {
+            nombre: s.nombre,
+            precio: s.precio,
+            tipo_cobro: s.tipo_cobro,
+          };
+        });
+        setServiciosInfo(info);
       }
-
-      const info = {};
-      data.forEach((s) => {
-        info[s.id] = { nombre: s.nombre, precio: s.precio };
-      });
-      setServiciosInfo(info);
     };
 
     fetchServicios();
   }, [resumen.serviciosSeleccionados]);
 
-  const handleConfirmWithEmail = async () => {
-    try {
-      if (!session) {
-        openPopup("Debes iniciar sesión para confirmar la reserva.", "error");
-        return;
-      }
-
-      const range = JSON.parse(
-        localStorage.getItem("rangeSeleccionado") || "{}"
-      );
-      const huespedes = JSON.parse(
-        localStorage.getItem("reservaHuespedes") || '{"adultos":1,"ninos":0}'
-      );
-      const userId = JSON.parse(
-        localStorage.getItem("clienteSeleccionado") || "{}"
-      ).user_id;
-      
-
-      const today = new Date();
-      const fechaReservacion = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        today.getDate()
-      );
-
-      const { data: reserva, error: reservaError } = await supabase
-        .from("reservas")
-        .insert([
-          {
-            fecha_reservacion: fechaReservacion,
-            fecha_entrada: range.startDate,
-            fecha_salida: range.endDate,
-            cantidad_adultos: huespedes.adultos || 1,
-            cantidad_ninos: huespedes.ninos || 0,
-            estado_reserva: "Confirmada",
-            id_cliente: userId,
-          },
-        ])
-        .select()
-        .single();
-
-      if (reservaError) throw reservaError;
-
-      const habitacionesSeleccionadas = JSON.parse(
-        localStorage.getItem("habitacionesSeleccionadas") || "[]"
-      );
-      console.log(habitacionesSeleccionadas,reserva);
-      
-      if (habitacionesSeleccionadas.length > 0) {
-        const habData = habitacionesSeleccionadas.map((id) => ({
-          id_reserva: reserva.id,
-          id_habitacion: id,
-        }));
-        await supabase.from("reservas_habitaciones").insert(habData);
-      }
-
-      const serviciosData = Object.entries(resumen.serviciosSeleccionados)
-        .filter(([_, count]) => count > 0)
-        .map(([id_servicio, count]) => ({
-          id_reserva: reserva.id,
-          id_servicio: Number(id_servicio),
-          cantidad: count,
-        }));
-
-      if (serviciosData.length > 0) {
-        await supabase.from("reservas_servicios").insert(serviciosData);
-      }
-
-      openPopup("✅ Reserva confirmada con éxito.", "success");
-    } catch (err) {
-      console.error(err);
-      openPopup("❌ Error al confirmar la reserva.", "error");
-    }
-  };
-
   const handleConfirm = async () => {
     try {
-      if (!session) {
-        openPopup("Debes iniciar sesión para confirmar la reserva.", "error");
-        return;
-      }
-
-      const range = JSON.parse(
-        localStorage.getItem("rangeSeleccionado") || "{}"
-      );
-      const huespedes = JSON.parse(
-        localStorage.getItem("reservaHuespedes") || '{"adultos":1,"ninos":0}'
-      );
-      const userId = session.user?.id;
-
-      const today = new Date();
-      const fechaReservacion = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        today.getDate()
-      );
+      const userId = session?.user?.id;
+      if (!userId) throw new Error("No se encontró el ID del usuario");
 
       const { data: reserva, error: reservaError } = await supabase
         .from("reservas")
-        .insert([
-          {
-            fecha_reservacion: fechaReservacion,
-            fecha_entrada: range.startDate,
-            fecha_salida: range.endDate,
-            cantidad_adultos: huespedes.adultos || 1,
-            cantidad_ninos: huespedes.ninos || 0,
-            estado_reserva: "Confirmada",
-            id_cliente: userId,
-          },
-        ])
+        .insert([{
+          id_cliente: userId,
+          fecha_reservacion: new Date().toISOString(),
+          fecha_entrada: range.startDate,
+          fecha_salida: range.endDate,
+          cantidad_adultos: reservaHuespedes.adultos,
+          cantidad_ninos: reservaHuespedes.ninos,
+          estado_reserva: "Confirmada",
+        }])
         .select()
         .single();
 
       if (reservaError) throw reservaError;
+      const id_reserva = reserva.id;
 
-      const habitacionesSeleccionadas = JSON.parse(
-        localStorage.getItem("habitacionesSeleccionadas") || "[]"
-      );
       if (habitacionesSeleccionadas.length > 0) {
-        const habData = habitacionesSeleccionadas.map((id) => ({
-          id_reserva: reserva.id,
-          id_habitacion: id,
+        const habitacionesData = habitacionesSeleccionadas.map((id_habitacion) => ({
+          id_reserva,
+          id_habitacion,
         }));
-        await supabase.from("reservas_habitaciones").insert(habData);
+        await supabase.from("reservas_habitaciones").insert(habitacionesData);
       }
 
-      const serviciosData = Object.entries(resumen.serviciosSeleccionados)
-        .filter(([_, count]) => count > 0)
-        .map(([id_servicio, count]) => ({
-          id_reserva: reserva.id,
-          id_servicio: Number(id_servicio),
-          cantidad: count,
-        }));
+      const { serviciosSeleccionados } = resumen;
 
-      if (serviciosData.length > 0) {
-        await supabase.from("reservas_servicios").insert(serviciosData);
+      for (const [id, sel] of Object.entries(serviciosSeleccionados)) {
+        const servicio = serviciosInfo[id];
+        if (!servicio) continue;
+
+        await supabase.from("reservas_servicios").insert([{
+          id_reserva,
+          id_servicio: Number(id),
+          cantidad: sel.cantidad,
+        }]);
+
+        let fechas = [];
+        if (servicio.tipo_cobro === "por_evento_por_persona" && sel.fecha) {
+          fechas.push(sel.fecha);
+        } else if (
+          (servicio.tipo_cobro === "por_dia_por_persona" ||
+           servicio.tipo_cobro === "por_dia_por_vehiculo") &&
+          sel.dias?.length
+        ) {
+          fechas = sel.dias.filter(Boolean);
+        }
+
+        if (fechas.length) {
+          const fechasData = fechas.map((fecha) => ({
+            id_reserva,
+            id_servicio: Number(id),
+            fecha,
+          }));
+          await supabase.from("reservas_servicios_fechas").insert(fechasData);
+        }
       }
 
-      openPopup("✅ Reserva confirmada con éxito.", "success");
-      setTimeout(() => setNav(1), 2000);
-    } catch (err) {
-      console.error(err);
-      openPopup("❌ Error al confirmar la reserva.", "error");
+      openPopup("✅ Reserva confirmada correctamente!", "success");
+      setNav(1);
+    } catch (error) {
+      console.error("Error al confirmar reserva:", error);
+      openPopup("Ocurrió un error al confirmar la reserva.", "error");
     }
   };
 
-  return {
-    resumen,
-    serviciosInfo,
-    handleConfirm,
-    handleConfirmWithEmail,
-  };
+  return { resumen, serviciosInfo, handleConfirm };
 }
+
+

@@ -4,10 +4,7 @@ import {
   Tv,
   Mountain,
   ShowerHead,
-  ChevronLeft,
-  ChevronRight,
   Plus,
-  Minus,
 } from "lucide-react";
 import Carousel from "./Carousel";
 
@@ -50,7 +47,7 @@ export default function RoomCard({
       <Carousel images={images} className="h-48" disableInterval />
 
       <div className="p-4">
-        <h2 className="text-xl font-semibold">Habitación {id}</h2>
+        <h2 className="text-xl font-semibold mb-1">Habitación {id}</h2>
 
         <p className="text-gray-600 text-sm mb-2">
           Capacidad: <span className="font-medium">{capacity} personas</span>
@@ -84,7 +81,10 @@ export default function RoomCard({
         </div>
 
         <div className="flex justify-between items-center mt-4">
-          <p className="text-lg font-bold">{price.toLocaleString()} COP</p>
+          <p className="text-lg font-bold">
+            {price.toLocaleString()} COP{" "}
+            <span className="text-sm text-gray-500">/noche</span>
+          </p>
         </div>
       </div>
 
@@ -106,15 +106,11 @@ export default function RoomCard({
         {plus && (
           <button
             onClick={onClick}
-            className={`
-      ml-2 p-2 rounded-lg border 
-      transition-all duration-200 ease-in-out
-      ${
-        selected
-          ? "bg-gradient-to-br from-green-500 to-green-600 border-green-600 shadow-md hover:shadow-lg hover:scale-105"
-          : "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-200 hover:to-green-300"
-      }
-    `}
+            className={`ml-2 p-2 rounded-lg border transition-all duration-200 ease-in-out ${
+              selected
+                ? "bg-gradient-to-br from-green-500 to-green-600 border-green-600 shadow-md hover:shadow-lg hover:scale-105"
+                : "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-200 hover:to-green-300"
+            }`}
           >
             <Plus
               size={22}

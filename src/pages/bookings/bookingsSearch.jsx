@@ -1,6 +1,6 @@
 import RoomCard from "../../components/RoomCard.jsx";
 import { Button } from "../../components/Button.jsx";
-import { useState,useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Icon } from "../../components/Icon.jsx";
 import { Counter } from "../../components/Counter.jsx";
 import { Calendar } from "../../components/Calendar.jsx";
@@ -12,9 +12,9 @@ import { useSize } from "../../utils/SizeContext.jsx";
 
 export function BookingSearch({ setNav }) {
   const { openPopup } = usePopup();
-  const {isMobile} = useSize();
-  
-  const sendRef =  useRef(null);
+  const { isMobile } = useSize();
+
+  const sendRef = useRef(null);
 
   const MAX_GUESTS = 50;
   const MAX_ROOMS = 14;
@@ -31,27 +31,32 @@ export function BookingSearch({ setNav }) {
   ]);
   const [showUp, setShowUp] = useState(false);
 
-  const scrollToTop = () => {
-    sendRef?.current?.scrollIntoView({ behavior: "smooth" });
-  };
-  
   const [availableRooms, setAvailableRooms] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [selectedCombo, setSelectedCombo] = useState(null);
-  
-    useEffect(() => {
-      const toggleVisibility = () => {
-        if (window.scrollY > 1000&&(availableRooms)) {
-          setShowUp(true);
-        } else {
-          setShowUp(false);
-        }
-      };
-  
-      window.addEventListener("scroll", toggleVisibility);
-      return () => window.removeEventListener("scroll", toggleVisibility);
-    }, [availableRooms]);
+
+  const noches = Math.ceil(
+    (range[0].endDate.getTime() - range[0].startDate.getTime()) /
+      (1000 * 60 * 60 * 24)
+  );
+
+  const scrollToTop = () => {
+    sendRef?.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    const toggleVisibility = () => {
+      if (window.scrollY > 1000 && availableRooms.length) {
+        setShowUp(true);
+      } else {
+        setShowUp(false);
+      }
+    };
+
+    window.addEventListener("scroll", toggleVisibility);
+    return () => window.removeEventListener("scroll", toggleVisibility);
+  }, [availableRooms]);
 
   const handleSelectCombo = (combo) => {
     const isSame =
@@ -84,7 +89,10 @@ export function BookingSearch({ setNav }) {
         JSON.stringify({ adultos: countAdults, ninos: countChildrens })
       );
 
-      const subtotal = combo.reduce((sum, r) => sum + (r.precio || 0), 0);
+      const subtotal = combo.reduce(
+        (sum, r) => sum + (r.precio || 0) * noches,
+        0
+      );
       localStorage.setItem("reservaSubtotal", String(subtotal));
     }
   };
@@ -110,7 +118,7 @@ export function BookingSearch({ setNav }) {
   };
 
   const totalPrice =
-    selectedCombo?.reduce((sum, r) => sum + (r.precio || 0), 0) || 0;
+    selectedCombo?.reduce((sum, r) => sum + (r.precio || 0) * noches, 0) || 0;
 
   const recommendedCombos = availableRooms
     .filter((combo) => {
@@ -143,7 +151,8 @@ export function BookingSearch({ setNav }) {
     if (val + countChildrens > MAX_GUESTS) {
       const allowed = MAX_GUESTS - countChildrens;
       setCountAdults(allowed);
-      openPopup && openPopup(`No puedes superar ${MAX_GUESTS} huéspedes en total`);
+      openPopup &&
+        openPopup(`No puedes superar ${MAX_GUESTS} huéspedes en total`);
     } else {
       setCountAdults(val);
     }
@@ -153,7 +162,8 @@ export function BookingSearch({ setNav }) {
     if (countAdults + val > MAX_GUESTS) {
       const allowed = MAX_GUESTS - countAdults;
       setCountChildrens(allowed);
-      openPopup && openPopup(`No puedes superar ${MAX_GUESTS} huéspedes en total`);
+      openPopup &&
+        openPopup(`No puedes superar ${MAX_GUESTS} huéspedes en total`);
     } else {
       setCountChildrens(val);
     }
@@ -162,7 +172,8 @@ export function BookingSearch({ setNav }) {
   const handleSetRooms = (val) => {
     if (val > MAX_ROOMS) {
       setCountRooms(MAX_ROOMS);
-      openPopup && openPopup(`No puedes seleccionar más de ${MAX_ROOMS} habitaciones`);
+      openPopup &&
+        openPopup(`No puedes seleccionar más de ${MAX_ROOMS} habitaciones`);
     } else {
       setCountRooms(val);
     }
@@ -172,12 +183,10 @@ export function BookingSearch({ setNav }) {
     <div className="space-y-6">
       <div className="bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-xl shadow-lg p-6">
         <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-          <span className="text-2xl">🔍</span>
-          Buscar Habitaciones
+          <span className="text-2xl">🔍</span> Buscar Habitaciones
         </h2>
 
         <div className="flex flex-col lg:flex-row gap-4 justify-center lg:items-stretch">
-
           <div className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow flex items-center justify-center gap-4 flex-1">
             <Calendar range={range} setRange={setRange} />
             <div className="flex flex-col items-center">
@@ -206,11 +215,7 @@ export function BookingSearch({ setNav }) {
                 </div>
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-xs text-slate-600">Adultos</span>
-                  <Counter
-                    count={countAdults}
-                    setCount={handleSetAdults}
-                    min={1}
-                  />
+                  <Counter count={countAdults} setCount={handleSetAdults} min={1} />
                 </div>
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-xs text-slate-600">Niños</span>
@@ -252,8 +257,8 @@ export function BookingSearch({ setNav }) {
         />
       </div>
 
+      {/* Resultados */}
       <div className="flex flex-col lg:flex-row gap-6">
-
         <div className="flex flex-col flex-1 space-y-6">
           {searchLoading ? (
             <div className="text-center py-12 bg-white rounded-xl shadow-md border border-slate-200 ">
@@ -275,13 +280,19 @@ export function BookingSearch({ setNav }) {
 
                   <div className="space-y-4">
                     {recommendedCombos.map((combo, idx) => {
-                      const isSelected = selectedCombo
-                        ? selectedCombo.length === combo.length &&
-                          selectedCombo.every((r, i) => r.id === combo[i].id)
-                        : false;
+                      const isSelected =
+                        selectedCombo &&
+                        selectedCombo.length === combo.length &&
+                        selectedCombo.every((r, i) => r.id === combo[i].id);
 
-                      const totalCap = combo.reduce((s, r) => s + r.capacidad_total, 0);
-                      const comboPrice = combo.reduce((sum, r) => sum + (r.precio || 0), 0);
+                      const totalCap = combo.reduce(
+                        (s, r) => s + r.capacidad_total,
+                        0
+                      );
+                      const comboPrice = combo.reduce(
+                        (sum, r) => sum + (r.precio || 0) * noches,
+                        0
+                      );
 
                       return (
                         <div
@@ -297,7 +308,10 @@ export function BookingSearch({ setNav }) {
                               Opción {idx + 1} – Capacidad: {totalCap} personas
                             </div>
                             <div className="text-lg font-bold text-green-700">
-                              ${comboPrice.toLocaleString("es-CO")}
+                              ${comboPrice.toLocaleString("es-CO")}{" "}
+                              <span className="text-xs text-slate-500">
+                                x {noches} noches
+                              </span>
                             </div>
                           </div>
 
@@ -335,6 +349,7 @@ export function BookingSearch({ setNav }) {
                                   <RoomCard
                                     id={r.id}
                                     price={r.precio ?? 0}
+                                    priceLabel={`/noche`}
                                     imageNames={[`${r.id}.jpeg`, `${r.id}_Bano.jpeg`]}
                                     services={services}
                                     description={r.descripcion ?? "Sin descripción disponible"}
@@ -353,96 +368,106 @@ export function BookingSearch({ setNav }) {
                   </div>
                 </div>
               )}
-              
-            {otherCombos.length > 0 && (
-            <div className="bg-gradient-to-br from-blue-50 to-sky-50 rounded-xl p-6 border border-blue-200 shadow-md">
-              <h3 className="text-lg font-bold text-blue-800 mb-4 flex items-center gap-2">
-                <span className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm">
-                  +
-                </span>
-                Opciones Disponibles
-              </h3>
 
-              <div className="space-y-4">
-                {otherCombos.map((combo, idx) => {
-                  const isSelected = selectedCombo
-                    ? selectedCombo.length === combo.length &&
-                      selectedCombo.every((r, i) => r.id === combo[i].id)
-                    : false;
+              {otherCombos.length > 0 && (
+                <div className="bg-gradient-to-br from-blue-50 to-sky-50 rounded-xl p-6 border border-blue-200 shadow-md">
+                  <h3 className="text-lg font-bold text-blue-800 mb-4 flex items-center gap-2">
+                    <span className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm">
+                      +
+                    </span>
+                    Opciones Disponibles
+                  </h3>
 
-                  const totalCap = combo.reduce((s, r) => s + r.capacidad_total, 0);
-                  const comboPrice = combo.reduce((sum, r) => sum + (r.precio || 0), 0);
+                  <div className="space-y-4">
+                    {otherCombos.map((combo, idx) => {
+                      const isSelected =
+                        selectedCombo &&
+                        selectedCombo.length === combo.length &&
+                        selectedCombo.every((r, i) => r.id === combo[i].id);
 
-                  return (
-                    <div
-                      key={combo.map((r) => r.id).join("-")}
-                      className={`border rounded-lg p-4 shadow-sm transition-all ${
-                        isSelected
-                          ? "border-blue-500 bg-blue-100"
-                          : "border-blue-300 bg-white hover:shadow-md"
-                      }`}
-                    >
-                      <div className="flex justify-between items-center mb-3">
-                        <div className="text-sm font-semibold text-slate-700">
-                          Opción {idx + 1} – Capacidad: {totalCap} personas
-                        </div>
-                        <div className="text-lg font-bold text-blue-700">
-                          ${comboPrice.toLocaleString("es-CO")}
-                        </div>
-                      </div>
+                      const totalCap = combo.reduce(
+                        (s, r) => s + r.capacidad_total,
+                        0
+                      );
+                      const comboPrice = combo.reduce(
+                        (sum, r) => sum + (r.precio || 0) * noches,
+                        0
+                      );
 
-                      <button
-                        className={`w-full px-4 py-2 rounded-lg font-semibold transition mb-3 ${
-                          isSelected
-                            ? "bg-red-500 text-white hover:bg-red-600"
-                            : "bg-blue-500 text-white hover:bg-blue-600"
-                        }`}
-                        onClick={() => handleSelectCombo(combo)}
-                      >
-                        {isSelected ? "✕ Quitar selección" : "✓ Seleccionar esta opción"}
-                      </button>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {combo.map((r) => {
-                          const capacity = r.capacidad_total;
-                          const bedType = (r.habitaciones_camas || []).map((hc) => ({
-                            tipo: hc?.camas?.nombre || "Cama sin nombre",
-                            cantidad: hc?.cantidad || 0,
-                          }));
-
-                          const services = (r.habitaciones_caracteristicas || []).map(
-                            (hc) => ({
-                              icon: hc.caracteristicas?.icono || "wifi",
-                              label: hc.caracteristicas?.nombre || "Servicio",
-                            })
-                          );
-
-                          return (
-                            <div
-                              key={r.id}
-                              className="bg-white rounded-lg p-2 border border-slate-200"
-                            >
-                              <RoomCard
-                                id={r.id}
-                                price={r.precio ?? 0}
-                                imageNames={[`${r.id}.jpeg`, `${r.id}_Bano.jpeg`]}
-                                services={services}
-                                description={r.descripcion ?? "Sin descripción disponible"}
-                                capacity={capacity}
-                                bedType={bedType}
-                                selected={isSelected}
-                                disabled={!!selectedCombo && !isSelected}
-                              />
+                      return (
+                        <div
+                          key={combo.map((r) => r.id).join("-")}
+                          className={`border rounded-lg p-4 shadow-sm transition-all ${
+                            isSelected
+                              ? "border-blue-500 bg-blue-100"
+                              : "border-blue-300 bg-white hover:shadow-md"
+                          }`}
+                        >
+                          <div className="flex justify-between items-center mb-3">
+                            <div className="text-sm font-semibold text-slate-700">
+                              Opción {idx + 1} – Capacidad: {totalCap} personas
                             </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+                            <div className="text-lg font-bold text-blue-700">
+                              ${comboPrice.toLocaleString("es-CO")}{" "}
+                              <span className="text-xs text-slate-500">
+                                x {noches} noches
+                              </span>
+                            </div>
+                          </div>
+
+                          <button
+                            className={`w-full px-4 py-2 rounded-lg font-semibold transition mb-3 ${
+                              isSelected
+                                ? "bg-red-500 text-white hover:bg-red-600"
+                                : "bg-blue-500 text-white hover:bg-blue-600"
+                            }`}
+                            onClick={() => handleSelectCombo(combo)}
+                          >
+                            {isSelected ? "✕ Quitar selección" : "✓ Seleccionar esta opción"}
+                          </button>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {combo.map((r) => {
+                              const capacity = r.capacidad_total;
+                              const bedType = (r.habitaciones_camas || []).map((hc) => ({
+                                tipo: hc?.camas?.nombre || "Cama sin nombre",
+                                cantidad: hc?.cantidad || 0,
+                              }));
+
+                              const services = (r.habitaciones_caracteristicas || []).map(
+                                (hc) => ({
+                                  icon: hc.caracteristicas?.icono || "wifi",
+                                  label: hc.caracteristicas?.nombre || "Servicio",
+                                })
+                              );
+
+                              return (
+                                <div
+                                  key={r.id}
+                                  className="bg-white rounded-lg p-2 border border-slate-200"
+                                >
+                                  <RoomCard
+                                    id={r.id}
+                                    price={r.precio ?? 0}
+                                    priceLabel={`/noche`}
+                                    imageNames={[`${r.id}.jpeg`, `${r.id}_Bano.jpeg`]}
+                                    services={services}
+                                    description={r.descripcion ?? "Sin descripción disponible"}
+                                    capacity={capacity}
+                                    bedType={bedType}
+                                    selected={isSelected}
+                                    disabled={!!selectedCombo && !isSelected}
+                                  />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </>
           ) : searched ? (
             <div className="text-center py-12 bg-white rounded-xl shadow-md border border-slate-200">
@@ -485,7 +510,10 @@ export function BookingSearch({ setNav }) {
                   <div className="bg-white rounded-lg p-4 mb-4 shadow-sm">
                     <p className="text-sm text-slate-600 mb-2">Total a pagar:</p>
                     <p className="text-3xl font-bold text-green-700">
-                      ${totalPrice.toLocaleString("es-CO")}
+                      ${totalPrice.toLocaleString("es-CO")}{" "}
+                      <span className="text-xs text-slate-500">
+                        x {noches} noches
+                      </span>
                     </p>
                     <p className="text-xs text-slate-500 mt-1">COP</p>
                   </div>
@@ -525,5 +553,4 @@ export function BookingSearch({ setNav }) {
       </div>
     </div>
   );
-
 }

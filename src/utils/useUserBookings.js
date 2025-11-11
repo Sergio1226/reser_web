@@ -17,7 +17,7 @@ export function useUserBookings() {
         return;
       }
 
-      const { data, error } = await supabase
+      const { data: reservas, error } = await supabase
         .from("reservas")
         .select(`
           id,
@@ -33,7 +33,8 @@ export function useUserBookings() {
             )
           ),
           reservas_servicios (
-            cantidad, 
+            id_servicio,
+            cantidad,
             servicios_adicionales (
               nombre,
               precio
@@ -45,35 +46,59 @@ export function useUserBookings() {
 
       if (error) throw error;
 
-      const formatted = (data || []).map((r) => {
-        const habitaciones = r.reservas_habitaciones?.map(
-          rh => rh.habitaciones?.id || `Habitación ${rh.habitaciones?.id}`
-        ).filter(Boolean);
+      const formatted = await Promise.all(
+        (reservas || []).map(async (r) => {
 
-        const habitacionesStr = habitaciones.length ? habitaciones.join(", ") : "—";
+          const habitaciones = r.reservas_habitaciones?.map(
+            rh => rh.habitaciones?.id || `Habitación ${rh.habitaciones?.id}`
+          ).filter(Boolean);
+          const habitacionesStr = habitaciones.length ? habitaciones.join(", ") : "—";
 
-        const roomsPrice = r.reservas_habitaciones?.reduce(
-          (sum, rh) => sum + (rh.habitaciones?.precio || 0),
-          0
-        );
+          const checkIn = new Date(r.fecha_entrada);
+          const checkOut = new Date(r.fecha_salida);
+          const noches = Math.max((checkOut - checkIn) / (1000 * 60 * 60 * 24), 1);
 
-        const servicesPrice = r.reservas_servicios?.reduce(
-          (sum, rs) => sum + ((rs.servicios_adicionales?.precio || 0) * (rs.cantidad || 1)),
-          0
-        );
+          const roomsPrice = r.reservas_habitaciones?.reduce(
+            (sum, rh) => sum + ((rh.habitaciones?.precio || 0) * noches),
+            0
+          );
 
-        const totalPrice = roomsPrice + servicesPrice;
+          let servicesPrice = 0;
+          if (r.reservas_servicios?.length) {
+            for (const rs of r.reservas_servicios) {
 
-        return {
-          id: r.id,
-          reservationDate: r.fecha_reservacion,
-          checkIn: r.fecha_entrada,
-          checkOut: r.fecha_salida,
-          room: habitacionesStr,
-          status: r.estado_reserva,
-          price: totalPrice ? `$${Number(totalPrice).toLocaleString()}` : "—",
-        };
-      });
+              const { data: fechas, error: fechasError } = await supabase
+                .from("reservas_servicios_fechas")
+                .select("fecha")
+                .eq("id_reserva", r.id)
+                .eq("id_servicio", rs.id_servicio);
+
+              if (fechasError) {
+                console.error("Error obteniendo fechas de servicio:", fechasError);
+                continue;
+              }
+
+              const cantidad = rs.cantidad || 1;
+              const veces = (fechas?.length) || 1;
+              const precio = rs.servicios_adicionales?.precio || 0;
+
+              servicesPrice += precio * cantidad * veces;
+            }
+          }
+
+          const totalPrice = roomsPrice + servicesPrice;
+
+          return {
+            id: r.id,
+            reservationDate: r.fecha_reservacion,
+            checkIn: r.fecha_entrada,
+            checkOut: r.fecha_salida,
+            room: habitacionesStr,
+            status: r.estado_reserva,
+            price: totalPrice ? `$${Number(totalPrice).toLocaleString()}` : "—",
+          };
+        })
+      );
 
       setBookings(formatted);
     } catch (err) {
@@ -88,10 +113,10 @@ export function useUserBookings() {
     async (booking, showPopup) => {
       if (!showPopup) return;
 
-      const now = new Date();
       const [year, month, day] = booking.checkIn.split("-").map(Number);
       const checkInDate = new Date(year, month - 1, day);
 
+      const now = new Date();
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
