@@ -14,13 +14,21 @@ export function useConfirmReservation(setNav) {
     totalGeneral: 0,
   });
 
-  const habitacionesSeleccionadas = JSON.parse(localStorage.getItem("habitacionesSeleccionadas") || "[]");
+  const toLocalISOString = (date) => {
+    const tzOffset = date.getTimezoneOffset() * 60000;
+    return new Date(date - tzOffset).toISOString().slice(0, -1);
+  };
+
   const range = JSON.parse(
     localStorage.getItem("rangeSeleccionado") ||
       JSON.stringify({
-        startDate: new Date().toISOString(),
-        endDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        startDate: toLocalISOString(new Date()),
+        endDate: toLocalISOString(new Date(Date.now() + 24 * 60 * 60 * 1000)),
       })
+  );
+
+  const habitacionesSeleccionadas = JSON.parse(
+    localStorage.getItem("habitacionesSeleccionadas") || "[]"
   );
   const reservaHuespedes = JSON.parse(
     localStorage.getItem("reservaHuespedes") || '{"adultos":1,"ninos":0}'
@@ -66,17 +74,22 @@ export function useConfirmReservation(setNav) {
       const userId = session?.user?.id;
       if (!userId) throw new Error("No se encontró el ID del usuario");
 
+      const fechaEntrada = toLocalISOString(new Date(range.startDate));
+      const fechaSalida = toLocalISOString(new Date(range.endDate));
+
       const { data: reserva, error: reservaError } = await supabase
         .from("reservas")
-        .insert([{
-          id_cliente: userId,
-          fecha_reservacion: new Date().toISOString(),
-          fecha_entrada: range.startDate,
-          fecha_salida: range.endDate,
-          cantidad_adultos: reservaHuespedes.adultos,
-          cantidad_ninos: reservaHuespedes.ninos,
-          estado_reserva: "Confirmada",
-        }])
+        .insert([
+          {
+            id_cliente: userId,
+            fecha_reservacion: toLocalISOString(new Date()),
+            fecha_entrada: fechaEntrada,
+            fecha_salida: fechaSalida,
+            cantidad_adultos: reservaHuespedes.adultos,
+            cantidad_ninos: reservaHuespedes.ninos,
+            estado_reserva: "Confirmada",
+          },
+        ])
         .select()
         .single();
 
@@ -97,29 +110,40 @@ export function useConfirmReservation(setNav) {
         const servicio = serviciosInfo[id];
         if (!servicio) continue;
 
-        await supabase.from("reservas_servicios").insert([{
-          id_reserva,
-          id_servicio: Number(id),
-          cantidad: sel.cantidad,
-        }]);
-
         let fechas = [];
+
         if (servicio.tipo_cobro === "por_evento_por_persona" && sel.fecha) {
-          fechas.push(sel.fecha);
+          fechas.push({
+            fecha: sel.fecha,
+            cantidad: sel.cantidad || 1,
+          });
         } else if (
           (servicio.tipo_cobro === "por_dia_por_persona" ||
-           servicio.tipo_cobro === "por_dia_por_vehiculo") &&
-          sel.dias?.length
+            servicio.tipo_cobro === "por_dia_por_vehiculo") &&
+          Array.isArray(sel.dias) &&
+          sel.dias.length > 0
         ) {
-          fechas = sel.dias.filter(Boolean);
+          fechas = sel.dias.map((f) => ({
+            fecha: f.fecha || f,
+            cantidad: f.cantidad || sel.cantidad || 1,
+          }));
         }
 
-        if (fechas.length) {
-          const fechasData = fechas.map((fecha) => ({
+        if (fechas.length > 0) {
+          await supabase.from("reservas_servicios").insert([
+            {
+              id_reserva,
+              id_servicio: Number(id),
+            },
+          ]);
+
+          const fechasData = fechas.map((f) => ({
             id_reserva,
             id_servicio: Number(id),
-            fecha,
+            fecha: f.fecha,
+            cantidad: f.cantidad,
           }));
+
           await supabase.from("reservas_servicios_fechas").insert(fechasData);
         }
       }
@@ -130,7 +154,7 @@ export function useConfirmReservation(setNav) {
       console.error("Error al confirmar reserva:", error);
       openPopup("Ocurrió un error al confirmar la reserva.", "error");
     }
-  };
+};
 
   return { resumen, serviciosInfo, handleConfirm };
 }

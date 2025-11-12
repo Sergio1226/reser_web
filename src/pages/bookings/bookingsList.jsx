@@ -6,11 +6,14 @@ import { Icon } from "../../components/Icon.jsx";
 import { CancelBookingModal } from "../../components/CancelBooking.jsx";
 import { usePopup } from "../../utils/PopupContext.jsx";
 import { useUserBookings } from "../../utils/useUserBookings.js";
+import { BookingDetails } from "../../components/BookingsDetails.jsx";
 
 export function BookingTable() {
   const { bookings, loading, cancelling, cancelBooking } = useUserBookings();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [selectedDetails, setSelectedDetails] = useState(null);
   const { openPopup } = usePopup();
 
   const [page, setPage] = useState(1);
@@ -155,7 +158,19 @@ export function BookingTable() {
           info={paginatedBookings}
           renderActions={(item) => {
             if (item.status !== "Confirmada") {
-              return <span className="text-slate-400 font-semibold">—</span>;
+              return (
+                <div className="flex gap-2">
+                  <Button
+                    className="bg-gray-200 text-slate-600 px-3 py-2 rounded-lg font-medium"
+                    onClick={() => {
+                      setSelectedDetails(item);
+                      setIsDetailsOpen(true);
+                    }}
+                  >
+                    Ver más
+                  </Button>
+                </div>
+              );
             }
 
             const now = new Date();
@@ -168,25 +183,37 @@ export function BookingTable() {
               (isToday && now.getHours() < 14);
 
             return (
-              <Button
-                className={`px-3 py-2 rounded-lg font-medium transition-colors ${
-                  canCancel
-                    ? "bg-red-300 text-red-700 hover:bg-red-500"
-                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                }`}
-                onClick={() => {
-                  if (!canCancel) return;
-                  setSelectedBooking({ ...item, habitaciones: item.room });
-                  setIsModalOpen(true);
-                }}
-                disabled={!canCancel || cancelling === item.id}
-              >
-                {cancelling === item.id
-                  ? "Cancelando..."
-                  : canCancel
-                  ? "CANCELAR"
-                  : "No disponible"}
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  className="bg-blue-100 text-blue-700 px-3 py-2 rounded-lg font-medium hover:bg-blue-200"
+                  onClick={() => {
+                    setSelectedDetails(item);
+                    setIsDetailsOpen(true);
+                  }}
+                >
+                  Ver más
+                </Button>
+
+                <Button
+                  className={`px-3 py-2 rounded-lg font-medium transition-colors ${
+                    canCancel
+                      ? "bg-red-300 text-red-700 hover:bg-red-500"
+                      : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  }`}
+                  onClick={() => {
+                    if (!canCancel) return;
+                    setSelectedBooking({ ...item, habitaciones: item.room });
+                    setIsModalOpen(true);
+                  }}
+                  disabled={!canCancel || cancelling === item.id}
+                >
+                  {cancelling === item.id
+                    ? "Cancelando..."
+                    : canCancel
+                    ? "CANCELAR"
+                    : "No disponible"}
+                </Button>
+              </div>
             );
           }}
         />
@@ -213,6 +240,12 @@ export function BookingTable() {
           </Button>
         </div>
       )}
+
+      <BookingDetails
+        isOpen={isDetailsOpen}
+        onClose={() => { setIsDetailsOpen(false); setSelectedDetails(null); }}
+        bookingInfo={selectedDetails}
+      />
 
       <CancelBookingModal
         isOpen={isModalOpen}

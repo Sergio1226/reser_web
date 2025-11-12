@@ -59,9 +59,7 @@ export function useExtraServices(subtotal) {
     if (tipo === "por_evento_por_persona") {
       let current = new Date(start);
       current.setDate(current.getDate() + 1);
-      const lastDay = new Date(end);
-      lastDay.setDate(lastDay.getDate() - 1);
-      while (current <= lastDay) {
+      while (current <= end) {
         days.push(current.toISOString().split("T")[0]);
         current.setDate(current.getDate() + 1);
       }

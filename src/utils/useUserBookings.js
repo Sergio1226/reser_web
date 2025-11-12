@@ -34,10 +34,10 @@ export function useUserBookings() {
           ),
           reservas_servicios (
             id_servicio,
-            cantidad,
             servicios_adicionales (
               nombre,
-              precio
+              precio,
+              tipo_cobro
             )
           )
         `)
@@ -49,40 +49,58 @@ export function useUserBookings() {
       const formatted = await Promise.all(
         (reservas || []).map(async (r) => {
 
-          const habitaciones = r.reservas_habitaciones?.map(
-            rh => rh.habitaciones?.id || `Habitación ${rh.habitaciones?.id}`
-          ).filter(Boolean);
-          const habitacionesStr = habitaciones.length ? habitaciones.join(", ") : "—";
+          const habitaciones = r.reservas_habitaciones?.map((h) => ({
+            id: h.habitaciones?.id,
+            descripcion: h.habitaciones?.descripcion || "Sin descripción",
+            precio: h.habitaciones?.precio || 0,
+          })) || [];
+
+          const habitacionesStr = habitaciones.map(h => `#${h.id}`).join(", ") || "—";
 
           const checkIn = new Date(r.fecha_entrada);
           const checkOut = new Date(r.fecha_salida);
           const noches = Math.max((checkOut - checkIn) / (1000 * 60 * 60 * 24), 1);
+          const roomsPrice = habitaciones.reduce((sum, h) => sum + h.precio * noches, 0);
 
-          const roomsPrice = r.reservas_habitaciones?.reduce(
-            (sum, rh) => sum + ((rh.habitaciones?.precio || 0) * noches),
-            0
-          );
-
+          const servicios = [];
           let servicesPrice = 0;
+
           if (r.reservas_servicios?.length) {
             for (const rs of r.reservas_servicios) {
+              const idServicio = rs.id_servicio;
+              const servicio = rs.servicios_adicionales;
+
+              if (!servicio) continue;
 
               const { data: fechas, error: fechasError } = await supabase
                 .from("reservas_servicios_fechas")
-                .select("fecha")
+                .select("fecha, cantidad")
                 .eq("id_reserva", r.id)
-                .eq("id_servicio", rs.id_servicio);
+                .eq("id_servicio", idServicio);
 
               if (fechasError) {
                 console.error("Error obteniendo fechas de servicio:", fechasError);
                 continue;
               }
 
-              const cantidad = rs.cantidad || 1;
-              const veces = (fechas?.length) || 1;
-              const precio = rs.servicios_adicionales?.precio || 0;
+              if (!fechas || fechas.length === 0) continue;
 
-              servicesPrice += precio * cantidad * veces;
+              const totalServicio = fechas.reduce(
+                (sum, f) => sum + servicio.precio * (f.cantidad || 1),
+                0
+              );
+
+              servicios.push({
+                id: idServicio,
+                nombre: servicio.nombre,
+                tipo_cobro: servicio.tipo_cobro,
+                precio_unitario: servicio.precio,
+                fechas: fechas.map(f => f.fecha),
+                cantidadTotal: fechas.reduce((s, f) => s + (f.cantidad || 1), 0),
+                total: totalServicio,
+              });
+
+              servicesPrice += totalServicio;
             }
           }
 
@@ -96,6 +114,11 @@ export function useUserBookings() {
             room: habitacionesStr,
             status: r.estado_reserva,
             price: totalPrice ? `$${Number(totalPrice).toLocaleString()}` : "—",
+            habitaciones,
+            servicios,
+            subtotalHabitaciones: roomsPrice,
+            subtotalServicios: servicesPrice,
+            total: totalPrice,
           };
         })
       );
@@ -115,13 +138,13 @@ export function useUserBookings() {
 
       const [year, month, day] = booking.checkIn.split("-").map(Number);
       const checkInDate = new Date(year, month - 1, day);
-
       const now = new Date();
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
       const isTodayCheckIn = checkInDate.getTime() === today.getTime();
-      const canCancel = checkInDate.getTime() > today.getTime() || (isTodayCheckIn && now.getHours() < 14);
+      const canCancel =
+        checkInDate.getTime() > today.getTime() || (isTodayCheckIn && now.getHours() < 14);
 
       if (!canCancel) {
         showPopup("❌ No se puede cancelar después de las 2 PM del día de check-in.", "error");

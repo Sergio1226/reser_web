@@ -511,7 +511,7 @@ function ConfirmReservation({ setNav }) {
             <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-700 max-w-[200px]">
               <p>
                 El check-in se debe realizar hasta las <b>6:00 p.m.</b> y el check-out
-                hasta las <b>12:00 a.m.</b>
+                hasta las <b>2:00 p.m.</b>
               </p>
             </div>
           </div>

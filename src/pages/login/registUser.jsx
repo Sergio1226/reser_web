@@ -346,10 +346,13 @@ export function RegistUser({ setNav }) {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute top-1/2 right-4 transform -translate-y-1/2 text-xl text-gray-500 hover:text-indigo-600"
+                className="absolute top-1/3 right-4 transform -translate-y-1/2 text-xl text-gray-500 hover:text-indigo-600"
               >
                 {showPassword ? <AiOutlineEye /> : <AiOutlineEyeInvisible />}
               </button>
+               <span className="text-xs text-gray-500">
+                La contraseña debe tener al menos 6 caracteres.
+              </span>
             </div>
             {errors.password && (
               <span className="text-red-600 text-sm mt-1 block">{errors.password}</span>
@@ -371,10 +374,13 @@ export function RegistUser({ setNav }) {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute top-1/2 right-4 transform -translate-y-1/2 text-xl text-gray-500 hover:text-indigo-600"
+                className="absolute top-1/3 right-4 transform -translate-y-1/2 text-xl text-gray-500 hover:text-indigo-600"
               >
                 {showConfirmPassword ? <AiOutlineEye /> : <AiOutlineEyeInvisible />}
               </button>
+               <span className="text-xs text-gray-500">
+                La contraseña debe coincidir con la digitada anteriormente.
+              </span>
             </div>
             {errors.passwordConfirm && (
               <div className="text-red-600 text-sm mt-2 font-medium">
