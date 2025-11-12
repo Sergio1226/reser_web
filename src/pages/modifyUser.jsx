@@ -43,7 +43,7 @@ export default function ModifyUser() {
             Perfil de Usuario
           </h1>
           <p className="text-gray-600 text-center max-w-md">
-            Administra tu información personal{" "}
+            Administra tu información personal, realiza tus cambios y guarda tu informacion{" "}
           </p>
         </div>
 
@@ -191,10 +191,10 @@ export default function ModifyUser() {
 
               <div className="pt-8 mt-8 border-t-2 w-full border-gray-100 flex flex-col sm:flex-row justify-center items-center gap-4">
                 <Button
-                  text="Atras"
+                  text="Cerrar sesion"
                   style="exit"
-                  onClick={() => navigate(-1)}
-                  iconName="back"
+                  onClick={() => signOut()}
+                  iconName="signOut"
                 />
                 <Button
                   text="Guardar Cambios"
@@ -215,10 +215,10 @@ export default function ModifyUser() {
     <div className="min-h-screen flex flex-col font-primary bg-white overflow-x-hidden">
       <Header>
         <Button
-          text="Cerrar sesion"
+          text="Atras"
           style="exit"
-          onClick={() => signOut()}
-          iconName="signOut"
+          onClick={() => navigate(-1)}
+          iconName="back"
         />
       </Header>
       {loading ? (

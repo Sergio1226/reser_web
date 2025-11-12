@@ -20,7 +20,7 @@ const options = [
     icon: "booking",
   },
   {
-    title: "Gestionar Reservas",
+    title: "Visualizar Reservas",
     icon: "list",
   },
 ];
