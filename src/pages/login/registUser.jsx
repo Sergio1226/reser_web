@@ -71,8 +71,8 @@ export function RegistUser({ setNav }) {
     if (colombia && parseInt(form.id_nacionalidad) === colombia.id) {
       setForm((prev) => ({
         ...prev,
-        id_pais_origen: null,
-        id_pais_destino: null,
+        id_pais_origen: "",
+        id_pais_destino: "",
       }));
     }
   }, [form.id_nacionalidad, countries]);
@@ -90,8 +90,15 @@ export function RegistUser({ setNav }) {
     if (!form.id_nacionalidad) newErrors.id_nacionalidad = "Seleccione una nacionalidad.";
     if (!form.tipo_documento) newErrors.tipo_documento = "Seleccione un tipo de documento.";
 
-    const docName =
-      documents.find((d) => d.id === parseInt(form.tipo_documento))?.nombre || "";
+    const colombia = countries.find((c) => c.nombre.toLowerCase() === "colombia");
+    const isColombian = parseInt(form.id_nacionalidad) === colombia?.id;
+
+    if (!isColombian) {
+      if (!form.id_pais_origen) newErrors.id_pais_origen = "Seleccione país de origen.";
+      if (!form.id_pais_destino) newErrors.id_pais_destino = "Seleccione país de destino.";
+    }
+
+    const docName = documents.find((d) => d.id === parseInt(form.tipo_documento))?.nombre || "";
     const isPasaporte = docName.toLowerCase().includes("pasaporte");
 
     if (!form.documento) newErrors.documento = "Campo obligatorio.";
@@ -125,7 +132,15 @@ export function RegistUser({ setNav }) {
 
     setLoading(true);
     try {
-      const { error } = await signUpNewUser({ email, password, user: form });
+      const submitData = {
+        ...form,
+        tipo_documento: parseInt(form.tipo_documento),
+        id_nacionalidad: parseInt(form.id_nacionalidad),
+        id_pais_origen: form.id_pais_origen ? parseInt(form.id_pais_origen) : null,
+        id_pais_destino: form.id_pais_destino ? parseInt(form.id_pais_destino) : null,
+      };
+
+      const { error } = await signUpNewUser({ email, password, user: submitData });
       if (error) {
         setErrors({ general: "Error al registrar el usuario." });
         openPopup("Error al registrar el usuario", "error");
@@ -151,13 +166,10 @@ export function RegistUser({ setNav }) {
 
   const colombia = countries.find((c) => c.nombre.toLowerCase() === "colombia");
   const isColombian = parseInt(form.id_nacionalidad) === colombia?.id;
-  const docName =
-    documents.find((d) => d.id === parseInt(form.tipo_documento))?.nombre || "";
+  const docName = documents.find((d) => d.id === parseInt(form.tipo_documento))?.nombre || "";
 
   return (
-    <CardForm
-      onSubmit={handleSubmit}
-    >
+    <CardForm onSubmit={handleSubmit}>
       <h2 className="text-3xl font-extrabold text-center text-indigo-700 mb-8 border-b-2 pb-3">
         Registro de Usuario
       </h2>
@@ -309,6 +321,79 @@ export function RegistUser({ setNav }) {
           </div>
         </div>
       </section>
+
+      {!isColombian && form.id_nacionalidad && (
+        <section className="mb-10 p-6 border rounded-xl bg-white">
+          <h3 className="text-xl font-semibold text-gray-800 mb-6">
+            Información de Migración
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="text-sm font-medium text-gray-700 block mb-1">
+                <span className="text-red-500">*</span> País de Origen
+              </label>
+              <select
+                name="id_pais_origen"
+                value={form.id_pais_origen}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-gray-800 focus:ring-indigo-500 focus:border-indigo-500 bg-white shadow-sm"
+              >
+                <option value="">Seleccione País de Origen</option>
+                {countries.map((country) => (
+                  <option key={country.id} value={country.id}>
+                    {country.nombre}
+                  </option>
+                ))}
+              </select>
+              {errors.id_pais_origen && (
+                <span className="text-red-600 text-sm mt-1 block">{errors.id_pais_origen}</span>
+              )}
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-gray-700 block mb-1">
+                <span className="text-red-500">*</span> País de Destino
+              </label>
+              <select
+                name="id_pais_destino"
+                value={form.id_pais_destino}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-gray-800 focus:ring-indigo-500 focus:border-indigo-500 bg-white shadow-sm"
+              >
+                <option value="">Seleccione País de Destino</option>
+                {countries.map((country) => (
+                  <option key={country.id} value={country.id}>
+                    {country.nombre}
+                  </option>
+                ))}
+              </select>
+              {errors.id_pais_destino && (
+                <span className="text-red-600 text-sm mt-1 block">{errors.id_pais_destino}</span>
+              )}
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="text-sm font-medium text-gray-700 block mb-1">
+                <span className="text-red-500">*</span> Fecha de Nacimiento
+              </label>
+              <input
+                type="date"
+                name="fecha_nacimiento"
+                value={form.fecha_nacimiento || ""}
+                onChange={handleChange}
+                required
+                max={new Date().toISOString().split('T')[0]}
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-gray-800 focus:ring-indigo-500 focus:border-indigo-500 bg-white shadow-sm"
+              />
+              {errors.fecha_nacimiento && (
+                <span className="text-red-600 text-sm mt-1 block">{errors.fecha_nacimiento}</span>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="mb-10 p-6 border rounded-xl bg-white">
         <h3 className="text-xl font-semibold text-gray-800 mb-6">

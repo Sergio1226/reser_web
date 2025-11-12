@@ -9,7 +9,7 @@ import { SmallFooter } from "../../components/Footer.jsx";
 import { Reservations } from "./reservationsAdmin.jsx";
 import { Schedule } from "./schedule.jsx";
 import { UserAuth } from "../../utils/AuthContext.jsx";
-import { BookingsAdmin } from "./bookingsSearch.jsx";
+import { BookingsAdmin } from "./bookings/bookingsSearch.jsx";
 import { useSize } from "../../utils/SizeContext.jsx";
 
 export default function BookingAdmin() {
