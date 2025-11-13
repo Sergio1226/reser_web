@@ -9,6 +9,8 @@ export function Schedule() {
   const [date, setDate] = useState(new Date());
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [hoveredReservation, setHoveredReservation] = useState(null);
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 
   const days = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 
@@ -49,38 +51,58 @@ export function Schedule() {
 
   const getReservation = (room, cellDate) => {
     return reservations.find((res) => {
-      if (res.room_id !== room) return false;
+      if (!Array.isArray(res.habitaciones) || !res.habitaciones.includes(room))
+        return false;
       const start = normalizeDate(res.start_date);
       const end = normalizeDate(res.end_date);
       return cellDate >= start && cellDate <= end;
     });
   };
-  const getCheckoutReservation = (room, cellDate) => {
-    return reservations.find((res) => {
-      if (res.room_id !== room) return false;
-      const end = normalizeDate(res.end_date);
-      return cellDate.getTime() === end.getTime();
-    });
-  };
+
   const getCheckinReservation = (room, cellDate) => {
     return reservations.find((res) => {
-      if (res.room_id !== room) return false;
+      if (!Array.isArray(res.habitaciones) || !res.habitaciones.includes(room))
+        return false;
       const start = normalizeDate(res.start_date);
       return cellDate.getTime() === start.getTime();
     });
   };
 
+  const getCheckoutReservation = (room, cellDate) => {
+    return reservations.find((res) => {
+      if (!Array.isArray(res.habitaciones) || !res.habitaciones.includes(room))
+        return false;
+      const end = normalizeDate(res.end_date);
+      return cellDate.getTime() === end.getTime();
+    });
+  };
+
+  const handleTooltip = (e, res, room) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setTooltipPos({ x: rect.x + rect.width / 2, y: rect.y - 10 });
+    const start = normalizeDate(res.start_date);
+    const end = normalizeDate(res.end_date);
+    setHoveredReservation({
+      guest: res.guest,
+      room,
+      checkIn: start.toLocaleDateString(),
+      checkOut: end.toLocaleDateString(),
+    });
+  };
+
+  const hideTooltip = () => setHoveredReservation(null);
+
   return (
     <div>
       <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-6 shadow-lg mx-8">
         <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
-          <span className="text-3xl">📅</span>
-          Calendario de reservas
+          <span className="text-3xl">📅</span> Calendario de reservas
         </h2>
         <p className="text-blue-100">
           Visualiza las reservas de habitaciones por semana
         </p>
       </div>
+
       {loading ? (
         <div className="w-full max-w-6xl mx-auto flex justify-center flex-col items-center py-8">
           <Loading />
@@ -127,7 +149,7 @@ export function Schedule() {
                 No hay reservas para mostrar
               </p>
             ) : (
-              <div className="w-full overflow-x-auto shadow-md rounded-lg">
+              <div className="w-full overflow-x-auto shadow-md rounded-lg relative">
                 <div className="inline-block min-w-full">
                   <table className="w-full border-collapse text-center text-xs border-2 border-gray-200">
                     <thead>
@@ -143,7 +165,7 @@ export function Schedule() {
                           return (
                             <th
                               key={day}
-                              className={`min-w-[120px] border border-gray-300 p-2 text-xs leading-tight break-words font-semibold transition-colors ${
+                              className={`min-w-[120px] border border-gray-300 p-2 text-xs leading-tight font-semibold transition-colors ${
                                 isToday
                                   ? "bg-gradient-to-br from-green-400 to-emerald-500 text-white shadow-md"
                                   : "bg-gradient-to-br from-gray-100 to-gray-200 text-gray-700"
@@ -159,87 +181,94 @@ export function Schedule() {
                         })}
                       </tr>
                     </thead>
+
                     <tbody>
                       {rooms.map((room) => (
-                        <tr
-                          key={room}
-                          className="hover:bg-gray-50 transition-colors"
-                        >
+                        <tr key={room} className="hover:bg-gray-50 transition-colors">
                           <td className="min-w-[80px] w-20 bg-gradient-to-br from-gray-100 to-gray-200 border border-gray-300 p-2 font-bold text-gray-700 sticky left-0 z-10">
                             {room}
                           </td>
+
                           {days.map((_, index) => {
                             const cellDate = getCellDate(date, index);
-                            const checkoutRes = getCheckoutReservation(
-                              room,
-                              cellDate
-                            );
-                            const checkinRes = getCheckinReservation(
-                              room,
-                              cellDate
-                            );
+                            const checkoutRes = getCheckoutReservation(room, cellDate);
+                            const checkinRes = getCheckinReservation(room, cellDate);
                             const res = getReservation(room, cellDate);
 
                             let cellContent;
-                            let cellClass =
-                              "min-w-[120px] border border-gray-300 p-0 text-[11px] font-medium transition-all relative";
 
                             if (
                               checkoutRes &&
                               checkinRes &&
-                              (checkoutRes.start_date !==
-                                checkinRes.start_date ||
+                              (checkoutRes.start_date !== checkinRes.start_date ||
                                 checkoutRes.end_date !== checkinRes.end_date)
                             ) {
+
                               cellContent = (
                                 <div className="flex h-full min-h-[40px]">
-                                  <div className="w-1/2 bg-gradient-to-br from-green-300 to-emerald-400 flex items-center justify-center text-gray-800 font-bold py-2 rounded-r-lg text-[10px]">
-                                    {checkoutRes.guest}
+                                  <div
+                                    onMouseEnter={(e) => handleTooltip(e, checkoutRes, room)}
+                                    onMouseLeave={hideTooltip}
+                                    className="w-1/2 bg-gradient-to-br from-green-300 to-emerald-400 flex items-center justify-center text-gray-800 font-bold py-2 rounded-r-lg text-[10px] cursor-pointer truncate px-1"
+                                    title={checkoutRes.guest}
+                                  >
+                                    {checkoutRes.guest.split(" ")[0]}
                                   </div>
-                                  <div className="w-1/2 bg-gradient-to-br from-green-300 to-emerald-400 flex items-center justify-center text-gray-800 font-bold py-2 rounded-l-lg text-[10px]">
-                                    {checkinRes.guest}
+                                  <div
+                                    onMouseEnter={(e) => handleTooltip(e, checkinRes, room)}
+                                    onMouseLeave={hideTooltip}
+                                    className="w-1/2 bg-gradient-to-br from-green-300 to-emerald-400 flex items-center justify-center text-gray-800 font-bold py-2 rounded-l-lg text-[10px] cursor-pointer truncate px-1"
+                                    title={checkinRes.guest}
+                                  >
+                                    {checkinRes.guest.split(" ")[0]}
                                   </div>
                                 </div>
                               );
                             } else if (res) {
+
                               const start = normalizeDate(res.start_date);
                               const end = normalizeDate(res.end_date);
-                              const isStart =
-                                cellDate.getTime() === start.getTime();
-                              const isEnd =
-                                cellDate.getTime() === end.getTime();
+                              const isStart = cellDate.getTime() === start.getTime();
+                              const isEnd = cellDate.getTime() === end.getTime();
 
                               if (isStart && isEnd) {
                                 cellContent = (
-                                  <div className="flex h-full min-h-[40px]">
-                                    <div className="w-1/2 bg-white"></div>
-                                    <div className="w-1/2 bg-gradient-to-br from-green-300 to-emerald-400 flex items-center justify-center text-gray-800 font-bold py-2 rounded-l-lg">
-                                      {res.guest}
-                                    </div>
+                                  <div
+                                    onMouseEnter={(e) => handleTooltip(e, res, room)}
+                                    onMouseLeave={hideTooltip}
+                                    className="flex h-full min-h-[40px] bg-gradient-to-br from-green-300 to-emerald-400 text-gray-800 font-bold items-center justify-center py-2 rounded-lg cursor-pointer"
+                                  >
+                                    {res.guest.split(" ")[0]}
                                   </div>
                                 );
                               } else if (isStart) {
                                 cellContent = (
-                                  <div className="flex h-full min-h-[40px]">
-                                    <div className="w-1/2 bg-white"></div>
-                                    <div className="w-1/2 bg-gradient-to-br from-green-300 to-emerald-400 flex items-center justify-center text-gray-800 font-bold py-2 rounded-l-lg">
-                                      {res.guest}
-                                    </div>
+                                  <div
+                                    onMouseEnter={(e) => handleTooltip(e, res, room)}
+                                    onMouseLeave={hideTooltip}
+                                    className="flex h-full min-h-[40px] bg-gradient-to-br from-green-300 to-emerald-400 text-gray-800 font-bold items-center justify-center py-2 rounded-l-lg cursor-pointer"
+                                  >
+                                    {res.guest.split(" ")[0]}
                                   </div>
                                 );
                               } else if (isEnd) {
                                 cellContent = (
-                                  <div className="flex h-full min-h-[40px]">
-                                    <div className="w-1/2 bg-gradient-to-br from-green-300 to-emerald-400 flex items-center justify-center text-gray-800 font-bold py-2 rounded-r-lg">
-                                      {res.guest}
-                                    </div>
-                                    <div className="w-1/2 bg-white"></div>
+                                  <div
+                                    onMouseEnter={(e) => handleTooltip(e, res, room)}
+                                    onMouseLeave={hideTooltip}
+                                    className="flex h-full min-h-[40px] bg-gradient-to-br from-green-300 to-emerald-400 text-gray-800 font-bold items-center justify-center py-2 rounded-r-lg cursor-pointer"
+                                  >
+                                    {res.guest.split(" ")[0]}
                                   </div>
                                 );
                               } else {
                                 cellContent = (
-                                  <div className="bg-gradient-to-br from-green-300 to-emerald-400 text-gray-800 font-bold flex items-center justify-center py-2 h-full min-h-[40px]">
-                                    {res.guest}
+                                  <div
+                                    onMouseEnter={(e) => handleTooltip(e, res, room)}
+                                    onMouseLeave={hideTooltip}
+                                    className="bg-gradient-to-br from-green-300 to-emerald-400 text-gray-800 font-bold flex items-center justify-center py-2 h-full min-h-[40px] cursor-pointer"
+                                  >
+                                    {res.guest.split(" ")[0]}
                                   </div>
                                 );
                               }
@@ -252,7 +281,10 @@ export function Schedule() {
                             }
 
                             return (
-                              <td key={room + index} className={cellClass}>
+                              <td
+                                key={room + index}
+                                className="min-w-[120px] border border-gray-300 p-0 text-[11px] font-medium relative"
+                              >
                                 {cellContent}
                               </td>
                             );
@@ -262,6 +294,22 @@ export function Schedule() {
                     </tbody>
                   </table>
                 </div>
+
+                {hoveredReservation && (
+                  <div
+                    className="absolute bg-white border border-gray-300 rounded-lg shadow-xl px-4 py-2 text-xs text-gray-800 z-50 transition-all duration-150"
+                    style={{
+                      top: tooltipPos.y - 40,
+                      left: tooltipPos.x,
+                      transform: "translateX(-50%)",
+                    }}
+                  >
+                    <p className="font-bold text-sm">{hoveredReservation.guest}</p>
+                    <p>Habitación: {hoveredReservation.room}</p>
+                    <p>Check-in: {hoveredReservation.checkIn}</p>
+                    <p>Check-out: {hoveredReservation.checkOut}</p>
+                  </div>
+                )}
               </div>
             )}
           </div>

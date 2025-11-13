@@ -113,7 +113,7 @@ export function Reservations() {
             <TableArray headers={headers} info={bookings}>
               <div className="flex flex-col items-center justify-center space-y-2 flex-1 p-2">
                 <Button
-                  text="Cancelar"
+                  text="No se presento"
                   style="exit"
                 />
               </div>
