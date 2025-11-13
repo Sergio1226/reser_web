@@ -42,10 +42,6 @@ export default function ProfileButton() {
           }`}
         >
           <div className="flex justify-center items-center mb-2">
-            <Icon name="account" />
-            <span className="ml-2 font-semibold text-lg tracking-wide">
-              Mi cuenta
-            </span>
             <button
               onClick={() => setOpen(false)}
               className="hover:text-red-400 transition"

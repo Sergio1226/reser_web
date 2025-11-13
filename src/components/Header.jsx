@@ -45,7 +45,7 @@ export default function Header({ children }) {
           onClick={() => navigate("/")}
         >
           <p className="text-white/90 text-xs sm:text-sm font-semibold tracking-widest uppercase mb-1">
-            Hotel
+            Hospedaje
           </p>
           <h1
             className={`text-white font-bold leading-tight tracking-wide ${

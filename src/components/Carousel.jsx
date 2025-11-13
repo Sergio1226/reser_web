@@ -8,14 +8,27 @@ export default function Carousel({
   disableInterval = false,
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [aspectRatios, setAspectRatios] = useState([]);
+
+  useEffect(() => {
+    // Calcular proporción de cada imagen al cargar
+    const promises = images.map(
+      (src) =>
+        new Promise((resolve) => {
+          const img = new Image();
+          img.onload = () => resolve(img.width / img.height);
+          img.src = src;
+        })
+    );
+
+    Promise.all(promises).then(setAspectRatios);
+  }, [images]);
 
   useEffect(() => {
     if (disableInterval) return;
-
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % images.length);
     }, autoPlayInterval);
-
     return () => clearInterval(interval);
   }, [images.length, autoPlayInterval, disableInterval]);
 
@@ -26,33 +39,29 @@ export default function Carousel({
   return (
     <div className="relative w-full group">
       <div className={`relative ${className} rounded-xl overflow-hidden shadow-md`}>
-        {images.map((src, index) => (
-          <img
-            key={index}
-            src={src}
-            alt={`Slide ${index + 1}`}
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
-              index === currentIndex ? "opacity-100" : "opacity-0"
-            }`}
-            draggable="false"
-          />
-        ))}
+        {images.map((src, index) => {
+          const isVertical = aspectRatios[index] && aspectRatios[index] < 1;
+          return (
+            <img
+              key={index}
+              src={src}
+              alt={`Slide ${index + 1}`}
+              className={`absolute inset-0 w-full h-full ${
+                isVertical ? "object-contain bg-white" : "object-cover"
+              } transition-opacity duration-700 ${
+                index === currentIndex ? "opacity-100" : "opacity-0"
+              }`}
+              draggable="false"
+            />
+          );
+        })}
 
+        {/* Resto igual */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
-
-        <button
-          onClick={prevSlide}
-          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white text-gray-800 p-3 rounded-full shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
-          aria-label="Anterior"
-        >
+        <button onClick={prevSlide} className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white text-gray-800 p-3 rounded-full shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110">
           <ChevronLeft className="w-5 h-5" />
         </button>
-
-        <button
-          onClick={nextSlide}
-          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white text-gray-800 p-3 rounded-full shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
-          aria-label="Siguiente"
-        >
+        <button onClick={nextSlide} className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/95 hover:bg-white text-gray-800 p-3 rounded-full shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110">
           <ChevronRight className="w-5 h-5" />
         </button>
 
@@ -70,7 +79,6 @@ export default function Carousel({
                   ? "w-8 h-3 bg-white shadow-lg"
                   : "w-3 h-3 bg-white/50 hover:bg-white/80"
               }`}
-              aria-label={`Ir a imagen ${index + 1}`}
             />
           ))}
         </div>

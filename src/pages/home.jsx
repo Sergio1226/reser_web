@@ -82,7 +82,7 @@ export default function Home() {
               text="Registrarse"
               style="primary"
               className="w-full "
-              onClick={() => navigate("/login", { state: { nav: 1 } })}
+              onClick={() => navigate("/login", { state: { nav: 1, fromHome: true } })}
               iconName="user"
             />
           )}
@@ -96,7 +96,7 @@ export default function Home() {
             Tu Aventura en Monguí Comienza Aquí
           </h1>
           <p className="text-xl text-primary font-semibold">
-            ¡Reserva ahora! Inicia sesión o crea tu cuenta para asegurar tu estadía.
+            ¡Reserva ahora! Inicia sesión o crea tu cuenta para asegurar tu estadía con nosotros.
           </p>
         </div>
 

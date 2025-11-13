@@ -1,18 +1,31 @@
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { Button } from "../../components/Button.jsx";
-import  Header  from "../../components/Header.jsx";
-import { RegistUser } from "./registUser.jsx";
-import { LoginUser } from "./loginUser.jsx";
 import { SmallFooter } from "../../components/Footer.jsx";
-import { useLocation } from "react-router-dom";
+import Header from "../../components/Header.jsx";
+import { LoginUser } from "./loginUser.jsx";
+import { RegistUser } from "./registUser.jsx";
 
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
+
   const initialNav = location.state?.nav || 0;
+  const fromHome = location.state?.fromHome || false;
 
   const [nav, setNav] = useState(initialNav);
+
+  const handleBack = () => {
+    if (nav === 0) {
+      navigate(-1);
+    } else {
+      if (fromHome) {
+        navigate("/");
+      } else {
+        setNav(0);
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col font-primary bg-gradient-to-br from-gradient_1 to-secondary">
@@ -20,24 +33,19 @@ export default function Login() {
         <Button
           text="Atrás"
           style="exit"
-          onClick={() => {
-            if (nav === 0) {
-              navigate("/");
-            } else {
-              setNav(0);
-            }
-          }}
+          onClick={handleBack}
           iconName="back"
         />
       </Header>
 
-      <main className="flex flex-1  w-full justify-center items-center p-8">
+      <main className="flex flex-1 w-full justify-center items-center p-8">
         {nav === 0 ? (
           <LoginUser setNav={setNav} />
         ) : (
           <RegistUser setNav={setNav} />
         )}
       </main>
+
       <SmallFooter />
     </div>
   );
