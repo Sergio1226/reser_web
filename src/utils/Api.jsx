@@ -1,5 +1,101 @@
 import { supabase } from "./supabase.js";
 import { formatBookings, formatBookingsByDates } from "./Format.js";
+export async function getFullReservationDetails(id_reserva) {
+  const { data: reserva, error: e1 } = await supabase
+    .from("reservas")
+    .select(`
+      id,
+      fecha_reservacion,
+      fecha_entrada,
+      fecha_salida,
+      estado_reserva,
+      cantidad_adultos,
+      cantidad_ninos,
+      id_cliente,
+      clientes (
+        primer_nombre,
+        segundo_nombre,
+        primer_apellido,
+        segundo_apellido,
+        documento,
+        email
+      )
+    `)
+    .eq("id", id_reserva)
+    .single();
+  if (e1) throw e1;
+
+  const { data: habitaciones, error: e2 } = await supabase
+    .from("reservas_habitaciones")
+    .select(`
+      id_habitacion,
+      habitaciones (
+        descripcion,
+        precio
+      )
+    `)
+    .eq("id_reserva", id_reserva);
+  if (e2) throw e2;
+
+  const { data: servicios, error: e3 } = await supabase
+    .from("reservas_servicios")
+    .select(`
+      id_servicio,
+      servicios_adicionales (
+        nombre,
+        descripcion,
+        precio,
+        tipo_cobro
+      )
+    `)
+    .eq("id_reserva", id_reserva);
+  if (e3) throw e3;
+
+  const { data: servicios_fechas, error: e4 } = await supabase
+    .from("reservas_servicios_fechas")
+    .select("*")
+    .eq("id_reserva", id_reserva);
+  if (e4) throw e4;
+
+  const serviciosCompletos = servicios.map((s) => {
+    const fechas = servicios_fechas.filter(f => f.id_servicio === s.id_servicio);
+    const cantidadTotal = fechas.reduce((sum, f) => sum + Number(f.cantidad || 0), 0);
+    const total = Number(s.servicios_adicionales.precio || 0) * cantidadTotal;
+    return {
+      id: s.id_servicio,
+      nombre: s.servicios_adicionales.nombre,
+      tipo_cobro: s.servicios_adicionales.tipo_cobro,
+      precio_unitario: s.servicios_adicionales.precio,
+      fechas: fechas.map(f => f.fecha),
+      cantidadTotal,
+      total
+    };
+  });
+
+  const habitacionesForm = habitaciones.map(h => ({
+    descripcion: h.habitaciones.descripcion,
+    precio: h.habitaciones.precio
+  }));
+
+  const nights = Math.max(1, Math.ceil((new Date(reserva.fecha_salida) - new Date(reserva.fecha_entrada)) / (1000*60*60*24)));
+  const subtotalHabitaciones = habitacionesForm.reduce((sum, h) => sum + Number(h.precio || 0) * nights, 0);
+  const subtotalServicios = serviciosCompletos.reduce((s, sv) => s + Number(sv.total || 0), 0);
+  const total = subtotalHabitaciones + subtotalServicios;
+
+  return {
+    id: reserva.id,
+    reservationDate: reserva.fecha_reservacion,
+    checkIn: reserva.fecha_entrada,
+    checkOut: reserva.fecha_salida,
+    room: (habitacionesForm.map(h => h.descripcion).join(", ")) || "—",
+    status: reserva.estado_reserva,
+    habitaciones: habitacionesForm,
+    servicios: serviciosCompletos,
+    subtotalHabitaciones,
+    subtotalServicios,
+    total
+  };
+}
 /**
  * Obtiene las habitaciones disponibles en un rango de fechas y para una cantidad de personas
  * @param {string} start - Fecha de entrada (YYYY-MM-DD)

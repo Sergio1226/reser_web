@@ -38,6 +38,6 @@ export function formatBookings(bookings) {
 
 export function formatBookingsByDates(bookings) {
   return bookings.map((booking) => {
-    return [booking.nombre_cliente, booking.fecha_entrada, booking.fecha_salida,!booking.habitaciones?'':booking.habitaciones.join(", "),booking.fecha_reservacion,booking.estado_reserva, `$${booking.precio}`];
+    return [booking.nombre_cliente, booking.fecha_entrada, booking.fecha_salida,!booking.habitaciones?'':booking.habitaciones.join(", "),booking.fecha_reservacion,booking.estado_reserva, `$${booking.precio}`, booking.id_reserva];
   });
 }
