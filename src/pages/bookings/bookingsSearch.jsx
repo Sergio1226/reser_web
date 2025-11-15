@@ -94,6 +94,8 @@ export function BookingSearch({ setNav }) {
         0
       );
       localStorage.setItem("reservaSubtotal", String(subtotal));
+
+      scrollToTop();
     }
   };
 
@@ -186,14 +188,24 @@ export function BookingSearch({ setNav }) {
           <span className="text-2xl">🔍</span> Buscar Habitaciones
         </h2>
 
+        <p className="text-gray-600 text-base sm:text-lg mt-2 mb-6">
+          Selecciona tus fechas, huéspedes y habitaciones para ver qué opciones tenemos para ti.
+        </p>
+
         <div className="flex flex-col lg:flex-row gap-4 justify-center lg:items-stretch">
           <div className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow flex items-center justify-center gap-4 flex-1">
             <Calendar range={range} setRange={setRange} />
-            <div className="flex flex-col items-center">
-              <span className="text-sm font-semibold text-slate-700 text-center">
-                Check In - Check Out
+
+            <div className="flex flex-col items-center text-center">
+              <span className="text-lg font-semibold text-slate-700">
+                Llegada - Salida
               </span>
-              <span className="text-slate-500 text-sm text-center">
+
+              <span className="text-xs text-slate-500 italic tracking-wide">
+                (Check In – Check Out)
+              </span>
+
+              <span className="text-slate-500 text-sm mt-1">
                 {`${format(range[0].startDate, "dd/MM/yy")} - ${format(
                   range[0].endDate,
                   "dd/MM/yy"
@@ -257,7 +269,6 @@ export function BookingSearch({ setNav }) {
         />
       </div>
 
-      {/* Resultados */}
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="flex flex-col flex-1 space-y-6">
           {searchLoading ? (
@@ -315,17 +326,6 @@ export function BookingSearch({ setNav }) {
                             </div>
                           </div>
 
-                          <button
-                            className={`w-full px-4 py-2 rounded-lg font-semibold transition mb-3 ${
-                              isSelected
-                                ? "bg-red-500 text-white hover:bg-red-600"
-                                : "bg-green-500 text-white hover:bg-green-600"
-                            }`}
-                            onClick={() => handleSelectCombo(combo)}
-                          >
-                            {isSelected ? "✕ Quitar selección" : "✓ Seleccionar esta opción"}
-                          </button>
-
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {combo.map((r) => {
                               const capacity = r.capacidad_total;
@@ -362,6 +362,16 @@ export function BookingSearch({ setNav }) {
                               );
                             })}
                           </div>
+                           <button
+                            className={`w-full px-4 py-2 rounded-lg font-semibold transition mb-3 ${
+                              isSelected
+                                ? "bg-red-500 text-white hover:bg-red-600"
+                                : "bg-green-500 text-white hover:bg-green-600"
+                            }`}
+                            onClick={() => handleSelectCombo(combo)}
+                          >
+                            {isSelected ? "✕ Quitar selección" : "✓ Seleccionar esta opción"}
+                          </button>
                         </div>
                       );
                     })}
@@ -489,8 +499,8 @@ export function BookingSearch({ setNav }) {
           )}
         </div>
 
-        <div className="lg:w-80" ref={sendRef}>
-          <div>
+        <div className="w-full lg:w-80" ref={sendRef}>
+          <div className="lg:sticky lg:top-6 h-min"> 
             <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-300 rounded-xl shadow-lg p-6">
               <h3 className="text-lg font-bold text-green-800 mb-4 text-center">
                 Resumen de Reserva

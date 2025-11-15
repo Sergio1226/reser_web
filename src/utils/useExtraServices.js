@@ -158,6 +158,17 @@ export function useExtraServices(subtotal) {
     });
   };
 
+    const assignAllGuests = (serviceId, totalHuespedes) => {
+      setSelected(prev => ({
+        ...prev,
+        [serviceId]: {
+          ...prev[serviceId],
+          cantidad: totalHuespedes,
+          activo: true
+        }
+      }));
+    };
+
   const totalServicios = useMemo(() => {
     return services.reduce((acc, s) => {
       const sel = selected[s.id];
@@ -196,5 +207,6 @@ export function useExtraServices(subtotal) {
     totalGeneral,
     getDiasDisponibles,
     toggleActive,
+    assignAllGuests,
   };
 }

@@ -126,6 +126,32 @@ export function RegistUser({ setNav }) {
     return Object.keys(newErrors).length === 0;
   };
 
+  const validateLive = (name, value) => {
+    let msg = "";
+
+    switch (name) {
+      case "email":
+        if (!value.trim()) msg = "El correo es obligatorio.";
+        else if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(value))
+          msg = "Formato de correo inválido.";
+        break;
+
+      case "password":
+        if (value.length < 6) msg = "Debe tener al menos 6 caracteres.";
+        break;
+
+      case "passwordConfirm":
+        if (value !== password) msg = "Las contraseñas no coinciden.";
+        break;
+
+      case "documento":
+        if (!value) msg = "Campo obligatorio.";
+        break;
+    }
+
+    setErrors((prev) => ({ ...prev, [name]: msg }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -175,9 +201,13 @@ export function RegistUser({ setNav }) {
       </h2>
 
       <section className="mb-10 p-6 border rounded-xl bg-white">
-        <h3 className="text-xl font-semibold text-gray-800 mb-6 flex items-center">
-          Datos Personales
-        </h3>
+        <p className="text-gray-600 mb-6">
+          Complete el formulario con su información personal. 
+        </p>
+
+        <p className="text-gray-600 mb-6">
+          Los campos marcados con <span className="text-red-500 font-semibold">*</span> son obligatorios.
+        </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {["primer_nombre", "segundo_nombre", "primer_apellido", "segundo_apellido"].map((field, i) => (
@@ -309,7 +339,7 @@ export function RegistUser({ setNav }) {
               {docName.toLowerCase().includes("pasaporte")
                 ? "Letras y números (6–15 caracteres)."
                 : isColombian
-                ? "Solo números (10 dígitos para cédula moderna)."
+                ? "Solo números (6-10 dígitos)."
                 : "Solo números (6–10 dígitos)."}
             </small>
 
@@ -399,6 +429,12 @@ export function RegistUser({ setNav }) {
         <h3 className="text-xl font-semibold text-gray-800 mb-6">
           Credenciales de Acceso
         </h3>
+        <p className="text-gray-600 mb-6">
+          Complete el formulario con sus credenciales de acceso al sistema. 
+        </p>
+        <p className="text-gray-600 mb-6">
+          Los campos marcados con <span className="text-red-500 font-semibold">*</span> son obligatorios.
+        </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="text-sm font-medium text-gray-700 block mb-1">
@@ -407,10 +443,14 @@ export function RegistUser({ setNav }) {
             <TextField
               type="email"
               placeholder="ejemplo@dominio.com"
-              required
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              required
+              onChange={(e) => {
+                setEmail(e.target.value);
+                validateLive("email", e.target.value);
+              }}
             />
+
             {errors.email && (
               <span className="text-red-600 text-sm mt-1 block">{errors.email}</span>
             )}
@@ -423,10 +463,13 @@ export function RegistUser({ setNav }) {
             <div className="relative">
               <TextField
                 type={showPassword ? "text" : "password"}
-                placeholder="Contraseña"
-                required
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                required
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  validateLive("password", e.target.value);
+                  validateLive("passwordConfirm", passwordConfirm);
+                }}
               />
               <button
                 type="button"
@@ -451,10 +494,12 @@ export function RegistUser({ setNav }) {
             <div className="relative">
               <TextField
                 type={showConfirmPassword ? "text" : "password"}
-                placeholder="Confirmar Contraseña"
-                required
                 value={passwordConfirm}
-                onChange={(e) => setPasswordConfirm(e.target.value)}
+                required
+                onChange={(e) => {
+                  setPasswordConfirm(e.target.value);
+                  validateLive("passwordConfirm", e.target.value);
+                }}
               />
               <button
                 type="button"

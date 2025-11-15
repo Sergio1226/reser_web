@@ -41,14 +41,16 @@ export default function Bookings() {
       <main className="flex flex-col flex-1 items-center p-4 sm:p-8 overflow-x-hidden w-full">
         <div className="w-full max-w-full">
           <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-x-hidden">
-            <div className="bg-gradient-to-r from-green-600 to-green-700 p-4 sm:p-8">
-              <h1 className="text-3xl font-bold text-white mb-2 text-center">
-                Modulo de Reservas
-              </h1>
-              <p className="text-green-100 text-center">
-                Realiza y Gestiona tus reservas de manera fácil y rápida
-              </p>
-            </div>
+            {nav < 2 && (
+              <div className="bg-gradient-to-r from-green-600 to-green-700 p-4 sm:p-8">
+                <h1 className="text-3xl font-bold text-white mb-2 text-center">
+                  Modulo de Reservas
+                </h1>
+                <p className="text-green-100 text-center">
+                  Realiza y Visualiza tus reservas de manera fácil y rápida
+                </p>
+              </div>
+            )}
 
             {nav < 2 && (
               <div className="py-6 flex justify-center items-center border-b border-slate-200">
@@ -130,21 +132,48 @@ function ExtraServices({ setNav }) {
   }
 
   const handleContinue = () => {
+
+    for (const service of services) {
+      const data = selected[service.id];
+      if (!data?.activo) continue;
+
+      if (
+        (service.tipo_cobro === "por_dia_por_persona" ||
+          service.tipo_cobro === "por_dia_por_vehiculo") &&
+        (!data.dias || data.dias.length === 0)
+      ) {
+        alert(`Debes seleccionar al menos un día para el servicio: ${service.nombre}`);
+        return;
+      }
+
+      if (
+        service.tipo_cobro === "por_evento_por_persona" &&
+        (!data.fecha || data.fecha === "")
+      ) {
+        alert(`Debes seleccionar la fecha del servicio: ${service.nombre}`);
+        return;
+      }
+    }
+
     const resumen = {
       subtotalHabitaciones: subtotal,
       subtotalServicios: totalServicios,
       totalGeneral,
       serviciosSeleccionados: selected,
       serviciosInfo: Object.fromEntries(
-        services.map((s) => [s.id, {
-          id: s.id,
-          nombre: s.nombre,
-          precio: s.precio,
-          tipo_cobro: s.tipo_cobro,
-          descripcion: s.descripcion,
-        }])
-      )
+        services.map((s) => [
+          s.id,
+          {
+            id: s.id,
+            nombre: s.nombre,
+            precio: s.precio,
+            tipo_cobro: s.tipo_cobro,
+            descripcion: s.descripcion,
+          },
+        ])
+      ),
     };
+
     localStorage.setItem("reservaDatos", JSON.stringify(resumen));
     setNav(3);
   };
@@ -187,6 +216,33 @@ function ExtraServices({ setNav }) {
   };
 
   const detallesServicios = calcularDetalleServicios();
+  const assignAllGuests = (serviceId, value) => {
+    setServiceCount(serviceId, value);
+  };
+
+  const hasMissingRequiredData = () => {
+    for (const service of services) {
+      const data = selected[service.id];
+      if (!data?.activo) continue;
+
+      if (
+        (service.tipo_cobro === "por_dia_por_persona" ||
+          service.tipo_cobro === "por_dia_por_vehiculo") &&
+        (!data.dias || data.dias.length === 0)
+      ) {
+        return true;
+      }
+
+      if (
+        service.tipo_cobro === "por_evento_por_persona" &&
+        (!data.fecha || data.fecha === "")
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -204,8 +260,7 @@ function ExtraServices({ setNav }) {
           const data = selected[s.id] || {};
           const isActive = !!data.activo;
           const diasDisponibles = getDiasDisponibles(s.tipo_cobro);
-          const todasSeleccionadas =
-            data.dias?.length === diasDisponibles.length;
+          const todasSeleccionadas = data.dias?.length === diasDisponibles.length;
 
           return (
             <div
@@ -246,10 +301,20 @@ function ExtraServices({ setNav }) {
                 <>
                   {s.tipo_cobro === "por_dia_por_persona" && (
                     <div className="space-y-4">
-                      <div className="flex items-center gap-3">
+                      <div className="flex justify-between items-center">
                         <span className="text-sm font-medium text-slate-600">
                           Cantidad de huéspedes:
                         </span>
+
+                        <button
+                          onClick={() => assignAllGuests(s.id, totalHuespedes)}
+                          className="text-green-700 text-sm font-medium hover:underline whitespace-nowrap"
+                        >
+                          Todos incluirán desayuno
+                        </button>
+                      </div>
+
+                      <div className="flex items-center">
                         <Counter
                           count={data.cantidad || totalHuespedes}
                           setCount={(val) => setServiceCount(s.id, val)}
@@ -268,12 +333,12 @@ function ExtraServices({ setNav }) {
                             className="text-green-700 text-sm font-medium hover:underline"
                           >
                             {todasSeleccionadas
-                              ? "Deseleccionar todas"
-                              : "Seleccionar todas"}
+                              ? "Deseleccionar todas las fechas"
+                              : "Seleccionar todas las fechas"}
                           </button>
                         </div>
 
-                        <div className="flex flex-wrap gap-2">
+                        <div className="w-full flex flex-wrap gap-2">
                           {diasDisponibles.map((d) => (
                             <button
                               key={d}
@@ -287,6 +352,15 @@ function ExtraServices({ setNav }) {
                               {formatDayShort(d)}
                             </button>
                           ))}
+                        </div>
+
+                        <div className="w-full">
+                          {isActive &&
+                            (!data.dias || data.dias.length === 0) && (
+                              <p className="text-red-600 text-xs mt-1">
+                                Selecciona al menos un día para continuar.
+                              </p>
+                            )}
                         </div>
                       </div>
                     </div>
@@ -316,12 +390,12 @@ function ExtraServices({ setNav }) {
                             className="text-green-700 text-sm font-medium hover:underline"
                           >
                             {todasSeleccionadas
-                              ? "Deseleccionar todas"
-                              : "Seleccionar todas"}
+                              ? "Deseleccionar todas las fechas"
+                              : "Seleccionar todas las fechas"}
                           </button>
                         </div>
 
-                        <div className="flex flex-wrap gap-2">
+                        <div className="w-full flex flex-wrap gap-2">
                           {diasDisponibles.map((d) => (
                             <button
                               key={d}
@@ -336,16 +410,37 @@ function ExtraServices({ setNav }) {
                             </button>
                           ))}
                         </div>
+
+                        <div className="w-full">
+                          {isActive &&
+                            (!data.dias || data.dias.length === 0) && (
+                              <p className="text-red-600 text-xs mt-1">
+                                Selecciona al menos un día para continuar.
+                              </p>
+                            )}
+                        </div>
                       </div>
                     </div>
                   )}
 
                   {s.tipo_cobro === "por_evento_por_persona" && (
                     <div className="space-y-4">
-                      <div className="flex items-center gap-3">
+                      <div className="flex justify-between items-center">
                         <span className="text-sm font-medium text-slate-600">
                           Personas que asistirán:
                         </span>
+
+                        <button
+                          onClick={() =>
+                            assignAllGuests(s.id, totalHuespedes)
+                          }
+                          className="text-green-700 text-sm font-medium hover:underline whitespace-nowrap"
+                        >
+                          Todos incluirán senderismo
+                        </button>
+                      </div>
+
+                      <div className="flex items-center">
                         <Counter
                           count={data.cantidad || 1}
                           setCount={(val) => setServiceCount(s.id, val)}
@@ -358,18 +453,30 @@ function ExtraServices({ setNav }) {
                         <p className="text-sm text-slate-600 mb-1">
                           Selecciona la fecha del senderismo:
                         </p>
+
                         <select
                           value={data.fecha || ""}
-                          onChange={(e) => setServiceDate(s.id, e.target.value)}
+                          onChange={(e) =>
+                            setServiceDate(s.id, e.target.value)
+                          }
                           className="border rounded-lg p-2 text-sm text-slate-700"
                         >
                           <option value="">Seleccionar fecha</option>
+
                           {diasDisponibles.map((d) => (
                             <option key={d} value={d}>
                               {formatDayWeekday(d)}
                             </option>
                           ))}
                         </select>
+
+                        <div className="w-full">
+                          {isActive && !data.fecha && (
+                            <p className="text-red-600 text-xs mt-1">
+                              Debes seleccionar una fecha para continuar.
+                            </p>
+                          )}
+                        </div>
                       </div>
                     </div>
                   )}
@@ -427,6 +534,7 @@ function ExtraServices({ setNav }) {
             </span>
           </div>
         </div>
+
         <div className="flex flex-col md:flex-row justify-center gap-4 mt-6">
           <Button style="exit" iconName="back" text="Atrás" onClick={() => setNav(0)} />
           <Button
@@ -434,6 +542,8 @@ function ExtraServices({ setNav }) {
             iconName="next"
             text="Continuar con la reserva"
             onClick={handleContinue}
+            disabled={hasMissingRequiredData()}
+            className={hasMissingRequiredData() ? "opacity-50 cursor-not-allowed" : ""}
           />
         </div>
       </div>
@@ -568,15 +678,24 @@ function ConfirmReservation({ setNav }) {
                       <span className="font-medium text-slate-800">
                         {info?.nombre || `Servicio #${id}`}
                       </span>
+
                       <span className="text-sm text-slate-600 ml-2">
                         ({detalle})
                       </span>
+
                       {sel.fecha && (
-                        <span className="text-xs text-slate-500 ml-2">
+                        <p className="text-xs text-slate-500 ml-2">
                           Fecha: {sel.fecha}
-                        </span>
+                        </p>
+                      )}
+
+                      {Array.isArray(sel.dias) && sel.dias.length > 0 && (
+                        <p className="text-xs text-slate-500 ml-2">
+                          Días: {sel.dias.join(", ")}
+                        </p>
                       )}
                     </div>
+
                     <span className="font-semibold text-slate-700">
                       ${totalServicio.toLocaleString()} COP
                     </span>

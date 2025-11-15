@@ -93,10 +93,10 @@ export default function Home() {
         
         <div className="text-center w-full max-w-4xl mx-auto mb-4">
           <h1 className="text-3xl sm:text-4xl font-extrabold text-primary_dark mb-1">
-            Tu Aventura en Monguí Comienza Aquí
+            ¡Reserva ahora!
           </h1>
-          <p className="text-xl text-primary font-semibold">
-            ¡Reserva ahora! Inicia sesión o crea tu cuenta para asegurar tu estadía con nosotros.
+          <p className="text-2xl text-primary font-semibold">
+            Inicia sesión o crea tu cuenta para asegurar tu estadía con nosotros.
           </p>
         </div>
 
