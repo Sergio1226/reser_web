@@ -26,7 +26,7 @@ export default function AdminPage() {
   const options = [
     {
       id: "visualizar",
-      title: "Visualizar clientes",
+      title: "Visualizar Clientes",
       icon: "users",
     },
     {
@@ -53,7 +53,7 @@ export default function AdminPage() {
       <Header>
         <div className={`flex flex-row md:flex-col h-full items-center justify-center ${isMobile ? " space-x-2":"space-y-2"} mt-4 mr-8`}>
           <Button
-            text="Administracion"
+            text="Modulos"
             style="primary"
             className="w-full"
             onClick={() => {
@@ -77,10 +77,10 @@ export default function AdminPage() {
           <div className="bg-white rounded-2xl shadow-xl border border-black-200 overflow-hidden ">
             <div className="bg-gradient-to-r from-green-600 to-green-700 p-8 ">
               <h1 className="text-3xl font-bold text-white mb-2 text-center">
-                Administracion de clientes
+                Modulo de clientes
               </h1>
               <p className="text-green-100 text-center">
-                Gestiona las cuentas de tus clientes de manera fácil y rápida.
+                Visualiza y agrega cuentas de tus clientes de manera fácil y rápida.
               </p>
             </div>
             <div className="py-4 mt-6 flex justify-center items-center">
@@ -103,12 +103,19 @@ function Clients() {
   const [loadingClients, setLoadingClients] = useState(false);
   const [loadingSearch, setLoadingSearch] = useState(false);
   const [clients, setClients] = useState([]);
+  const [page, setPage] = useState(1);
+  const rowsPerPage = 10;
+
+  const totalPages = Math.ceil(clients.length / rowsPerPage);
+  const paginatedClients = clients.slice(
+    (page - 1) * rowsPerPage,
+    page * rowsPerPage
+);
   const [searchedClient, setSearchedClient] = useState(null);
 
   const statuses = [
     "Cédula de ciudadanía",
     "Pasaporte",
-    "Nit (Persona juridica)",
     "Cédula de extranjería",
   ];
   const headers = [
@@ -182,7 +189,7 @@ function Clients() {
         <div className="w-full max-w-6xl mx-auto p-6 flex flex-col items-center justify-center gap-6 rounded-xl border-2 border-gray-200 shadow-md">
 
           <p className="text-2xl font-bold text-green-900 ">
-            Ingrese el documento del cliente
+            Ingrese el tipo y numero de documento del cliente
           </p>
 
           <div className="flex flex-col md:flex-row items-center gap-4">
@@ -322,9 +329,38 @@ function Clients() {
             <p>Cargando clientes...</p>
           </div>
         ) : (
-          <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-            <TableArray headers={headers} info={clients}/>
-          </div>
+          <>
+            <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+              <TableArray
+                headers={headers}
+                info={paginatedClients}
+              />
+            </div>
+
+            {clients.length > 0 && (
+              <div className="flex justify-between items-center p-4 bg-slate-50 border border-slate-200 rounded-lg shadow-sm mt-4">
+                <Button
+                  className="bg-white text-slate-700 px-4 py-2 rounded-lg border border-slate-300 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => setPage(p => Math.max(p - 1, 1))}
+                  disabled={page === 1}
+                >
+                  ← Anterior
+                </Button>
+
+                <span className="font-medium text-slate-700">
+                  Página {page} de {totalPages}
+                </span>
+
+                <Button
+                  className="bg-white text-slate-700 px-4 py-2 rounded-lg border border-slate-300 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => setPage(p => Math.min(p + 1, totalPages))}
+                  disabled={page === totalPages}
+                >
+                  Siguiente →
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

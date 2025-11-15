@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Button } from "../../components/Button.jsx";
 import { CalendarSingle } from "../../components/Calendar.jsx";
 import { getAllRoomsIds, getAllBookings } from "../../utils/Api.jsx";
@@ -9,8 +9,10 @@ export function Schedule() {
   const [date, setDate] = useState(new Date());
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [hoveredReservation, setHoveredReservation] = useState(null);
+  const [clickedReservation, setClickedReservation] = useState(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+  const [tooltipPlacement, setTooltipPlacement] = useState("top");
+  const tooltipRef = useRef(null);
 
   const days = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 
@@ -77,12 +79,25 @@ export function Schedule() {
     });
   };
 
-  const handleTooltip = (e, res, room) => {
+  /** CLICK en una reserva — NO hover */
+  const handleClickReservation = (e, res, room) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    setTooltipPos({ x: rect.x + rect.width / 2, y: rect.y - 10 });
+
+    const spaceAbove = rect.top;
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const preferTop = spaceAbove > 120 || spaceAbove > spaceBelow;
+
+    const centerX = rect.left + rect.width / 2;
+    const clampedX = Math.min(Math.max(centerX, 12), window.innerWidth - 12);
+    const posY = preferTop ? rect.top : rect.bottom;
+
+    setTooltipPos({ x: clampedX, y: posY });
+    setTooltipPlacement(preferTop ? "top" : "bottom");
+
     const start = normalizeDate(res.start_date);
     const end = normalizeDate(res.end_date);
-    setHoveredReservation({
+
+    setClickedReservation({
       guest: res.guest,
       room,
       checkIn: start.toLocaleDateString(),
@@ -90,7 +105,7 @@ export function Schedule() {
     });
   };
 
-  const hideTooltip = () => setHoveredReservation(null);
+  const closeReservationModal = () => setClickedReservation(null);
 
   return (
     <div>
@@ -111,9 +126,16 @@ export function Schedule() {
       ) : (
         <main className="p-4 md:p-6 flex flex-col lg:flex-row flex-1 space-y-6 lg:space-y-0 lg:space-x-6">
           <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-lg flex-1">
-            <h1 className="text-2xl font-bold mb-6 text-center text-gray-800 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold mb-2 text-center text-gray-800 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
               Calendario de Reservas
             </h1>
+
+            <h3 className="text-center text-gray-600 mb-6 text-sm font-semibold">
+              Semana del {(() => {
+                const monday = getCellDate(date, 0);
+                return monday.toLocaleDateString();
+              })()}
+            </h3>
 
             <div className="flex mb-6 items-center justify-center space-x-4">
               <Button
@@ -123,9 +145,8 @@ export function Schedule() {
                   newDate.setDate(date.getDate() - 7);
                   setDate(newDate);
                 }}
-                className={"shadow-none hover:shadow-none"}
               />
-              <h2 className="text-center px-5 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-shadow flex items-center gap-2 hover:-translate-y-0.5">
+              <h2 className="text-center px-5 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg text-sm font-semibold">
                 <CalendarSingle
                   date={date}
                   setDate={setDate}
@@ -140,7 +161,6 @@ export function Schedule() {
                   newDate.setDate(date.getDate() + 7);
                   setDate(newDate);
                 }}
-                className={"shadow-none hover:shadow-none"}
               />
             </div>
 
@@ -154,7 +174,7 @@ export function Schedule() {
                   <table className="w-full border-collapse text-center text-xs border-2 border-gray-200">
                     <thead>
                       <tr>
-                        <th className="min-w-[80px] w-20 bg-gradient-to-br from-gray-700 to-gray-800 text-white border border-gray-400 p-2 text-sm font-bold sticky left-0 z-20">
+                        <th className="min-w-[80px] w-20 bg-gray-800 text-white border p-2 text-sm font-bold sticky left-0 z-20">
                           Hab.
                         </th>
                         {days.map((day, index) => {
@@ -165,10 +185,10 @@ export function Schedule() {
                           return (
                             <th
                               key={day}
-                              className={`min-w-[120px] border border-gray-300 p-2 text-xs leading-tight font-semibold transition-colors ${
+                              className={`min-w-[120px] border p-2 text-xs font-semibold ${
                                 isToday
-                                  ? "bg-gradient-to-br from-green-400 to-emerald-500 text-white shadow-md"
-                                  : "bg-gradient-to-br from-gray-100 to-gray-200 text-gray-700"
+                                  ? "bg-green-500 text-white"
+                                  : "bg-gray-200 text-gray-700"
                               }`}
                             >
                               {day}
@@ -184,8 +204,8 @@ export function Schedule() {
 
                     <tbody>
                       {rooms.map((room) => (
-                        <tr key={room} className="hover:bg-gray-50 transition-colors">
-                          <td className="min-w-[80px] w-20 bg-gradient-to-br from-gray-100 to-gray-200 border border-gray-300 p-2 font-bold text-gray-700 sticky left-0 z-10">
+                        <tr key={room}>
+                          <td className="min-w-[80px] w-20 bg-gray-100 border p-2 font-bold sticky left-0 z-10">
                             {room}
                           </td>
 
@@ -197,84 +217,39 @@ export function Schedule() {
 
                             let cellContent;
 
-                            if (
-                              checkoutRes &&
-                              checkinRes &&
-                              (checkoutRes.start_date !== checkinRes.start_date ||
-                                checkoutRes.end_date !== checkinRes.end_date)
-                            ) {
+                            const createCell = (r, roundClass) => (
+                              <div
+                                onClick={(e) => handleClickReservation(e, r, room)}
+                                className={`flex h-full min-h-[40px] bg-green-400 text-gray-800 font-bold items-center justify-center py-2 cursor-pointer truncate px-1 ${roundClass}`}
+                              >
+                                {r.guest.split(" ")[0]}
+                              </div>
+                            );
 
+                            if (checkoutRes && checkinRes) {
                               cellContent = (
                                 <div className="flex h-full min-h-[40px]">
-                                  <div
-                                    onMouseEnter={(e) => handleTooltip(e, checkoutRes, room)}
-                                    onMouseLeave={hideTooltip}
-                                    className="w-1/2 bg-gradient-to-br from-green-300 to-emerald-400 flex items-center justify-center text-gray-800 font-bold py-2 rounded-r-lg text-[10px] cursor-pointer truncate px-1"
-                                    title={checkoutRes.guest}
-                                  >
-                                    {checkoutRes.guest.split(" ")[0]}
-                                  </div>
-                                  <div
-                                    onMouseEnter={(e) => handleTooltip(e, checkinRes, room)}
-                                    onMouseLeave={hideTooltip}
-                                    className="w-1/2 bg-gradient-to-br from-green-300 to-emerald-400 flex items-center justify-center text-gray-800 font-bold py-2 rounded-l-lg text-[10px] cursor-pointer truncate px-1"
-                                    title={checkinRes.guest}
-                                  >
-                                    {checkinRes.guest.split(" ")[0]}
-                                  </div>
+                                  {createCell(checkoutRes, "rounded-r-lg w-1/2")}
+                                  {createCell(checkinRes, "rounded-l-lg w-1/2")}
                                 </div>
                               );
                             } else if (res) {
-
                               const start = normalizeDate(res.start_date);
                               const end = normalizeDate(res.end_date);
-                              const isStart = cellDate.getTime() === start.getTime();
+                              const isStart =
+                                cellDate.getTime() === start.getTime();
                               const isEnd = cellDate.getTime() === end.getTime();
 
-                              if (isStart && isEnd) {
-                                cellContent = (
-                                  <div
-                                    onMouseEnter={(e) => handleTooltip(e, res, room)}
-                                    onMouseLeave={hideTooltip}
-                                    className="flex h-full min-h-[40px] bg-gradient-to-br from-green-300 to-emerald-400 text-gray-800 font-bold items-center justify-center py-2 rounded-lg cursor-pointer"
-                                  >
-                                    {res.guest.split(" ")[0]}
-                                  </div>
-                                );
-                              } else if (isStart) {
-                                cellContent = (
-                                  <div
-                                    onMouseEnter={(e) => handleTooltip(e, res, room)}
-                                    onMouseLeave={hideTooltip}
-                                    className="flex h-full min-h-[40px] bg-gradient-to-br from-green-300 to-emerald-400 text-gray-800 font-bold items-center justify-center py-2 rounded-l-lg cursor-pointer"
-                                  >
-                                    {res.guest.split(" ")[0]}
-                                  </div>
-                                );
-                              } else if (isEnd) {
-                                cellContent = (
-                                  <div
-                                    onMouseEnter={(e) => handleTooltip(e, res, room)}
-                                    onMouseLeave={hideTooltip}
-                                    className="flex h-full min-h-[40px] bg-gradient-to-br from-green-300 to-emerald-400 text-gray-800 font-bold items-center justify-center py-2 rounded-r-lg cursor-pointer"
-                                  >
-                                    {res.guest.split(" ")[0]}
-                                  </div>
-                                );
-                              } else {
-                                cellContent = (
-                                  <div
-                                    onMouseEnter={(e) => handleTooltip(e, res, room)}
-                                    onMouseLeave={hideTooltip}
-                                    className="bg-gradient-to-br from-green-300 to-emerald-400 text-gray-800 font-bold flex items-center justify-center py-2 h-full min-h-[40px] cursor-pointer"
-                                  >
-                                    {res.guest.split(" ")[0]}
-                                  </div>
-                                );
-                              }
+                              if (isStart && isEnd)
+                                cellContent = createCell(res, "rounded-lg");
+                              else if (isStart)
+                                cellContent = createCell(res, "rounded-l-lg");
+                              else if (isEnd)
+                                cellContent = createCell(res, "rounded-r-lg");
+                              else cellContent = createCell(res, "");
                             } else {
                               cellContent = (
-                                <div className="bg-white text-gray-600 hover:bg-blue-50 flex items-center justify-center py-2 h-full min-h-[40px]">
+                                <div className="bg-white text-gray-600 flex items-center justify-center py-2 min-h-[40px]">
                                   Libre
                                 </div>
                               );
@@ -283,7 +258,7 @@ export function Schedule() {
                             return (
                               <td
                                 key={room + index}
-                                className="min-w-[120px] border border-gray-300 p-0 text-[11px] font-medium relative"
+                                className="min-w-[120px] border p-0 text-[11px]"
                               >
                                 {cellContent}
                               </td>
@@ -295,19 +270,38 @@ export function Schedule() {
                   </table>
                 </div>
 
-                {hoveredReservation && (
-                  <div
-                    className="absolute bg-white border border-gray-300 rounded-lg shadow-xl px-4 py-2 text-xs text-gray-800 z-50 transition-all duration-150"
-                    style={{
-                      top: tooltipPos.y - 40,
-                      left: tooltipPos.x,
-                      transform: "translateX(-50%)",
-                    }}
+                {clickedReservation && (
+                  <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50"
+                      onClick={closeReservationModal}
                   >
-                    <p className="font-bold text-sm">{hoveredReservation.guest}</p>
-                    <p>Habitación: {hoveredReservation.room}</p>
-                    <p>Check-in: {hoveredReservation.checkIn}</p>
-                    <p>Check-out: {hoveredReservation.checkOut}</p>
+                    <div
+                      className="bg-white rounded-xl shadow-xl p-6 w-80 animate-fadeIn"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <h2 className="text-lg font-bold mb-2 text-gray-800">
+                        {clickedReservation.guest}
+                      </h2>
+
+                      <p className="text-gray-700">
+                        <span className="font-semibold">Habitación:</span>{" "}
+                        {clickedReservation.room}
+                      </p>
+                      <p className="text-gray-700">
+                        <span className="font-semibold">Check-in:</span>{" "}
+                        {clickedReservation.checkIn}
+                      </p>
+                      <p className="text-gray-700 mb-4">
+                        <span className="font-semibold">Check-out:</span>{" "}
+                        {clickedReservation.checkOut}
+                      </p>
+
+                      <button
+                        className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-lg shadow"
+                        onClick={closeReservationModal}
+                      >
+                        Cerrar
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>

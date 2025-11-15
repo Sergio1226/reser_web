@@ -8,16 +8,16 @@ import { useSize } from "../../utils/SizeContext.jsx";
 
 const options = [
   {
-    title: "Administrar reservas",
+    title: "Modulo reservas",
     icon: "list",
     color: "green",
     description: "Visualiza y administra tus reservas.",
   },
   {
-    title: "Administrar Clientes",
+    title: "Modulo Clientes",
     icon: "users",
     color: "blue",
-    description: "Administra las reservas de tus clientes.",
+    description: "Visualiza la informacion de tus clientes.",
   },
 ];
 export default function DashBoard() {

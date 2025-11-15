@@ -55,7 +55,7 @@ export default function BookingAdmin() {
       <Header>
         <div className={`flex flex-row md:flex-col h-full items-center justify-center ${isMobile ? " space-x-2":"space-y-2"} mt-4 mr-8`}>
           <Button
-            text="Administracion"
+            text="Modulos"
             style="primary"
             className="w-full"
             onClick={() => {

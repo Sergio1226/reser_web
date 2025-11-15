@@ -392,14 +392,27 @@ export async function addClient(client) {
 export async function getReservationsByDate(date, type) {
   try {
     const pgDate = date.toISOString().split("T")[0];
+
     const { data, error } = await supabase.rpc("get_bookings", {
       p_date: pgDate,
       p_type: type,
     });
-    console.log(data);
-    if (data.length === 0) throw new Error("No se encontraron reservas para la fecha y tipo seleccionados");
-    if (error) console.log(error.message);
-    return { data: formatBookingsByDates(data), ids: data.map((obj) => obj.id),error };
+
+    if (error) {
+      console.error(error);
+      throw new Error("Error consultando las reservas");
+    }
+
+    if (!Array.isArray(data)) {
+      throw new Error("Error procesando reservas");
+    }
+
+    return {
+      data: data.length > 0 ? formatBookingsByDates(data) : [],
+      ids: data.map((obj) => obj.id),
+      error: null,
+    };
+
   } catch (error) {
     console.error("Error en getReservationsByDate:", error);
     throw error;

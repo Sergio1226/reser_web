@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { Picker } from "../../components/Picker.jsx";
@@ -11,11 +11,13 @@ import { Loading } from "../../components/Animate.jsx";
 
 export function Reservations() { 
   const { openPopup } = usePopup();
-  const [status, setStatus] = useState(0);
+  const [status, setStatus] = useState(1);
   const [date, setDate] = useState(new Date());
   const statuses = ["Reserva", "Entrada", "Salida"];
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const headers = [
     "Nombre del cliente",
@@ -45,6 +47,27 @@ export function Reservations() {
     }
   };
 
+  useEffect(() => {
+    const loadToday = async () => {
+      try {
+        setLoading(true);
+        const { data } = await getReservationsByDate(new Date(), 0);
+        setBookings(data);
+      } catch (error) {
+        openPopup(error.message, "warning");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadToday();
+  }, []);
+
+  const indexOfLast = currentPage * itemsPerPage;
+  const indexOfFirst = indexOfLast - itemsPerPage;
+  const currentBookings = bookings.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(bookings.length / itemsPerPage);
+
   return (
     <div>
       <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-6 shadow-lg mx-8">
@@ -64,7 +87,12 @@ export function Reservations() {
           </p>
 
           <div className="w-full flex flex-col md:flex-row items-center justify-center gap-6">
-            <Picker text="Fecha de" options={statuses} onChange={setStatus} />
+            <Picker
+              text="Fecha de"
+              options={statuses}
+              onChange={setStatus}
+              value={status}
+            />
 
             <div className="flex items-center relative bg-white rounded-lg shadow-sm border border-gray-200 p-3">
               <CalendarSingle date={date} setDate={setDate} />
@@ -110,14 +138,36 @@ export function Reservations() {
                 {bookings.length === 1 ? "reserva" : "reservas"}
               </p>
             </div>
-            <TableArray headers={headers} info={bookings}>
+
+            <TableArray headers={headers} info={currentBookings}>
               <div className="flex flex-col items-center justify-center space-y-2 flex-1 p-2">
-                <Button
-                  text="No se presento"
-                  style="exit"
-                />
+                <Button text="No se presento" style="exit" />
               </div>
             </TableArray>
+
+            <div className="flex justify-between items-center p-4 bg-slate-50 border border-slate-200 rounded-lg shadow-sm mt-4">
+              <Button
+                className="bg-white text-slate-700 px-4 py-2 rounded-lg border border-slate-300 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                ← Anterior
+              </Button>
+
+              <span className="font-medium text-slate-700">
+                Página {currentPage} de {totalPages}
+              </span>
+
+              <Button
+                className="bg-white text-slate-700 px-4 py-2 rounded-lg border border-slate-300 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(p + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+              >
+                Siguiente →
+              </Button>
+            </div>
           </div>
         )}
       </div>
