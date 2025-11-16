@@ -316,7 +316,7 @@ export default function ExtraServices({ setNav }) {
           <span className="text-4xl">🛎️</span> Servicios Adicionales
         </h2>
         <p className="text-green-100">
-          Personaliza tu estadía agregando servicios opcionales.
+          Agrega servicios opcionales a la reserva.
         </p>
       </div>
 

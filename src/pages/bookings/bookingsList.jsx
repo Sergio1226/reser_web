@@ -187,9 +187,9 @@ export function BookingTable() {
           renderActions={(item) => {
             if (item.status !== "Confirmada") {
               return (
-                <div className="flex gap-2">
+                <div className="flex flex-col gap-2">
                   <Button
-                    className="bg-gray-200 text-slate-600 px-3 py-2 rounded-lg font-medium"
+                    className="bg-blue-100 text-blue-700 px-3 py-2 rounded-lg font-medium hover:bg-blue-200"
                     onClick={() => {
                       setSelectedDetails(item);
                       setIsDetailsOpen(true);
@@ -210,7 +210,7 @@ export function BookingTable() {
               checkInDate > now || (isToday && now.getHours() < 14);
 
             return (
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-2">
                 <Button
                   className="bg-blue-100 text-blue-700 px-3 py-2 rounded-lg font-medium hover:bg-blue-200"
                   onClick={() => {

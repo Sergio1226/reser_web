@@ -460,6 +460,7 @@ export function RegistUser({ setNav }) {
             <label className="text-sm font-medium text-gray-700 block mb-1">
               <span className="text-red-500">*</span> Contraseña
             </label>
+
             <div className="relative">
               <TextField
                 type={showPassword ? "text" : "password"}
@@ -471,17 +472,20 @@ export function RegistUser({ setNav }) {
                   validateLive("passwordConfirm", passwordConfirm);
                 }}
               />
+
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute top-1/3 right-4 transform -translate-y-1/2 text-xl text-gray-500 hover:text-indigo-600"
+                className="absolute top-1/2 -translate-y-1/2 right-2 text-xl text-gray-500 hover:text-indigo-600"
               >
                 {showPassword ? <AiOutlineEye /> : <AiOutlineEyeInvisible />}
               </button>
-               <span className="text-xs text-gray-500">
-                La contraseña debe tener al menos 6 caracteres.
-              </span>
             </div>
+
+            <span className="text-xs text-gray-500">
+              La contraseña debe tener al menos 6 caracteres.
+            </span>
+
             {errors.password && (
               <span className="text-red-600 text-sm mt-1 block">{errors.password}</span>
             )}
@@ -491,6 +495,7 @@ export function RegistUser({ setNav }) {
             <label className="text-sm font-medium text-gray-700 block mb-1">
               <span className="text-red-500">*</span> Confirmar Contraseña
             </label>
+
             <div className="relative">
               <TextField
                 type={showConfirmPassword ? "text" : "password"}
@@ -501,17 +506,20 @@ export function RegistUser({ setNav }) {
                   validateLive("passwordConfirm", e.target.value);
                 }}
               />
+
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute top-1/3 right-4 transform -translate-y-1/2 text-xl text-gray-500 hover:text-indigo-600"
+                className="absolute top-1/2 -translate-y-1/2 right-2 text-xl text-gray-500 hover:text-indigo-600"
               >
                 {showConfirmPassword ? <AiOutlineEye /> : <AiOutlineEyeInvisible />}
               </button>
-               <span className="text-xs text-gray-500">
-                La contraseña debe coincidir con la digitada anteriormente.
-              </span>
             </div>
+
+            <span className="text-xs text-gray-500">
+              La contraseña debe coincidir con la digitada anteriormente.
+            </span>
+
             {errors.passwordConfirm && (
               <div className="text-red-600 text-sm mt-2 font-medium">
                 {errors.passwordConfirm}

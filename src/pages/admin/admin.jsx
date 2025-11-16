@@ -31,7 +31,7 @@ export default function AdminPage() {
     },
     {
       id: "Agregar",
-      title: "Agregar Cliente",
+      title: "Registrar Cliente",
       icon: "plusUser",
     },
   ];
@@ -55,7 +55,7 @@ export default function AdminPage() {
           <Button
             text="Modulos"
             style="primary"
-            className="w-full"
+            className="w-full flex justify-center items-center text-center"
             onClick={() => {
               navigate("/dashboard");
             }}
@@ -114,6 +114,7 @@ function Clients() {
   const [searchedClient, setSearchedClient] = useState(null);
 
   const statuses = [
+    "Seleccione tipo de documento",
     "Cédula de ciudadanía",
     "Pasaporte",
     "Cédula de extranjería",
