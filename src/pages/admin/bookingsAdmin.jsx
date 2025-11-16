@@ -61,7 +61,7 @@ export default function BookingAdmin() {
             onClick={() => {
               navigate("/dashboard");
             }}
-            iconName="lock"
+            iconName="box"
             />
           <Button
             text="Cerrar Sesion" 

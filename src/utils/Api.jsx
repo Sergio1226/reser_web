@@ -586,3 +586,4 @@ const addUser = async ({ user }) => {
     .insert({ id_rol: 1, user_id: user.user_id });
   return data;
 };
+

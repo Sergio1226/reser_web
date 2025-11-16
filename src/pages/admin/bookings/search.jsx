@@ -28,16 +28,16 @@ export default function SearchBookingsAdmin({ setNav }) {
   const [searched, setSearched] = useState(false);
   const [selectedRooms, setSelectedRooms] = useState([]);
   const [selectedServices] = useState([]);
-  
-    const calculateNights = () => {
-      const start = range[0].startDate;
-      const end =
-        range[0].startDate.getTime() === range[0].endDate.getTime()
-          ? addDays(range[0].endDate, 1)
-          : range[0].endDate;
-      const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-      return Math.max(1, diff);
-    };
+
+  const calculateNights = () => {
+    const start = range[0].startDate;
+    const end =
+      range[0].startDate.getTime() === range[0].endDate.getTime()
+        ? addDays(range[0].endDate, 1)
+        : range[0].endDate;
+    const diff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+    return Math.max(1, diff);
+  };
 
   const subtotal = selectedRooms.reduce(
     (sum, r) => sum + (r.precio || 0) * calculateNights(),
@@ -172,11 +172,19 @@ export default function SearchBookingsAdmin({ setNav }) {
                 </div>
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-xs text-slate-600">Adultos</span>
-                  <Counter count={countAdults} setCount={setCountAdults} min={1} />
+                  <Counter
+                    count={countAdults}
+                    setCount={setCountAdults}
+                    min={1}
+                  />
                 </div>
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-xs text-slate-600">Niños</span>
-                  <Counter count={countChildrens} setCount={setCountChildrens} min={0} />
+                  <Counter
+                    count={countChildrens}
+                    setCount={setCountChildrens}
+                    min={0}
+                  />
                 </div>
               </div>
             </div>
@@ -211,18 +219,20 @@ export default function SearchBookingsAdmin({ setNav }) {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {availableRooms.map((room) => {
-                  const isSelected = selectedRooms.some((r) => r.id === room.id);
+                  const isSelected = selectedRooms.some(
+                    (r) => r.id === room.id
+                  );
                   const capacity = room.capacidad_total;
                   const bedType = (room.habitaciones_camas || []).map((hc) => ({
                     tipo: hc?.camas?.nombre || "Cama sin nombre",
                     cantidad: hc?.cantidad || 0,
                   }));
-                  const services = (room.habitaciones_caracteristicas || []).map(
-                    (hc) => ({
-                      icon: hc.caracteristicas?.icono || "wifi",
-                      label: hc.caracteristicas?.nombre || "Servicio",
-                    })
-                  );
+                  const services = (
+                    room.habitaciones_caracteristicas || []
+                  ).map((hc) => ({
+                    icon: hc.caracteristicas?.icono || "wifi",
+                    label: hc.caracteristicas?.nombre || "Servicio",
+                  }));
 
                   return (
                     <div
@@ -287,7 +297,10 @@ export default function SearchBookingsAdmin({ setNav }) {
                       >
                         <span>#{r.id}</span>
                         <span className="font-semibold text-slate-800">
-                          ${(r.precio * calculateNights()).toLocaleString("es-CO")}
+                          $
+                          {(r.precio * calculateNights()).toLocaleString(
+                            "es-CO"
+                          )}
                         </span>
                       </div>
                     ))}
@@ -300,7 +313,9 @@ export default function SearchBookingsAdmin({ setNav }) {
                   </div>
 
                   <div className="bg-white rounded-lg p-4 shadow-sm">
-                    <p className="text-sm text-slate-600 mb-2">Total a pagar:</p>
+                    <p className="text-sm text-slate-600 mb-2">
+                      Total a pagar:
+                    </p>
                     <p className="text-3xl font-bold text-green-700">
                       ${subtotal.toLocaleString("es-CO")}
                     </p>
@@ -317,14 +332,15 @@ export default function SearchBookingsAdmin({ setNav }) {
                   </p>
                 </div>
               )}
-
-              <Button
-                text="Continuar"
-                style="primary"
-                iconName="next"
-                onClick={handleContinue}
-                disabled={selectedRooms.length === 0}
-              />
+              <div className="flex justify-center mt-4">
+                <Button
+                  text="Continuar"
+                  style="primary"
+                  iconName="next"
+                  onClick={handleContinue}
+                  disabled={selectedRooms.length === 0}
+                />
+              </div>
             </div>
           </div>
         </div>

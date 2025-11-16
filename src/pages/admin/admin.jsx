@@ -59,7 +59,7 @@ export default function AdminPage() {
             onClick={() => {
               navigate("/dashboard");
             }}
-            iconName="lock"
+            iconName="box"
             />
           <Button
             text="Cerrar Sesion" 
