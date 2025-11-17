@@ -5,6 +5,7 @@ import {
   Mountain,
   ShowerHead,
   Plus,
+  Minus,
 } from "lucide-react";
 import Carousel from "./Carousel";
 
@@ -108,15 +109,23 @@ export default function RoomCard({
             onClick={onClick}
             className={`ml-2 p-2 rounded-lg border transition-all duration-200 ease-in-out ${
               selected
-                ? "bg-gradient-to-br from-green-500 to-green-600 border-green-600 shadow-md hover:shadow-lg hover:scale-105"
+                ? "bg-gradient-to-br from-red-500 to-red-600 border-red-600 shadow-md hover:shadow-lg hover:scale-105"
                 : "bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:from-green-200 hover:to-green-300"
             }`}
           >
-            <Plus
-              size={22}
-              color={selected ? "white" : "#16a34a"}
-              className="transition-colors duration-200"
-            />
+            {selected ? (
+              <Minus
+                size={22}
+                color="white"
+                className="transition-colors duration-200"
+              />
+            ) : (
+              <Plus
+                size={22}
+                color="#16a34a"
+                className="transition-colors duration-200"
+              />
+            )}
           </button>
         )}
       </div>

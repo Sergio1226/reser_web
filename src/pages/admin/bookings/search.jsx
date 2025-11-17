@@ -137,8 +137,11 @@ export default function SearchBookingsAdmin({ setNav }) {
     <div className="space-y-6">
       <div className="bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-xl shadow-lg p-6">
         <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-          🔍 Buscar Habitaciones Disponibles (Admin)
+          🔍 Buscar Habitaciones Disponibles (Administrador)
         </h2>
+        <h4 className="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
+          Selecciona fechas y numero de huspedes para visualizar las opciones y agregar una reserva nueva al sistema.
+        </h4>
 
         <div className="flex flex-col lg:flex-row gap-4 justify-center lg:items-stretch">
           <div className="bg-white border border-slate-200 rounded-lg p-4 flex items-center gap-4">

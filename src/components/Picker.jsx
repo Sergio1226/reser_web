@@ -1,7 +1,6 @@
 export function Picker({ options, text, onChange, value }) {
   const handleChange = (e) => {
-    const value = Number(e.target.value);
-    onChange(value);
+    onChange(Number(e.target.value));
   };
 
   return (
@@ -10,7 +9,7 @@ export function Picker({ options, text, onChange, value }) {
       onChange={handleChange}
       value={value}
     >
-      <option value="" disabled>
+      <option value={0}>
         {text}
       </option>
 

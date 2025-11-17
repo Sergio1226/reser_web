@@ -57,7 +57,7 @@ export default function BookingAdmin() {
           <Button
             text="Modulos"
             style="primary"
-            className="w-full"
+            className="w-full flex justify-center items-center text-centerr"
             onClick={() => {
               navigate("/dashboard");
             }}
@@ -79,7 +79,7 @@ export default function BookingAdmin() {
           <div className="bg-white rounded-2xl shadow-xl border border-black-200 ">
             <div className="bg-gradient-to-r from-green-600 to-green-700 p-8 rounded-t-2xl ">
               <h1 className="text-3xl font-bold text-white mb-2 text-center">
-                Administracion de Reservas
+                Modulo de Reservas
               </h1>
               <p className="text-green-100 text-center">
                 Gestiona las reservas de manera fácil y rápida.

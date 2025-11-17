@@ -487,7 +487,7 @@ export async function addClient(client) {
 
 export async function getReservationsByDate(date, type) {
   try {
-    const pgDate = date.toISOString().split("T")[0];
+    const pgDate = date.toLocaleDateString("en-CA");
 
     const { data, error } = await supabase.rpc("get_bookings", {
       p_date: pgDate,
