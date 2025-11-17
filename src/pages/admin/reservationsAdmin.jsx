@@ -173,7 +173,6 @@ export function Reservations() {
       const data = result?.data ?? [];
       const ids = result?.ids ?? [];
       const rows = transformApiDataToRows(data, ids);
-      console.log(rows);
 
       setBookings(rows);
     } catch (error) {
@@ -184,28 +183,7 @@ export function Reservations() {
   };
 
   useEffect(() => {
-    const loadToday = async () => {
-      try {
-        setLoading(true);
-        const result = await getReservationsByDate(new Date(), 0);
-        const data = result?.data ?? [];
-        const ids = result?.ids ?? [];
-        const rows = transformApiDataToRows(data, ids);
-        setBookings(rows);
-        console.log("ROWS TRANSFORMADOS:", rows);
-        console.log("DATA CRUDA API:", data);
-        console.log("IDS DEVUELTOS POR API:", ids);
-      } catch (error) {
-        openPopup(
-          error?.message || "Error cargando reservas del día",
-          "warning"
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadToday();
+    handleSearch();
   }, []);
 
   const indexOfLast = currentPage * itemsPerPage;
@@ -346,8 +324,23 @@ export function Reservations() {
               </p>
             </div>
 
-            <TableArray headers={headers} info={currentBookings}>
-              {(row) => (
+           <TableArray headers={headers} info={currentBookings}>
+            {(row) => {
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+
+              const fechaEntrada = new Date(row[1]);
+              fechaEntrada.setHours(0, 0, 0, 0);
+
+              const fechaSalida = new Date(row[2]);
+              fechaSalida.setHours(0, 0, 0, 0);
+
+              const debeMostrarNoShow =
+                today >= fechaEntrada &&
+                today <= fechaSalida &&
+                row[5] === "Confirmada";
+
+              return (
                 <div className="flex flex-col items-center justify-center space-y-2 flex-1 p-2">
                   {rowSearch === row && loadingDetails ? (
                     <Button
@@ -367,17 +360,18 @@ export function Reservations() {
                       onClick={() => handleViewMore(row)}
                     />
                   )}
-                  {new Date(row[1]) <= new Date() &&
-                    new Date(row[2]) >= new Date() &&  row[5]==="Confirmada" &&(
-                      <Button
-                        text="No se presentó"
-                        style="exit"
-                        onClick={() => handleNoShowClick(row)}
-                      />
-                    )}
+
+                  {debeMostrarNoShow && (
+                    <Button
+                      text="No se presentó"
+                      style="exit"
+                      onClick={() => handleNoShowClick(row)}
+                    />
+                  )}
                 </div>
-              )}
-            </TableArray>
+              );
+            }}
+          </TableArray>
 
             <div className="flex justify-between items-center p-4 bg-slate-50 border border-slate-200 rounded-lg shadow-sm mt-4">
               <Button
