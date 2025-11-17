@@ -68,7 +68,7 @@ export default function BookingAdmin() {
             style="exit"
             className="w-full"
             onClick={() => {
-              signOut();
+              signOut().then(() => navigate("/"));
             }}
             iconName="signOut"
           />
