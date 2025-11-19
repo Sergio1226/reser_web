@@ -5,6 +5,8 @@ import { Button } from "../../components/Button.jsx";
 import { Card } from "../../components/Card.jsx";
 import { UserAuth } from "../../utils/AuthContext.jsx";
 import { useSize } from "../../utils/SizeContext.jsx";
+import { supabase } from "../../utils/supabase.js";
+
 
 const options = [
   {
@@ -25,18 +27,47 @@ export default function DashBoard() {
   const { signOut } = UserAuth();
   const {isMobile}= useSize();
 
+  const handleDownloadManual = async () => {
+    const { data, error } = await supabase.storage
+      .from("Users_Manual")
+      .download("MANUAL DE USUARIO (1).pdf");
+
+    if (error) {
+      console.error("Error descargando el manual:", error);
+      return;
+    }
+
+    const url = URL.createObjectURL(data);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "manual_usuario.pdf";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="min-h-screen flex flex-col font-primary bg-gradient-to-br from-gradient_1 to-secondary">
       <Header>
         <div className="flex flex-col justify-center items-center space-y-2 mt-4 mr-8">
+
           <Button
-            text="Cerrar Sesion"
+            text="Manual de Usuario"
+            style="banana"
+            iconName="help"
+            onClick={handleDownloadManual}
+            className="w-full"
+          />
+
+          <Button
+            text="Cerrar Sesión"
             style="exit"
+            iconName="signOut"
+            className="w-full"
             onClick={() => {
               signOut();
             }}
-            iconName="signOut"
           />
+          
         </div>
       </Header>
 

@@ -34,8 +34,9 @@ import warning from '/src/assets/icons/warning.svg'
 import arrowUp from '/src/assets/icons/up-arrow.svg'
 import arrowDown from '/src/assets/icons/down-arrow.svg'
 import box from '/src/assets/icons/box.svg'
+import help from '/src/assets/icons/help.svg'
 
-const icons = { account, back, bedDouble, bed, book, box,booking,arrowDown, calendar, check,  arrowUp, contactForm, enter, exit, guest, image, list, lock, login, logout, mail, map, maps, moon, net, next, phone, plusUser, refreshCw, saveAll, search, settings, signOut, user, users, warning }
+const icons = { account, back, bedDouble, bed, book, box,booking,arrowDown, calendar, check,  arrowUp, contactForm, enter, exit, guest, image, list, lock, login, logout, mail, map, maps, moon, net, next, phone, plusUser, refreshCw, saveAll, search, settings, signOut, user, users, warning , help}
 
 export function Icon({ name, style, onClick, alt }) {
   return <img src={icons[name]} className={` size-icon ${style}`} alt={alt || name} onClick={onClick} />

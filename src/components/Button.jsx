@@ -9,6 +9,8 @@ const colors = {
   exit: "bg-gradient-to-br from-button_exit to-button_exit_dark text-red-900 shadow-button-exit hover:shadow-button-exit-hover",
 
   info: "bg-gradient-to-br from-button_bookings to-button_bookings_dark text-green-800 shadow-button-bookings hover:shadow-button-bookings-hover",
+  banana:
+  "bg-gradient-to-br from-yellow-300 to-yellow-400 text-yellow-900 shadow-md hover:shadow-lg hover:from-yellow-400 hover:to-yellow-500",
 };
 export function Button({
   text,
