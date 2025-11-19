@@ -55,8 +55,8 @@ export function BookingTable() {
 
   const headers = [
     { label: "Fecha de reserva", key: "reservationDate" },
-    { label: "Check-In", key: "checkIn" },
-    { label: "Check-Out", key: "checkOut" },
+    { label: "Fecha de llegada", key: "checkIn" },
+    { label: "Fecha de salida", key: "checkOut" },
     { label: "Habitaciones", key: "room" },
     { label: "Estado de reserva", key: "status" },
     { label: "Precio", key: "price" },

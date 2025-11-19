@@ -11,6 +11,7 @@ import { Schedule } from "./schedule.jsx";
 import { UserAuth } from "../../utils/AuthContext.jsx";
 import { BookingsAdmin } from "./bookings/bookingsSearch.jsx";
 import { useSize } from "../../utils/SizeContext.jsx";
+import { supabase } from "../../utils/supabase.js";
 
 export default function BookingAdmin() {
   const [nav, setNav] = useState(0);
@@ -50,21 +51,52 @@ export default function BookingAdmin() {
     }
   };
 
+  const handleDownloadManual = async () => {
+    const { data, error } = await supabase.storage
+      .from("Users_Manual")
+      .download("MANUAL DE USUARIO (1).pdf");
+
+    if (error) {
+      console.error("Error descargando el manual:", error);
+      return;
+    }
+
+    const url = URL.createObjectURL(data);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "manual_usuario.pdf";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="bg-gradient-to-br from-gradient_1 to-secondary min-h-screen flex flex-col font-primary">
       <Header>
-        <div className={`flex flex-row md:flex-col h-full items-center justify-center ${isMobile ? " space-x-2":"space-y-2"} mt-4 mr-8`}>
+        <div
+          className={`flex flex-row md:flex-col h-full items-center justify-center ${
+            isMobile ? "space-x-2" : "space-y-2"
+          } mt-4 mr-8`}
+        >
+          <Button
+            text="Manual de Usuario"
+            style="banana"
+            iconName="help"
+            className="w-full flex justify-center items-center"
+            onClick={handleDownloadManual}
+          />
+
           <Button
             text="Modulos"
             style="primary"
-            className="w-full flex justify-center items-center text-centerr"
+            className="w-full flex justify-center items-center"
             onClick={() => {
               navigate("/dashboard");
             }}
             iconName="box"
-            />
+          />
+
           <Button
-            text="Cerrar Sesion" 
+            text="Cerrar Sesion"
             style="exit"
             className="w-full"
             onClick={() => {

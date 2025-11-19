@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { BookingSearch } from "./bookingsSearch.jsx";
 import { BookingTable } from "./bookingsList.jsx";
 import { useSize } from "../../utils/SizeContext.jsx";
+import { UserAuth } from "../../utils/AuthContext.jsx";
 
 const options = [
   {
@@ -26,15 +27,40 @@ const options = [
 ];
 
 export default function Bookings() {
+  const { signOut } = UserAuth();
   const navigate = useNavigate();
   const [nav, setNav] = useState(0);
   const {isMobile}=useSize();
 
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/");
+    setOpen(false);
+  };
+
   return (
     <div className="min-h-screen max-w-full flex flex-col font-primary bg-gradient-to-br from-gradient_1 to-secondary m-0 overflow-x-hidden">
       <Header>
-        <div className={`flex flex-row md:flex-col justify-center items-center ${isMobile ? " space-x-2":"space-y-2"} mt-4 mr-8 w-full`}>
-          <ProfileButton toPag={"/login"} />
+        <div
+          className={`flex flex-row md:flex-col justify-center items-center ${
+            isMobile ? "space-x-2" : "space-y-2"
+          } mt-4 mr-8 w-full`}
+        >
+          <Button
+            text="Perfil"
+            style="secondary"
+            iconName="user"
+            className="w-full"
+            onClick={() => navigate("/modifyUser")}
+          />
+
+          <Button
+            text="Cerrar Sesión"
+            style="exit"
+            iconName="signOut"
+            className="w-full"
+            onClick={handleLogout}
+          />
         </div>
       </Header>
 
