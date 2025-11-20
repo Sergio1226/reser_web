@@ -59,9 +59,39 @@ function Section({ iconName, text }) {
 }
 
 export function SmallFooter() {
+  const handleDownloadManual = async () => {
+    const { data, error } = await supabase.storage
+      .from("Users_Manual")
+      .download("MANUAL DE USUARIO (1).pdf");
+
+    if (error) {
+      console.error("Error descargando el manual:", error);
+      return;
+    }
+
+    const url = URL.createObjectURL(data);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "manual_usuario.pdf";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
-    <footer className="text-center py-4 text-sm text-gray-600 bg-gradient-to-t from-primary_dark/20 to-transparent">
+    <footer className="text-center py-6 text-sm text-gray-600 bg-gradient-to-t from-primary_dark/20 to-transparent">
       © 2025 Reser - Todos los derechos reservados
+
+      <div className="mt-4 flex justify-center">
+        <button
+          onClick={handleDownloadManual}
+          className="flex items-center gap-3 bg-green-600 hover:bg-green-700 transition-colors px-4 py-2 rounded-xl shadow-md group text-white"
+        >
+          <Icon name="help" color="text-white" />
+          <span className="text-sm font-semibold group-hover:text-white/90">
+            ¿Necesita ayuda? Consulte el Manual de Usuario
+          </span>
+        </button>
+      </div>
     </footer>
   );
 }
