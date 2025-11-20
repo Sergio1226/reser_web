@@ -49,24 +49,6 @@ export default function AdminPage() {
     }
   };
 
-  const handleDownloadManual = async () => {
-    const { data, error } = await supabase.storage
-      .from("Users_Manual")
-      .download("MANUAL DE USUARIO (1).pdf");
-
-    if (error) {
-      console.error("Error descargando el manual:", error);
-      return;
-    }
-
-    const url = URL.createObjectURL(data);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "manual_usuario.pdf";
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
   return (
     <div className="bg-gradient-to-br from-gradient_1 to-secondary min-h-screen flex flex-col font-primary">
       <Header>
@@ -75,13 +57,6 @@ export default function AdminPage() {
             isMobile ? "space-x-2" : "space-y-2"
           } mt-4 mr-8`}
         >
-          <Button
-            text="Manual de Usuario"
-            style="banana"
-            iconName="help"
-            className="w-full flex justify-center items-center"
-            onClick={handleDownloadManual}
-          />
 
           <Button
             text="Modulos"
